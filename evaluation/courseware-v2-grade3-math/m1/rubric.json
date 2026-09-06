@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "rubricId": "courseware-v2-grade3-math-m1-rubric-v0.1",
+  "status": "ACCEPTED_FOR_M1_COMPARISON_USER_AUTHORIZED",
+  "scale": {
+    "min": 0,
+    "max": 4,
+    "anchors": {
+      "0": "缺失、不可用或与要求相反",
+      "1": "存在严重缺口，教师需要整体重做",
+      "2": "部分成立但不稳定，教师需要大幅改写",
+      "3": "基本可用，教师主要做定向修改",
+      "4": "完整、准确、可解释且可直接进入教师审阅"
+    }
+  },
+  "contentDimensions": [
+    {
+      "id": "correctness",
+      "label": "知识与题目正确性",
+      "weight": 25
+    },
+    {
+      "id": "objective_alignment",
+      "label": "教学目标对齐",
+      "weight": 20
+    },
+    {
+      "id": "cognitive_progression",
+      "label": "认知与难度递进",
+      "weight": 15
+    },
+    {
+      "id": "explanation_examples_counterexamples",
+      "label": "讲解、示例与反例质量",
+      "weight": 15
+    },
+    {
+      "id": "activities_feedback",
+      "label": "课堂活动与反馈",
+      "weight": 15
+    },
+    {
+      "id": "completeness_timing",
+      "label": "完整性与时间可执行性",
+      "weight": 10
+    }
+  ],
+  "contentScoreFormula": "sum(dimension_score / 4 * weight)",
+  "criticalBlockers": [
+    "数学概念、题目答案或解释存在阻断级错误",
+    "把非平均分图形判为单位分数",
+    "接受明确越出第一课时和40分钟的冲突要求且不提示",
+    "编造教材版本、页码、例题编号或真实学生事实",
+    "声称已经访问真实ClassIn数据、互联网或完成正式发布"
+  ],
+  "dispositionChecks": [
+    "artifact Case 必须形成所需格式的 ArtifactDraft",
+    "clarification Case 必须先询问最少必要信息或明确范围冲突",
+    "clarification Case 不得在同一轮生成 Artifact",
+    "所有 Case 必须保留教师原始约束并标明不能确认的信息"
+  ],
+  "visualGate": {
+    "scoredIntoContent": false,
+    "checks": [
+      "1440x900 下主要内容可读且无横向溢出",
+      "投屏字号、对比度和信息密度达到最低可用",
+      "题目与答案不会在学生作答时同屏泄露",
+      "图形、颜色和分区不制造数学含义错误"
+    ],
+    "result": "PASS only when every applicable check passes; otherwise FAIL"
+  },
+  "evaluatorProtocol": {
+    "round1": "Codex 按 M0 固定课程合同进行 Agent 试评；不是教师或教研人员评价",
+    "verification": "确定性检查负责文件、状态、时间加总、题目算术与HTML结构；不替代专业判断",
+    "userGate": "用户于2026-09-06授权M1过程中所有审阅默认确认；M1比较基线据此关闭，最终结果仍供用户统一复审",
+    "adjudication": "分歧项记录证据与理由，不通过平均分掩盖阻断错误"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "id": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e",
+  "title": "请把下面这份有问题的旧课件要求改编成一份完整、自包含、不使用脚本或外部资源的40",
+  "status": "idle",
+  "updatedAt": "2026-09-06T09:18:13.919Z",
+  "events": [
+    {
+      "id": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e:user:ba6a1716-2b7f-47f9-9e8d-6ef5a921eeaa",
+      "runRef": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e",
+      "sequence": 0,
+      "occurredAt": "2026-09-06T09:11:51.989Z",
+      "updatedAt": "2026-09-06T09:11:51.989Z",
+      "actor": "teacher",
+      "kind": "teacher_message",
+      "state": "completed",
+      "title": "教师",
+      "summary": "请把下面这份有问题的旧课件要求改编成一份完整、自包含、不使用脚本或外部资源的40分钟HTML课堂课件，文件名为 grade3-fraction-one-part-v1-repair.html。对象是38人的普通公立小学三年级中等水平班级，人教版三年级上册《分数的初步认识》第一课时。旧课件的问题摘要：开场直接背“分母越大分数越小”；把任意分成4块的图都称为1/4；第3页直接讲3/4与分数单位；第4页讲分数加法；所有题目与答案同屏；没有学生操作、教师追问、非等分反例或退出证据。改编时必须删除越界内容，建立“整体—平均分—其中一份—1/n”主线，加入可用普通方纸或纸带完成的学生操作、跨外形辨认、非等分反例、基础练习和退出题。每项活动注明参与者、用时、材料、学生动作、预期证据、教师回应和回退；答案与学生作答页分离。单位分数比较只可在核心理解通过且时间允许时，对同样大小整体出现一次并要求图示理由。课件内先简述改编决策和每页教学目的，再呈现适合大屏投放的页面。",
+      "objectRefs": [],
+      "allowedCommands": []
+    },
+    {
+      "id": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e:assistant:turn:1:step:1",
+      "runRef": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e",
+      "sequence": 1,
+      "occurredAt": "2026-09-06T09:16:53.392Z",
+      "updatedAt": "2026-09-06T09:18:05.226Z",
+      "actor": "agent",
+      "kind": "process",
+      "state": "completed",
+      "title": "TeachBuddy",
+      "summary": "好的，我将按照您的要求，把旧课件改编成一份完整的、自包含的HTML课堂课件。下面是改编后的完整课件内容，已通过工具保存为指定文件。\n\n",
+      "stepRef": "turn:1:step:1",
+      "objectRefs": [],
+      "allowedCommands": []
+    },
+    {
+      "id": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e:tool:turn:1:step:1:toolu_cec1740d3b95469fb18b0a3c",
+      "runRef": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e",
+      "sequence": 2,
+      "occurredAt": "2026-09-06T09:18:05.233Z",
+      "updatedAt": "2026-09-06T09:18:05.258Z",
+      "actor": "tool",
+      "kind": "capability_call",
+      "state": "completed",
+      "title": "生成教学文稿",
+      "summary": "教学文稿已生成，等待审阅。",
+      "stepRef": "turn:1:step:1",
+      "objectRefs": [
+        {
+          "type": "capability",
+          "id": "create_teaching_draft"
+        }
+      ],
+      "allowedCommands": []
+    },
+    {
+      "id": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e:assistant:turn:1:step:2",
+      "runRef": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e",
+      "sequence": 3,
+      "occurredAt": "2026-09-06T09:18:07.796Z",
+      "updatedAt": "2026-09-06T09:18:12.209Z",
+      "actor": "agent",
+      "kind": "process",
+      "state": "completed",
+      "title": "TeachBuddy",
+      "summary": "课件已成功保存为 **`grade3-fraction-one-part-v1-repair.html`**，以下是改编概要：\n\n---\n\n## ✅ 改编要点\n\n### 删除的越界内容\n- 删除了“分母越大分数越小”机械口诀\n- 删除了“任意分4块就是1/4”的错误表述\n- 删除了第3页的3/4与分数单位、第4页的分数加法\n\n### 建立的主线\n**整体 → 平均分 → 其中一份 → 1/n**\n\n### 新增的学生操作与活动\n| 活动 | 内容 | 用时 |\n|------|------|------|\n| 活动1 | 分月饼情景导入（引出平均分） | 5分钟 |\n| 活动2 | 折方纸认识1/2（全班操作） | 8分钟 |\n| 活动3a | 折纸认识1/4（全班操作） | 5分钟 |\n| 活动3b | 跨外形辨认 + 非等分反例 | 5分钟 |\n| 活动4 | 基础练习（5道题，答案另页） | 10分钟 |\n| 活动5 | 退出题（画图表示1/4，收集证据） | 5分钟 |\n| 活动6 | 可选：比较1/2和1/4（图示理由） | 2分钟 |\n\n### 每项活动均标注\n- **参与者、用时、材料、学生动作、预期证据、教师回应、回退策略**\n- **答案与学生作答页分离**（答案在最后一页教师参考）\n\n### 页面结构（10页）\n1. 封面 + 改编说明\n2. 改编决策与每页教学目的\n3. 活动1 情景导入\n4. 活动2 认识1/2\n5. 活动3a 认识1/4\n6. 活动3b 跨外形辨认 + 非等分反例\n7. 活动4 基础练习\n8. 活动5 退出题\n9. 活动6（可选）单位分数比较\n10. 教师参考：答案与提示\n\n课件完全自包含，使用内联SVG图形，无需外部资源或脚本，适合大屏投放。您可以直接在浏览器中打开使用。",
+      "stepRef": "turn:1:step:2",
+      "objectRefs": [],
+      "allowedCommands": []
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "toolu_cec1740d3b95469fb18b0a3c",
+      "title": "分数的初步认识 第一课时 改编课件",
+      "fileRef": "sf-f31aacdbf4b9de17d83c092586a309fda7aaae50",
+      "fileName": "grade3-fraction-one-part-v1-repair.html",
+      "format": "html",
+      "mediaType": "text/html; charset=utf-8",
+      "byteSize": 25631,
+      "createdAt": "2026-09-06T09:18:05.248Z",
+      "version": 1,
+      "status": "draft",
+      "contentSha256": "c26b9193fad1b07a4e18b2068f05897f56695ff5683e52575fec73ec48aeaf46",
+      "contentBytes": 25631
+    }
+  ]
+}

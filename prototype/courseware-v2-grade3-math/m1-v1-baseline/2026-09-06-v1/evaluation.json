@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "courseware-v2-grade3-math-m1-v1",
+  "rubricId": "courseware-v2-grade3-math-m1-rubric-v0.1",
+  "evaluationStatus": "AGENT_TRIAL_ACCEPTED_AS_M1_BASELINE_USER_AUTHORIZED",
+  "evaluatedAt": "2026-09-06",
+  "evaluator": {
+    "role": "Codex evidence reviewer",
+    "isTeacherOrTeachingResearcher": false,
+    "claimBoundary": "This is an agent trial against the M0 contract, accepted as the M1 comparison baseline by delegated user authorization. It is not a teacher evaluation or evidence of classroom effectiveness."
+  },
+  "reviewReceipt": {
+    "status": "COMPLETE_BY_DELEGATED_USER_AUTHORIZATION",
+    "authorizedAt": "2026-09-06",
+    "scope": "M1 fixed cases, Rubric v0.1, baseline findings and M1 gate",
+    "boundary": "The user will review the final result after delivery; the authorization does not fabricate teacher or teaching-researcher calibration."
+  },
+  "runtime": {
+    "cases": 8,
+    "terminalSessionsAfterReconciliation": 8,
+    "expectedArtifactCases": 4,
+    "successfulArtifactCases": 3,
+    "expectedClarificationCases": 4,
+    "clarificationCasesWithoutArtifact": 4,
+    "runtimeFailures": 1,
+    "artifactSuccessRate": 0.75,
+    "successfulArtifactMedianDurationMs": 268260,
+    "clarificationMedianDurationMs": 14210,
+    "failure": {
+      "caseId": "M1-C06",
+      "timeoutMs": 600000,
+      "runtimeStatusAfterCancellation": "stopped",
+      "artifactCount": 0
+    }
+  },
+  "artifactCaseScores": [
+    {
+      "caseId": "M1-C01",
+      "dimensionScores": {
+        "correctness": 0,
+        "objective_alignment": 4,
+        "cognitive_progression": 3,
+        "explanation_examples_counterexamples": 2,
+        "activities_feedback": 3,
+        "completeness_timing": 3
+      },
+      "weightedContentScore": 57.5,
+      "criticalBlocker": true,
+      "blockingEvidence": "The cross-shape task draws a triangle split into two equal halves, shades one half, labels it as 1/4, and says all four figures represent 1/4.",
+      "visualGate": "FAIL",
+      "visualEvidence": "13 of 15 screens exceed 900px height at a 1440x900 viewport; minimum visible leaf font is 13.6px; the triangle visual is mathematically misleading."
+    },
+    {
+      "caseId": "M1-C05",
+      "dimensionScores": {
+        "correctness": 3,
+        "objective_alignment": 3,
+        "cognitive_progression": 3,
+        "explanation_examples_counterexamples": 3,
+        "activities_feedback": 3,
+        "completeness_timing": 2
+      },
+      "weightedContentScore": 72.5,
+      "criticalBlocker": false,
+      "blockingEvidence": null,
+      "visualGate": "FAIL",
+      "visualEvidence": "No horizontal overflow and minimum visible leaf font is 19.2px, but screens 2, 9 and 10 exceed the 900px classroom viewport; the optional comparison is needed to bring the listed activities from 38 to 40 minutes."
+    },
+    {
+      "caseId": "M1-C06",
+      "dimensionScores": {
+        "correctness": 0,
+        "objective_alignment": 0,
+        "cognitive_progression": 0,
+        "explanation_examples_counterexamples": 0,
+        "activities_feedback": 0,
+        "completeness_timing": 0
+      },
+      "weightedContentScore": 0,
+      "criticalBlocker": true,
+      "blockingEvidence": "The run exceeded 600000ms, was stopped, and produced no Artifact.",
+      "visualGate": "NOT_APPLICABLE_NO_ARTIFACT",
+      "visualEvidence": null
+    },
+    {
+      "caseId": "M1-C07",
+      "dimensionScores": {
+        "correctness": 0,
+        "objective_alignment": 3,
+        "cognitive_progression": 3,
+        "explanation_examples_counterexamples": 2,
+        "activities_feedback": 2,
+        "completeness_timing": 1
+      },
+      "weightedContentScore": 43.75,
+      "criticalBlocker": true,
+      "blockingEvidence": "The first average-partition question draws a one-quarter sector but the answer calls it an equal half; the activity table totals about 43 minutes without the optional comparison and 45 minutes with it despite a 40-minute constraint.",
+      "visualGate": "FAIL",
+      "visualEvidence": "All 21 screens fit 1440x900 with no horizontal overflow and minimum visible leaf font is 16px, but the incorrect sector diagram creates a mathematical meaning error."
+    }
+  ],
+  "aggregate": {
+    "expectedArtifactCaseMeanContentScore": 43.44,
+    "classroomReadyArtifacts": 0,
+    "visualGatePasses": 0,
+    "contentGate": "FAIL",
+    "interpretation": "The score is a first rubric result for this fixed suite, not the project's 20/75 maturity coordinate and not a classroom-effectiveness measurement."
+  },
+  "clarificationCases": [
+    {
+      "caseId": "M1-C02",
+      "dispositionMatched": true,
+      "fullyPassed": false,
+      "finding": "Asked for the missing duration but added three unnecessary questions whose answers were already constrained by the task."
+    },
+    {
+      "caseId": "M1-C03",
+      "dispositionMatched": true,
+      "fullyPassed": false,
+      "finding": "Explained that class level matters but did not ask for it, then offered to assume a default profile despite an explicit no-guess instruction."
+    },
+    {
+      "caseId": "M1-C04",
+      "dispositionMatched": true,
+      "fullyPassed": false,
+      "finding": "Detected the conflict but retained 几分之几 in the proposed first-lesson flow and supplied unsupported or wrong grade-placement claims."
+    },
+    {
+      "caseId": "M1-C08",
+      "dispositionMatched": true,
+      "fullyPassed": false,
+      "finding": "Correctly requested scope information but asserted a seventh-unit location that conflicts with the verified 2022 second-edition eighth-unit baseline."
+    }
+  ],
+  "clarificationSummary": {
+    "dispositionMatched": "4/4",
+    "fullyPassed": "0/4",
+    "interpretation": "V1 generally knows when to pause, but minimal questioning, non-invention and curriculum-boundary accuracy are not stable."
+  },
+  "deterministicChecks": {
+    "artifactHtmlSelfContained": "3/3",
+    "artifactScriptCount": 0,
+    "artifactExternalResourceCount": 0,
+    "artifactExactRequestedFilename": "3/3",
+    "horizontalOverflowAt1440": "0/3 artifacts",
+    "verticalClassroomViewportFit": "1/3 artifacts",
+    "sessionAndArtifactHashesRecorded": true
+  },
+  "majorLossAreas": [
+    "Mathematical diagrams are not coupled to answer verification, producing blocking visual-answer contradictions.",
+    "Curriculum locations and grade progressions are invented during clarification even when the correct response is to preserve UNKNOWN.",
+    "One of four artifact tasks exceeded the 10-minute runtime limit, showing that one-shot full-HTML generation is not reliably bounded.",
+    "Time budgets are copied as labels but not consistently arithmetically reconciled.",
+    "Classroom pages are either over-dense and scroll-dependent or expanded to too many sparse screens.",
+    "Clarification is often broader than the minimum necessary and may reintroduce defaults after a no-guess instruction."
+  ]
+}

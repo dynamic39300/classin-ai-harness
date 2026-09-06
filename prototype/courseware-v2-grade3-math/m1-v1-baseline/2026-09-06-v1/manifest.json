@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "suiteId": "courseware-v2-grade3-math-m1-v1",
+  "suiteSha256": "3b058cb53f64d3e167cd78b5b9dccd57f331d486e3b8bfd6ca5926e0ed220c12",
+  "baseline": "Courseware Generation Version 1",
+  "scope": "ideal-full",
+  "baseUrl": "http://127.0.0.1:4174",
+  "startedAt": "2026-09-06T09:06:47.126Z",
+  "runtimeHealthAtStart": {
+    "status": "ready",
+    "message": "已连接"
+  },
+  "cases": [
+    {
+      "id": "M1-C01",
+      "axis": "complete_input",
+      "expectedDisposition": "artifact",
+      "promptSha256": "2c9c56f4875c8dd9e867a0eab7a34c43dc392ed87c523308387c3ff77e39ec8b",
+      "startedAt": "2026-09-06T09:06:47.126Z",
+      "sessionId": "tb-7995b241-770c-412f-9b7c-2777e3a00a6f",
+      "commandId": "m1-m1-c01-mtpl87hd",
+      "terminalStatus": "idle",
+      "observedDisposition": "artifact",
+      "dispositionMatched": true,
+      "artifacts": [
+        {
+          "id": "toolu_a5d58ba6b35944889b5e1331",
+          "title": "分数的初步认识——几分之一 三年级上册 第一课时 完整课件",
+          "fileName": "grade3-fraction-one-part-v1-complete.html",
+          "format": "html",
+          "status": "draft",
+          "version": 1,
+          "snapshot": "01-toolu_a5d58ba6b35944889b5e1331.html",
+          "sha256": "b041290c4d211f8472eed3719a23af60c90ca829695f3584ecb0796481c4b670",
+          "bytes": 74611
+        }
+      ],
+      "latestAgentText": "课件已成功创建并保存为草稿。\n\n**文件名称：** `grade3-fraction-one-part-v1-complete.html`\n\n**课件内容概览：**\n\n| 页数 | 环节 | 用时 | 核心内容 |\n|------|------|------|----------|\n| 1 | 📖 教学设计说明 | — | 核心目标、设计思路、活动结构总览、教师侧概念提示 |\n| 2 | 📋 教学流程总览 | — | 5大环节时间分配图 |\n| 3 | 🔍 前置诊断 | 4′ | 分物引入（苹果/水/蛋糕）+ 平均分判断（4组图形） |\n| 4 | ✂️ 操作 ½ | 14′ | 折圆形纸认识 ½，多种折法对比 |\n| 5 | ✂️ 操作 ¼ | 14′ | 折正方形纸认识 ¼，田字格/斜线/竖条折法 |\n| 6 | ✂️ 操作 ⅓ ⅛ | 14′ | 观察长方形三等分/八等分，抽象出 1/n 概念 |\n| 7 | 📐 图→符号 | 8′ | 看图写分数（¼、½、⅓） |\n| 8 | 📐 符号→图 | 8′ | 画图表示 ⅓，同桌互评 |\n| 9 | 🔷 跨外形辨认 | 8′ | 不同形状（圆/正方/长方/三角）中辨认 ¼ |\n| 10 | 🚫 反例辨析 | 9′ | 4组非平均分反例判断 |\n| 11 | 📝 综合练习 | 9′ | 4道综合题（判断/填空/写分数/画图） |\n| 12 | 📌 总结 | 5′ | 结构化的知识回顾 |\n| 13 | 🎯 退出题 | 5′ | 3道独立诊断题（判断/填空/画图） |\n| 14 | 🌟 拓展（选学） | 约3′ | ½ 与 ¼ 比较（同样大小整体） |\n| 15 | 🏁 结束页 | — | 核心概念回顾 |\n\n**课件特点：**\n- ✅ 自包含 HTML，无外部脚本/网络资源\n- ✅ 每页标注环节、用时、教学目的\n- ✅ 活动卡片详细列出参与者、材料、学生动作、预期证据、教师回应、回退策略\n- ✅ 所有题目答案通过 `<details>` 折叠，不与学生作答同时显示\n- ✅ 包含 SVG 图形直观展示\n- ✅ 响应式设计，适配大屏和移动端\n- ✅ 打印友好样式\n- ✅ 顶部导航栏可快速跳转任意页面\n\n您可以在浏览器中打开该 HTML 文件直接使用。如需调整任何内容，请告诉我。",
+      "finishedAt": "2026-09-06T09:11:15.386Z",
+      "durationMs": 268260
+    },
+    {
+      "id": "M1-C02",
+      "axis": "missing_duration",
+      "expectedDisposition": "clarification",
+      "promptSha256": "2d43b91ec6546aeeee8e124889c81064643197366ae712d7c8857b8d326e41ea",
+      "startedAt": "2026-09-06T09:11:15.386Z",
+      "sessionId": "tb-42e1893f-f3e0-424b-adbc-13235e8b930b",
+      "commandId": "m1-m1-c02-mtpldygz",
+      "terminalStatus": "idle",
+      "observedDisposition": "clarification",
+      "dispositionMatched": true,
+      "artifacts": [],
+      "latestAgentText": "老师您好，为了制作出贴合您课堂实际的课件，我需要先确认几个关键信息：\n\n1. **课时长度**：本节课计划是多少分钟？（例如40分钟或45分钟，这会影响各环节的容量与节奏）\n\n2. **“学生操作”环节**：您希望学生进行哪种具体操作？例如折纸、涂色、分实物（如小棒、圆片）还是其他形式？\n\n3. **“反例辨析”环节**：您希望呈现的是“平均分”与“非平均分”的对比判断，还是其他类型的反例？\n\n4. **“退出题”的含义**：是指课堂结束前的检测题（如1~2道选择题），还是指课后作业题？\n\n请先告知以上几点，我即可开始制作完整的HTML课件。",
+      "finishedAt": "2026-09-06T09:11:17.440Z",
+      "durationMs": 2054
+    },
+    {
+      "id": "M1-C03",
+      "axis": "missing_class_profile",
+      "expectedDisposition": "clarification",
+      "promptSha256": "fd3d4c1de66a4898596de73123e3422464e7b9c97da468f1f47cc0a6bda803b3",
+      "startedAt": "2026-09-06T09:11:17.440Z",
+      "sessionId": "tb-53756aa7-f922-43dc-9081-a8007851ffe0",
+      "commandId": "m1-m1-c03-mtple027",
+      "terminalStatus": "idle",
+      "observedDisposition": "clarification",
+      "dispositionMatched": true,
+      "artifacts": [],
+      "latestAgentText": "好的，我已理解您的需求：制作一份人教版三年级上册《分数的初步认识》第一课时“几分之一”的40分钟HTML课件，内容需包含“平均分活动→单位分数意义→学生操作→非等分反例→基础练习→退出题”。\n\n在开始制作之前，您提到尚未说明**班级人数、学生水平和设备条件**。这些信息确实会影响教学组织与课件设计，例如：\n\n- **班级人数**会影响小组合作环节的规模与操作材料准备；\n- **学生水平**（是否已牢固掌握“平均分”）会影响概念引入的铺垫深度；\n- **设备条件**（是否有触控大屏、学生终端等）会影响互动操作的形式（点击/拖拽/书写）。\n\n为了在不揣测的前提下设计出最贴合您课堂实际的课件，请您先澄清以下 **最少问题**：\n\n1. **班级大约有多少名学生？**（例如：30人以下/30–40人/40人以上）\n2. **教室是否配备交互式电子白板或触控显示屏？**（或者仅用投影+鼠标展示）\n\n只要您提供这两个信息，我就可以开始制作完整、自包含的HTML课件。如果还有其他您认为重要的条件，也欢迎一并告知；如果没有，我会按最常见的公立学校班级规模（约40人、投影展示+少量上台操作）进行设计。",
+      "finishedAt": "2026-09-06T09:11:33.640Z",
+      "durationMs": 16200
+    },
+    {
+      "id": "M1-C04",
+      "axis": "scope_conflict",
+      "expectedDisposition": "clarification",
+      "promptSha256": "8b7985480f675974360ebca0e5b52e1285f9f8dd63de7817ce6db1b9fd9fef96",
+      "startedAt": "2026-09-06T09:11:33.641Z",
+      "sessionId": "tb-45b1c0f0-b1dd-45c7-9674-49abd4934e73",
+      "commandId": "m1-m1-c04-mtpleck2",
+      "terminalStatus": "idle",
+      "observedDisposition": "clarification",
+      "dispositionMatched": true,
+      "artifacts": [],
+      "latestAgentText": "好的，我们先来逐一核对您提出的内容要求与《分数的初步认识》第一课时的实际定位，以及40分钟课堂的承载能力。\n\n---\n\n## 一、人教版三年级上册《分数的初步认识》第一课时标准范围\n\n| 项目 | 标准内容 |\n|------|----------|\n| **核心目标** | 从“平均分”引入分数，初步理解分数的含义，会读、写几分之一（如 \\(\\frac{1}{2}\\)、\\(\\frac{1}{4}\\)） |\n| **常见拓展** | 简单认识几分之几（如 \\(\\frac{2}{4}\\)、\\(\\frac{3}{4}\\)），但不作精确计算 |\n| **典型活动** | 折纸、涂色、说含义、比大小（直观比较） |\n| **课时长度** | 约 40 分钟，一般安排 2–3 个核心活动 + 少量练习 |\n\n---\n\n## 二、逐项冲突分析\n\n| 您要求的内容 | 是否属于第一课时 | 时间可行性 | 冲突程度 |\n|--------------|------------------|------------|----------|\n| 几分之一 | ✅ 是 | 可容纳 | 无冲突 |\n| 几分之几 | ⚠️ 可简单提及，但不作为重点 | 可容纳 | 低度冲突 |\n| **分数与除法** | ❌ 通常四年级下册正式学习 | 无法在40分钟内讲透 | **高度冲突** |\n| **分数基本性质** | ❌ 四年级下册或五年级上册 | 需单独一节课 | **高度冲突** |\n| **通分、约分** | ❌ 五年级下册 | 需单独一节课 | **高度冲突** |\n| **同分母分数加减法** | ❌ 三年级下册或四年级 | 至少需20分钟练习 | **高度冲突** |\n| **20道计算题** | ❌ 第一课时以概念理解为主，不适合大量计算 | 完全无法完成 | **高度冲突** |\n\n> **结论：您列出的内容量大约相当于 4–5 个完整课时的总和，远超第一课时和 40 分钟的容量。如果强行全部塞入，会导致每个概念都只能“念名词”，学生无法真正理解分数含义，反而造成认知混乱。**\n\n---\n\n## 三、保持第一课时核心目标的最小调整建议\n\n### 保留（不变）\n- **几分之一**（核心）\n- **几分之几**（作为几分之一的自然延伸，用直观图展示）\n- 活动：折一折、涂一涂、说一说\n- 少量口头或纸笔练习（约 5–6 题，以看图写分数、比较大小为主）\n\n### 必须移除（移到后续课时或年级）\n| 内容 | 处理建议 |\n|------|----------|\n| 分数与除法 | 移到四年级下册“分数与除法”单元 |\n| 分数基本性质 | 移到五年级上册“分数的意义和性质” |\n| 通分、约分 | 移到五年级下册 |\n| 同分母分数加减法 | 移到三年级下册或四年级 |\n| 20道计算题 | 改为 5–6 道**概念理解题**（如：涂色表示分数、判断是否平均分、用分数说一句话） |\n\n### 关于“20道计算题”的特别说明\n第一课时学生刚认识分数，连分数写法都还没巩固，直接做计算题（即使是同分母加减）会严重偏离教学目标。建议将计算题分散到后续课时，第一课时只做 **“认—读—写—说—比”** 的练习。\n\n---\n\n## 四、可接受的调整后内容框架（40分钟）\n\n| 环节 | 时间 | 内容 |\n|------|------|------|\n| 情境导入 | 5 min | 分月饼/分蛋糕，引出“平均分”，产生分数需求 |\n| 认识几分之一 | 10 min | 折纸表示 \\(\\frac{1}{2}\\)、\\(\\frac{1}{4}\\)，读写法 |\n| 认识几分之几 | 10 min | 从 \\(\\frac{1}{4}\\) 到 \\(\\frac{2}{4}\\)、\\(\\frac{3}{4}\\)，涂色活动 |\n| 直观比较大小 | 8 min | 借助图形比较同分母分数大小（如 \\(\\frac{1}{4}\\) 与 \\(\\frac{3}{4}\\)） |\n| 课堂练习与小结 | 7 min | 4–6 道看图写分数、判断题，回顾分数含义 |\n\n---\n\n**总结：您的要求与第一课时定位及40分钟时长存在明显冲突。建议按照上述调整，只保留“几分之一、几分之几”及直观比较，其余内容全部移至后续课时。如您同意此调整方案，我可以立即为您生成符合第一课时标准的40分钟HTML课件。**",
+      "finishedAt": "2026-09-06T09:11:51.926Z",
+      "durationMs": 18285
+    },
+    {
+      "id": "M1-C05",
+      "axis": "repair_flawed_legacy_deck",
+      "expectedDisposition": "artifact",
+      "promptSha256": "42e1924cd8e68f4c70627e702a23575177671c1726e813f2a1dcb7a2934793a6",
+      "startedAt": "2026-09-06T09:11:51.926Z",
+      "sessionId": "tb-4b3784b8-1570-49cc-9385-d04fc4ca801e",
+      "commandId": "m1-m1-c05-mtpleqoa",
+      "terminalStatus": "idle",
+      "observedDisposition": "artifact",
+      "dispositionMatched": true,
+      "artifacts": [
+        {
+          "id": "toolu_cec1740d3b95469fb18b0a3c",
+          "title": "分数的初步认识 第一课时 改编课件",
+          "fileName": "grade3-fraction-one-part-v1-repair.html",
+          "format": "html",
+          "status": "draft",
+          "version": 1,
+          "snapshot": "01-toolu_cec1740d3b95469fb18b0a3c.html",
+          "sha256": "c26b9193fad1b07a4e18b2068f05897f56695ff5683e52575fec73ec48aeaf46",
+          "bytes": 25631
+        }
+      ],
+      "latestAgentText": "课件已成功保存为 **`grade3-fraction-one-part-v1-repair.html`**，以下是改编概要：\n\n---\n\n## ✅ 改编要点\n\n### 删除的越界内容\n- 删除了“分母越大分数越小”机械口诀\n- 删除了“任意分4块就是1/4”的错误表述\n- 删除了第3页的3/4与分数单位、第4页的分数加法\n\n### 建立的主线\n**整体 → 平均分 → 其中一份 → 1/n**\n\n### 新增的学生操作与活动\n| 活动 | 内容 | 用时 |\n|------|------|------|\n| 活动1 | 分月饼情景导入（引出平均分） | 5分钟 |\n| 活动2 | 折方纸认识1/2（全班操作） | 8分钟 |\n| 活动3a | 折纸认识1/4（全班操作） | 5分钟 |\n| 活动3b | 跨外形辨认 + 非等分反例 | 5分钟 |\n| 活动4 | 基础练习（5道题，答案另页） | 10分钟 |\n| 活动5 | 退出题（画图表示1/4，收集证据） | 5分钟 |\n| 活动6 | 可选：比较1/2和1/4（图示理由） | 2分钟 |\n\n### 每项活动均标注\n- **参与者、用时、材料、学生动作、预期证据、教师回应、回退策略**\n- **答案与学生作答页分离**（答案在最后一页教师参考）\n\n### 页面结构（10页）\n1. 封面 + 改编说明\n2. 改编决策与每页教学目的\n3. 活动1 情景导入\n4. 活动2 认识1/2\n5. 活动3a 认识1/4\n6. 活动3b 跨外形辨认 + 非等分反例\n7. 活动4 基础练习\n8. 活动5 退出题\n9. 活动6（可选）单位分数比较\n10. 教师参考：答案与提示\n\n课件完全自包含，使用内联SVG图形，无需外部资源或脚本，适合大屏投放。您可以直接在浏览器中打开使用。",
+      "finishedAt": "2026-09-06T09:18:13.921Z",
+      "durationMs": 381995
+    },
+    {
+      "id": "M1-C06",
+      "axis": "strengthen_manipulation",
+      "expectedDisposition": "artifact",
+      "promptSha256": "8a9a1db3527d408260bb6fe10556a12988974c3af4e978756e5a8f43b11cc222",
+      "startedAt": "2026-09-06T09:18:13.922Z",
+      "sessionId": "tb-db614192-b829-4eed-9034-e989d6be9bf6",
+      "terminalStatus": "runner_error",
+      "observedDisposition": "failure",
+      "dispositionMatched": false,
+      "error": "Session tb-db614192-b829-4eed-9034-e989d6be9bf6 exceeded 600000ms and cancellation was requested.",
+      "runtimeStatusAfterFailure": "stopped",
+      "finishedAt": "2026-09-06T09:28:15.824Z",
+      "durationMs": 601902
+    },
+    {
+      "id": "M1-C07",
+      "axis": "more_practice_same_duration",
+      "expectedDisposition": "artifact",
+      "promptSha256": "7dd408b0588ca169025715ecc10dfce74e3c92dbb1b5e39b5ad3c32684ff4ed9",
+      "startedAt": "2026-09-06T09:28:15.825Z",
+      "sessionId": "tb-ef71f24c-dd28-4eb9-a476-109776a4fd2c",
+      "commandId": "m1-m1-c07-mtplztwb",
+      "terminalStatus": "idle",
+      "observedDisposition": "artifact",
+      "dispositionMatched": true,
+      "artifacts": [
+        {
+          "id": "toolu_0b1b0279ffcd4ea3886aa4ae",
+          "title": "分数的初步认识——几分之一 课堂课件",
+          "fileName": "grade3-fraction-one-part-v1-more-practice.html",
+          "format": "html",
+          "status": "draft",
+          "version": 1,
+          "snapshot": "01-toolu_0b1b0279ffcd4ea3886aa4ae.html",
+          "sha256": "a830266fac096f6d8f9ab26bb28a2f2b65941b3ced625065bdb0d6f1f475ebd8",
+          "bytes": 25799
+        }
+      ],
+      "latestAgentText": "已为您生成完整的HTML课堂课件，并成功保存为 **`grade3-fraction-one-part-v1-more-practice.html`**（状态：草稿）。\n\n---\n\n## 课件概览\n\n### 结构\n- **第一部分：教学设计说明与每页目的**（含整体思路、教学目标、重难点、准备材料、40分钟活动详细表格、每页目的列表）\n- **第二部分：21页课堂课件**（适合大屏投放）\n\n### 内容覆盖\n| 核心要素 | 对应页面 |\n|----------|----------|\n| 整体、平均分 | 导入页、练习①、练习⑤ |\n| 其中一份、1/n | 认识1/2、认识1/4、练习②③ |\n| 跨外形 | 跨外形认识页、练习④ |\n| 非等分反例 | 练习⑤ |\n| 平均分判断 | 练习① |\n| 图→符号 | 练习② |\n| 符号→图 | 练习③ |\n| 退出题 | 退出题（1/10） |\n| 单位分数比较（可选） | 选学页（1/2 vs 1/4） |\n\n### 设计要求\n- ✅ 每题答案与练习分屏，不和学生作答同屏\n- ✅ 每项活动写明参与者、用时、材料、学生动作、预期证据、教师回应、回退\n- ✅ 不依赖外部资源、无脚本\n- ✅ 自包含HTML，适合大屏投放\n- ✅ 中等水平38人班级，40分钟总时长\n\n您可以直接在浏览器中打开该文件使用。如需调整任何内容或格式，请告诉我！",
+      "finishedAt": "2026-09-06T09:31:56.802Z",
+      "durationMs": 220977
+    },
+    {
+      "id": "M1-C08",
+      "axis": "ambiguous_textbook_and_topic",
+      "expectedDisposition": "clarification",
+      "promptSha256": "e4b7f9fcdf8faf73d26f0ac23bbaa1f671aac4cad70e8a564e1dd742477452e4",
+      "startedAt": "2026-09-06T09:31:56.802Z",
+      "sessionId": "tb-176327fb-cf0d-482f-977f-e1af389c7ba5",
+      "commandId": "m1-m1-c08-mtpm4kct",
+      "terminalStatus": "idle",
+      "observedDisposition": "clarification",
+      "dispositionMatched": true,
+      "artifacts": [],
+      "latestAgentText": "好的，老师。在开始制作课件前，我需要先了解以下几个关键信息，才能确定教学范围。这些信息属于**客观事实**，我不能自行编造，必须由您提供：\n\n### 最少需要您确认的 3 个问题：\n\n1. **教材版本与具体单元**\n   - 您说“可能是人教版”，但三年级分数知识在**三年级上册**（第七单元《分数的初步认识》——认识几分之一、几分之几、分数大小比较）和**三年级下册**（第七单元《分数的简单计算》——同分母加减法）都有涉及。\n   - **请您确认：是上册还是下册？具体是哪个知识点？**（例如：第一次认识几分之一、认识几分之几、比较分数大小，还是分数的简单计算？）\n\n2. **课时长度**\n   - 您计划用**1个课时**还是**2个课时**完成这个内容？这会影响课件的内容容量和教学环节设计。\n\n3. **班级学情**\n   - 学生是**第一次接触分数**，还是有**少量基础**（比如在上学期已经学过几分之一或几分之几）？这将决定课件是从“导入概念”开始，还是从“复习巩固”切入。\n\n### 我能基于教学经验主动提供的部分（不需要您额外说明）：\n\n- 课件的基本结构（导入、新授、练习、小结）\n- 符合三年级认知水平的教学语言和活动设计\n- 对应的练习题形式和难度梯度\n- 美观的课件排版建议\n\n请您先回答以上三个问题，我再为您精准制作课件内容。",
+      "finishedAt": "2026-09-06T09:32:09.021Z",
+      "durationMs": 12219
+    }
+  ],
+  "finishedAt": "2026-09-06T09:32:09.022Z",
+  "summary": {
+    "total": 8,
+    "terminal": 7,
+    "dispositionMatched": 7,
+    "artifactCases": 3,
+    "clarificationCases": 4,
+    "failures": 1
+  },
+  "reconciledSummary": {
+    "terminalSessions": 8,
+    "expectedDispositionMatched": 7,
+    "artifactSuccess": "3/4",
+    "clarificationDispositionMatched": "4/4",
+    "runtimeFailures": 1,
+    "note": "M1-C06 reached the runner timeout and was subsequently observed as stopped with no Artifact. The original runner summary is retained above."
+  }
+}

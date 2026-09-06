@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分数的初步认识——几分之一</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Microsoft YaHei", "SimHei", sans-serif; background: #f5f7fa; color: #2c3e50; }
+/* ===== 教学设计说明（可滚动） ===== */
+.instruction { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; background: #fff; }
+.instruction h1 { font-size: 2rem; color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+.instruction h2 { font-size: 1.5rem; color: #34495e; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+.instruction h3 { font-size: 1.2rem; color: #2c3e50; margin-top: 1rem; margin-bottom: 0.3rem; }
+.instruction p, .instruction li { font-size: 1rem; line-height: 1.8; }
+.instruction table { border-collapse: collapse; margin: 1rem 0; width: 100%; }
+.instruction th, .instruction td { border: 1px solid #bdc3c7; padding: 0.5rem; text-align: left; }
+.instruction th { background: #ecf0f1; }
+.instruction .nav-link { display: inline-block; margin-top: 1rem; padding: 0.5rem 1.5rem; background: #3498db; color: #fff; text-decoration: none; border-radius: 5px; font-size: 1rem; }
+.instruction .nav-link:hover { background: #2980b9; }
+/* ===== 课件页面 ===== */
+.page { width: 100vw; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; background: #fff; position: relative; border-bottom: 2px solid #ecf0f1; }
+.page h1 { font-size: 2.8rem; margin-bottom: 0.5rem; text-align: center; }
+.page h2 { font-size: 2.2rem; margin-bottom: 0.8rem; text-align: center; }
+.page h3 { font-size: 1.6rem; margin-bottom: 0.5rem; text-align: center; }
+.page p { font-size: 1.3rem; line-height: 1.6; text-align: center; max-width: 800px; margin: 0.3rem 0; }
+.page .sub { font-size: 1rem; color: #7f8c8d; }
+.nav { position: absolute; bottom: 1rem; left: 0; right: 0; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.nav a { display: inline-block; padding: 0.5rem 1.2rem; background: #3498db; color: #fff; text-decoration: none; border-radius: 5px; font-size: 1rem; }
+.nav a:hover { background: #2980b9; }
+.nav .prev { background: #95a5a6; }
+.nav .prev:hover { background: #7f8c8d; }
+.nav .top { background: #1abc9c; }
+.nav .top:hover { background: #16a085; }
+/* 图形容器 */
+.shape-container { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; align-items: center; margin: 1rem 0; }
+.shape-item { text-align: center; }
+.shape-item p { font-size: 1.2rem; margin-top: 0.3rem; }
+/* 答案框 */
+.answer-box { background: #f9e79f; padding: 1rem 2rem; border-radius: 10px; margin: 1rem 0; border: 2px solid #f1c40f; max-width: 800px; }
+.answer-box p { font-size: 1.2rem; text-align: left; }
+/* 选项区 */
+.option-group { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+.option-item { text-align: center; cursor: default; }
+.option-item p { font-size: 1rem; }
+/* 表格 */
+table { border-collapse: collapse; margin: 1rem auto; }
+td { border: 1px solid #333; padding: 0.5rem 1rem; text-align: center; }
+/* 大屏适配 */
+@media (max-width: 768px) {
+  .page h1 { font-size: 2rem; }
+  .page h2 { font-size: 1.6rem; }
+  .page p { font-size: 1rem; }
+  .shape-container { gap: 1rem; }
+  svg { width: 80px; height: 80px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- 第一部分：教学设计说明与每页目的 -->
+<!-- ============================================================ -->
+<div class="instruction" id="top">
+<h1>《分数的初步认识——几分之一》教学设计说明与每页目的</h1>
+
+<h2>一、整体设计思路</h2>
+<p>本课以“平均分”为核心，通过“分月饼”情境引入，激发兴趣；通过折纸操作，让学生亲身体验分数的产生过程；通过受控变式练习，巩固概念，避免机械重复。在40分钟内，精简重复讲解，将练习组织成判断、转换、跨外形、反例等变式，提高效率。每项活动明确参与者、用时、材料、学生动作、预期证据、教师回应和回退，确保中等水平班级全员达成目标。</p>
+
+<h2>二、教学目标</h2>
+<ol>
+<li>理解平均分的含义，能正确判断一个图形是否被平均分。</li>
+<li>认识几分之一，会读、写几分之一，理解分子、分母的含义。</li>
+<li>能用分数表示图形中的一份，能根据分数涂出或选出图形的一部分。</li>
+<li>理解不同形状的图形，只要平均分，每份都可以用相同的分数表示。</li>
+</ol>
+
+<h2>三、教学重点与难点</h2>
+<p><strong>重点：</strong>理解几分之一的含义，建立分数概念。</p>
+<p><strong>难点：</strong>理解“平均分”是分数的前提，从具体操作到抽象符号的过渡。</p>
+
+<h2>四、教学准备</h2>
+<p>多媒体课件、圆形纸片（每人2张）、正方形纸片（每人1张）、长方形纸片（每人1张）、彩笔。</p>
+
+<h2>五、活动设计（40分钟）</h2>
+
+<table>
+<tr><th>环节</th><th>活动</th><th>参与者</th><th>用时</th><th>材料</th><th>学生动作</th><th>预期证据</th><th>教师回应</th><th>回退</th></tr>
+<tr>
+<td><strong>导入</strong></td>
+<td>分月饼</td>
+<td>全班</td>
+<td>5′</td>
+<td>课件（月饼图）</td>
+<td>观察、思考、回答</td>
+<td>说出“一半”或“1/2”</td>
+<td>引出分数1/2</td>
+<td>教师用实物演示平均分</td>
+</tr>
+<tr>
+<td rowspan="3"><strong>新授</strong></td>
+<td>认识1/2（折圆形）</td>
+<td>全班+个人</td>
+<td>5′</td>
+<td>圆形纸片</td>
+<td>折一折，涂一涂，说一说</td>
+<td>折出对折，涂出1/2，说出“每份是它的1/2”</td>
+<td>板书1/2，强调分子分母含义</td>
+<td>教师示范，学生跟折</td>
+</tr>
+<tr>
+<td>认识1/4（折正方形）</td>
+<td>全班+个人</td>
+<td>5′</td>
+<td>正方形纸片</td>
+<td>折一折，涂一涂，说一说</td>
+<td>折出1/4，说出“每份是它的1/4”</td>
+<td>板书1/4，比较与1/2的不同</td>
+<td>教师示范不同折法</td>
+</tr>
+<tr>
+<td>跨外形认识</td>
+<td>全班</td>
+<td>5′</td>
+<td>课件</td>
+<td>观察、比较、写分数</td>
+<td>说出“形状不同，但都是平均分2份，每份是1/2”</td>
+<td>强调“整体”不同，分数相同</td>
+<td>再举例子</td>
+</tr>
+<tr>
+<td rowspan="5"><strong>练习</strong></td>
+<td>①平均分判断</td>
+<td>全班</td>
+<td>3′</td>
+<td>课件</td>
+<td>判断图形是否平均分</td>
+<td>正确判断</td>
+<td>给出答案与解释</td>
+<td>复习平均分概念</td>
+</tr>
+<tr>
+<td>②图到符号</td>
+<td>全班</td>
+<td>3′</td>
+<td>课件</td>
+<td>看图写分数</td>
+<td>正确写出分数</td>
+<td>核对答案，强调分母分子</td>
+<td>示范写法</td>
+</tr>
+<tr>
+<td>③符号到图</td>
+<td>全班</td>
+<td>3′</td>
+<td>课件、纸</td>
+<td>根据分数选择/画出涂色图形</td>
+<td>正确选择或画出</td>
+<td>展示正确图形</td>
+<td>复习分数意义</td>
+</tr>
+<tr>
+<td>④跨外形</td>
+<td>全班</td>
+<td>3′</td>
+<td>课件</td>
+<td>观察不同形状写分数</td>
+<td>写出分数，理解不同形状但分数相同</td>
+<td>强调概念</td>
+<td>举例</td>
+</tr>
+<tr>
+<td>⑤非等分反例</td>
+<td>全班</td>
+<td>3′</td>
+<td>课件</td>
+<td>判断、指出错误</td>
+<td>识别非平均分</td>
+<td>强调平均分前提</td>
+<td>对比平均分</td>
+</tr>
+<tr>
+<td><strong>选讲</strong></td>
+<td>单位分数比较（1/2与1/4）</td>
+<td>全班</td>
+<td>2′</td>
+<td>课件</td>
+<td>猜测、观察、比较</td>
+<td>说出“1/2比1/4大”</td>
+<td>总结“分母越大，每份越小”</td>
+<td>跳过或简单提示</td>
+</tr>
+<tr>
+<td><strong>退出</strong></td>
+<td>退出题</td>
+<td>全班</td>
+<td>3′</td>
+<td>课件</td>
+<td>独立思考、回答</td>
+<td>正确回答</td>
+<td>给出答案与解释</td>
+<td>提示</td>
+</tr>
+<tr>
+<td><strong>总结</strong></td>
+<td>回顾要点</td>
+<td>全班</td>
+<td>5′</td>
+<td>无</td>
+<td>回顾、总结</td>
+<td>说出本节课学到的知识</td>
+<td>梳理重点，布置作业</td>
+<td>教师总结</td>
+</tr>
+</table>
+
+<h2>六、每页目的</h2>
+<ol>
+<li><strong>标题页：</strong>展示课题与学习目标，激发兴趣。</li>
+<li><strong>导入：</strong>分月饼情境，引出平均分和1/2。</li>
+<li><strong>认识1/2：</strong>折纸操作，理解1/2的含义。</li>
+<li><strong>认识1/4：</strong>折纸操作，理解1/4的含义。</li>
+<li><strong>跨外形认识：</strong>不同形状的1/2，深化理解。</li>
+<li><strong>练习① 平均分判断：</strong>巩固平均分概念。</li>
+<li><strong>练习① 答案：</strong>核对答案，给予反馈。</li>
+<li><strong>练习② 图到符号：</strong>练习图形→符号转换。</li>
+<li><strong>练习② 答案：</strong>核对答案。</li>
+<li><strong>练习③ 符号到图：</strong>练习符号→图形转换。</li>
+<li><strong>练习③ 答案：</strong>核对答案。</li>
+<li><strong>练习④ 跨外形：</strong>练习跨外形写分数。</li>
+<li><strong>练习④ 答案：</strong>核对答案。</li>
+<li><strong>练习⑤ 非等分反例：</strong>强化平均分前提。</li>
+<li><strong>练习⑤ 答案：</strong>核对答案。</li>
+<li><strong>单位分数比较（可选）：</strong>比较1/2和1/4。</li>
+<li><strong>退出题：</strong>综合检验。</li>
+<li><strong>退出题答案：</strong>核对答案。</li>
+<li><strong>总结：</strong>回顾要点，布置作业。</li>
+<li><strong>结束页：</strong>感谢与鼓励。</li>
+</ol>
+
+<p style="text-align:center; margin-top:2rem;">
+<a class="nav-link" href="#page1">进入课件 →</a>
+</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- 第二部分：课堂课件页面 -->
+<!-- ============================================================ -->
+
+<!-- 第1页：标题 -->
+<div class="page" id="page1">
+<h1>分数的初步认识</h1>
+<h2>—— 几分之一</h2>
+<p>三年级上册 · 数学</p>
+<p class="sub">学习目标：理解平均分，认识几分之一，会读会写。</p>
+<div class="nav">
+<a href="#page2" class="next">开始学习 →</a>
+<a href="#top" class="top">教学设计</a>
+</div>
+</div>
+
+<!-- 第2页：导入 -->
+<div class="page" id="page2">
+<h2>🍰 分月饼</h2>
+<p>中秋节，妈妈把一个月饼平均分给2个小朋友，</p>
+<p>每人分到多少？</p>
+<p style="font-size:1.5rem; font-weight:bold; color:#e67e22;">“一半”怎么用数表示？</p>
+<div class="nav">
+<a href="#page1" class="prev">← 上一页</a>
+<a href="#page3" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第3页：认识1/2 -->
+<div class="page" id="page3">
+<h2>认识 1/2</h2>
+<p>拿出圆形纸片，折一折，涂一涂，表示出它的 <strong>1/2</strong>。</p>
+<div class="shape-container">
+<svg width="140" height="140" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <path d="M50,2 A48,48 0 0,1 98,50 L50,50 Z" fill="#e67e22"/>
+</svg>
+</div>
+<p>把圆形平均分成 <strong>2</strong> 份，每份是它的 <strong>1/2</strong>。</p>
+<div class="nav">
+<a href="#page2" class="prev">← 上一页</a>
+<a href="#page4" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第4页：认识1/4 -->
+<div class="page" id="page4">
+<h2>认识 1/4</h2>
+<p>拿出正方形纸片，折一折，涂一涂，表示出它的 <strong>1/4</strong>。</p>
+<div class="shape-container">
+<svg width="140" height="140" viewBox="0 0 100 100">
+  <rect x="2" y="2" width="96" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="48" height="48" fill="#e67e22"/>
+</svg>
+</div>
+<p>把正方形平均分成 <strong>4</strong> 份，每份是它的 <strong>1/4</strong>。</p>
+<div class="nav">
+<a href="#page3" class="prev">← 上一页</a>
+<a href="#page5" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第5页：跨外形认识 -->
+<div class="page" id="page5">
+<h2>跨外形认识 1/2</h2>
+<p>这些图形形状不同，但都平均分成了2份，</p>
+<p>每份是它的 <strong>1/2</strong>。</p>
+<div class="shape-container">
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <path d="M50,2 A48,48 0 0,1 98,50 L50,50 Z" fill="#e67e22"/>
+</svg>
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <rect x="2" y="2" width="96" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="96" height="48" fill="#e67e22"/>
+</svg>
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <polygon points="50,2 98,98 2,98" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <polygon points="50,2 98,98 50,98" fill="#e67e22"/>
+</svg>
+</div>
+<p>形状不同，但每份都是整体的 <strong>1/2</strong>。</p>
+<div class="nav">
+<a href="#page4" class="prev">← 上一页</a>
+<a href="#page6" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第6页：练习① 平均分判断 -->
+<div class="page" id="page6">
+<h2>练习① 平均分判断</h2>
+<p>下面图形哪些是平均分？是的在括号里画“√”，不是画“×”。</p>
+<div class="shape-container">
+<div class="shape-item">
+<svg width="120" height="120" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <path d="M50,2 A48,48 0 0,1 98,50 L50,50 Z" fill="#e67e22"/>
+</svg>
+<p>（ ）</p>
+</div>
+<div class="shape-item">
+<svg width="120" height="120" viewBox="0 0 100 100">
+  <rect x="2" y="2" width="96" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="48" height="48" fill="#e67e22"/>
+</svg>
+<p>（ ）</p>
+</div>
+<div class="shape-item">
+<svg width="160" height="120" viewBox="0 0 160 100">
+  <rect x="2" y="2" width="156" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="30" y1="2" x2="30" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="100" y1="2" x2="100" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="28" height="96" fill="#e67e22"/>
+  <rect x="100" y="2" width="58" height="96" fill="#e67e22"/>
+</svg>
+<p>（ ）</p>
+</div>
+<div class="shape-item">
+<svg width="160" height="120" viewBox="0 0 150 100">
+  <rect x="2" y="2" width="146" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="50" y1="2" x2="50" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="100" y1="2" x2="100" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="48" height="96" fill="#e67e22"/>
+</svg>
+<p>（ ）</p>
+</div>
+</div>
+<div class="nav">
+<a href="#page5" class="prev">← 上一页</a>
+<a href="#page7" class="next">答案 →</a>
+</div>
+</div>
+
+<!-- 第7页：练习① 答案 -->
+<div class="page" id="page7">
+<h2>练习① 答案与解释</h2>
+<div class="answer-box">
+<p><strong>图1：</strong>✅ 平均分，每份是1/2。</p>
+<p><strong>图2：</strong>✅ 平均分，每份是1/4。</p>
+<p><strong>图3：</strong>❌ 不是平均分，三份大小不同。</p>
+<p><strong>图4：</strong>✅ 平均分，每份是1/3。</p>
+</div>
+<div class="nav">
+<a href="#page6" class="prev">← 返回练习</a>
+<a href="#page8" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第8页：练习② 图到符号 -->
+<div class="page" id="page8">
+<h2>练习② 图到符号</h2>
+<p>看图写出阴影部分表示的分数。</p>
+<div class="shape-container">
+<div class="shape-item">
+<svg width="120" height="120" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <path d="M50,2 A48,48 0 0,1 98,50 L50,50 Z" fill="#e67e22"/>
+</svg>
+<p>分数：________</p>
+</div>
+<div class="shape-item">
+<svg width="120" height="120" viewBox="0 0 100 100">
+  <rect x="2" y="2" width="96" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="48" height="48" fill="#e67e22"/>
+</svg>
+<p>分数：________</p>
+</div>
+<div class="shape-item">
+<svg width="160" height="120" viewBox="0 0 150 100">
+  <rect x="2" y="2" width="146" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="50" y1="2" x2="50" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="100" y1="2" x2="100" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="48" height="96" fill="#e67e22"/>
+</svg>
+<p>分数：________</p>
+</div>
+</div>
+<div class="nav">
+<a href="#page7" class="prev">← 上一页</a>
+<a href="#page9" class="next">答案 →</a>
+</div>
+</div>
+
+<!-- 第9页：练习② 答案 -->
+<div class="page" id="page9">
+<h2>练习② 答案与解释</h2>
+<div class="answer-box">
+<p><strong>图1：</strong> \(\frac{1}{2}\)，把圆平均分成2份，取1份。</p>
+<p><strong>图2：</strong> \(\frac{1}{4}\)，把正方形平均分成4份，取1份。</p>
+<p><strong>图3：</strong> \(\frac{1}{3}\)，把长方形平均分成3份，取1份。</p>
+</div>
+<div class="nav">
+<a href="#page8" class="prev">← 返回练习</a>
+<a href="#page10" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第10页：练习③ 符号到图 -->
+<div class="page" id="page10">
+<h2>练习③ 符号到图</h2>
+<p>下面分数表示哪个图形的阴影部分？连一连或选一选。</p>
+<div class="option-group">
+<div class="option-item">
+<p style="font-size:2rem; font-weight:bold;">\(\frac{1}{2}\)</p>
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <path d="M50,2 A48,48 0 0,1 98,50 L50,50 Z" fill="#e67e22"/>
+</svg>
+<p>A</p>
+</div>
+<div class="option-item">
+<p style="font-size:2rem; font-weight:bold;">\(\frac{1}{4}\)</p>
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <rect x="2" y="2" width="96" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="48" height="48" fill="#e67e22"/>
+</svg>
+<p>B</p>
+</div>
+<div class="option-item">
+<p style="font-size:2rem; font-weight:bold;">\(\frac{1}{3}\)</p>
+<svg width="120" height="100" viewBox="0 0 120 100">
+  <rect x="2" y="2" width="116" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="40" y1="2" x2="40" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="80" y1="2" x2="80" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="38" height="96" fill="#e67e22"/>
+</svg>
+<p>C</p>
+</div>
+</div>
+<p style="margin-top:1rem;">请选择：1/2 —（  ）；1/4 —（  ）；1/3 —（  ）。</p>
+<div class="nav">
+<a href="#page9" class="prev">← 上一页</a>
+<a href="#page11" class="next">答案 →</a>
+</div>
+</div>
+
+<!-- 第11页：练习③ 答案 -->
+<div class="page" id="page11">
+<h2>练习③ 答案与解释</h2>
+<div class="answer-box">
+<p><strong>1/2 —— A</strong>（圆形平均分2份，每份1/2）</p>
+<p><strong>1/4 —— B</strong>（正方形平均分4份，每份1/4）</p>
+<p><strong>1/3 —— C</strong>（长方形平均分3份，每份1/3）</p>
+</div>
+<div class="nav">
+<a href="#page10" class="prev">← 返回练习</a>
+<a href="#page12" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第12页：练习④ 跨外形 -->
+<div class="page" id="page12">
+<h2>练习④ 跨外形</h2>
+<p>这些图形形状不同，但都平均分成了2份，</p>
+<p>每份用分数怎么表示？</p>
+<div class="shape-container">
+<div class="shape-item">
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <path d="M50,2 A48,48 0 0,1 98,50 L50,50 Z" fill="#e67e22"/>
+</svg>
+<p>分数：________</p>
+</div>
+<div class="shape-item">
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <rect x="2" y="2" width="96" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="96" height="48" fill="#e67e22"/>
+</svg>
+<p>分数：________</p>
+</div>
+<div class="shape-item">
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <polygon points="50,2 98,98 2,98" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <polygon points="50,2 98,98 50,98" fill="#e67e22"/>
+</svg>
+<p>分数：________</p>
+</div>
+</div>
+<div class="nav">
+<a href="#page11" class="prev">← 上一页</a>
+<a href="#page13" class="next">答案 →</a>
+</div>
+</div>
+
+<!-- 第13页：练习④ 答案 -->
+<div class="page" id="page13">
+<h2>练习④ 答案与解释</h2>
+<div class="answer-box">
+<p>三个图形都表示 <strong>\(\frac{1}{2}\)</strong>。</p>
+<p>虽然形状不同，但都是平均分成2份，取其中1份，所以每份都是整体的1/2。</p>
+</div>
+<div class="nav">
+<a href="#page12" class="prev">← 返回练习</a>
+<a href="#page14" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第14页：练习⑤ 非等分反例 -->
+<div class="page" id="page14">
+<h2>练习⑤ 非等分反例</h2>
+<p>下面这个图形是平均分吗？为什么？</p>
+<div class="shape-container">
+<svg width="200" height="120" viewBox="0 0 200 100">
+  <rect x="2" y="2" width="196" height="96" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="40" y1="2" x2="40" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <line x1="120" y1="2" x2="120" y2="98" stroke="#2c3e50" stroke-width="2"/>
+  <rect x="2" y="2" width="38" height="96" fill="#e67e22"/>
+  <rect x="40" y="2" width="80" height="96" fill="#ecf0f1"/>
+  <rect x="120" y="2" width="78" height="96" fill="#e67e22"/>
+</svg>
+</div>
+<p style="font-size:1.2rem;">它是不是平均分？请说明理由。</p>
+<div class="nav">
+<a href="#page13" class="prev">← 上一页</a>
+<a href="#page15" class="next">答案 →</a>
+</div>
+</div>
+
+<!-- 第15页：练习⑤ 答案 -->
+<div class="page" id="page15">
+<h2>练习⑤ 答案与解释</h2>
+<div class="answer-box">
+<p>❌ <strong>不是平均分。</strong></p>
+<p>图形被分成了三份，但三份的宽度不同（38、80、78），</p>
+<p>所以每份大小不一样，不是平均分。</p>
+<p>平均分要求每份同样大。</p>
+</div>
+<div class="nav">
+<a href="#page14" class="prev">← 返回练习</a>
+<a href="#page16" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第16页：单位分数比较（可选） -->
+<div class="page" id="page16">
+<h2>⭐ 选学：比较 1/2 和 1/4</h2>
+<p>两个同样大的圆形，</p>
+<div class="shape-container">
+<div class="shape-item">
+<svg width="120" height="120" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <path d="M50,2 A48,48 0 0,1 98,50 L50,50 Z" fill="#e67e22"/>
+</svg>
+<p>\(\frac{1}{2}\)</p>
+</div>
+<div class="shape-item">
+<svg width="120" height="120" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#2c3e50" stroke-width="2"/>
+  <path d="M50,2 A48,48 0 0,0 98,50 L50,50 Z" fill="#e67e22"/>
+  <path d="M50,2 A48,48 0 0,1 98,50 L50,50 Z" fill="none" stroke="#2c3e50" stroke-width="1"/>
+  <line x1="50" y1="2" x2="50" y2="98" stroke="#2c3e50" stroke-width="2"/>
+</svg>
+<p>\(\frac{1}{4}\)</p>
+</div>
+</div>
+<p>哪个大？为什么？</p>
+<div class="nav">
+<a href="#page15" class="prev">← 上一页</a>
+<a href="#page17" class="next">答案 →</a>
+</div>
+</div>
+
+<!-- 第17页：单位分数比较答案 -->
+<div class="page" id="page17">
+<h2>答案：1/2 与 1/4 比较</h2>
+<div class="answer-box">
+<p><strong>\(\frac{1}{2} > \frac{1}{4}\)</strong></p>
+<p>同样大的整体，平均分的份数越多，每份就越小。</p>
+<p>1/2表示把整体平均分成2份，1/4表示平均分成4份，</p>
+<p>所以1/2比1/4大。</p>
+</div>
+<div class="nav">
+<a href="#page16" class="prev">← 返回</a>
+<a href="#page18" class="next">下一页 →</a>
+</div>
+</div>
+
+<!-- 第18页：退出题 -->
+<div class="page" id="page18">
+<h2>📝 退出题</h2>
+<p>把一根绳子平均分成10份，</p>
+<p style="font-size:1.5rem; font-weight:bold; color:#e67e22;">每份是这根绳子的几分之几？</p>
+<p>请你写出分数。</p>
+<div class="nav">
+<a href="#page17" class="prev">← 上一页</a>
+<a href="#page19" class="next">答案 →</a>
+</div>
+</div>
+
+<!-- 第19页：退出题答案 -->
+<div class="page" id="page19">
+<h2>退出题 答案</h2>
+<div class="answer-box">
+<p><strong>\(\frac{1}{10}\)</strong></p>
+<p>把绳子平均分成10份，每份就是它的1/10。</p>
+<p>分母表示平均分成10份，分子表示取其中的1份。</p>
+</div>
+<div class="nav">
+<a href="#page18" class="prev">← 返回题目</a>
+<a href="#page20" class="next">总结 →</a>
+</div>
+</div>
+
+<!-- 第20页：总结 -->
+<div class="page" id="page20">
+<h2>🎯 课堂总结</h2>
+<p>今天我们学习了什么？</p>
+<div style="text-align:left; max-width:600px; margin:1rem auto; font-size:1.2rem; line-height:2;">
+✅ 平均分：每份同样大。<br>
+✅ 几分之一：把整体平均分成几份，每份就是它的几分之一。<br>
+✅ 写法：\(\frac{1}{2}\)、\(\frac{1}{4}\)、\(\frac{1}{3}\)……<br>
+✅ 不同形状，只要平均分，每份都可以用相同的分数表示。
+</div>
+<p style="margin-top:1rem;"><strong>课后任务：</strong>找一个家里的物品，平均分一分，说一说每份是它的几分之一。</p>
+<div class="nav">
+<a href="#page19" class="prev">← 上一页</a>
+<a href="#page21" class="next">结束 →</a>
+</div>
+</div>
+
+<!-- 第21页：结束 -->
+<div class="page" id="page21">
+<h1>🌟 你们真棒！</h1>
+<p>今天我们一起认识了分数，</p>
+<p>数学就在我们身边，继续探索吧！</p>
+<div class="nav">
+<a href="#page20" class="prev">← 上一页</a>
+<a href="#top" class="top">教学设计</a>
+</div>
+</div>
+
+</body>
+</html>

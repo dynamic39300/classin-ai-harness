@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分数的初步认识 第一课时</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: 'Microsoft YaHei', 'SimHei', sans-serif; 
+  background: #e6f0fa; 
+  color: #222; 
+}
+.slides { 
+  height: 100vh; 
+  overflow-y: scroll; 
+  scroll-snap-type: y mandatory; 
+  scroll-behavior: smooth; 
+  -webkit-scroll-snap-type: y mandatory; 
+}
+.slide { 
+  min-height: 100vh; 
+  scroll-snap-align: start; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  padding: 30px 60px; 
+  background: #fff; 
+  border-bottom: 4px solid #b0c4de; 
+  position: relative; 
+}
+.slide h1 { 
+  font-size: 3.2em; 
+  margin-bottom: 0.4em; 
+  color: #1a3a5c; 
+  text-align: center; 
+}
+.slide h2 { 
+  font-size: 2.5em; 
+  margin-bottom: 0.4em; 
+  color: #2a5a8c; 
+  text-align: center; 
+}
+.slide h3 { 
+  font-size: 2em; 
+  margin-bottom: 0.3em; 
+  color: #3a6a9c; 
+  text-align: center; 
+}
+.slide p, .slide li, .slide td { 
+  font-size: 1.5em; 
+  line-height: 1.6; 
+}
+.activity-grid { 
+  display: grid; 
+  grid-template-columns: auto 1fr; 
+  gap: 8px 20px; 
+  font-size: 1.3em; 
+  margin: 15px 0; 
+  width: 100%; 
+  max-width: 1000px; 
+}
+.activity-grid .label { 
+  font-weight: bold; 
+  color: #1a3a5c; 
+  text-align: right; 
+}
+.activity-grid .value { 
+  text-align: left; 
+}
+.main-content { 
+  width: 100%; 
+  max-width: 1100px; 
+  margin: 15px 0; 
+  text-align: center; 
+}
+.main-content svg { 
+  margin: 10px; 
+}
+.nav { 
+  margin-top: 20px; 
+  font-size: 1.3em; 
+  text-align: center; 
+  width: 100%; 
+}
+.nav a { 
+  color: #1a5a8c; 
+  text-decoration: none; 
+  padding: 10px 20px; 
+  border: 2px solid #1a5a8c; 
+  border-radius: 8px; 
+  margin: 0 10px; 
+  transition: background 0.3s; 
+  display: inline-block; 
+}
+.nav a:hover { 
+  background: #1a5a8c; 
+  color: #fff; 
+}
+.teacher-ref { 
+  background: #f0f8ff; 
+}
+.highlight { 
+  color: #c0392b; 
+  font-weight: bold; 
+}
+.fraction { 
+  font-size: 1.2em; 
+  font-weight: bold; 
+  color: #1a3a5c; 
+}
+table { 
+  font-size: 1.2em; 
+  border-collapse: collapse; 
+  width: 100%; 
+  max-width: 900px; 
+  margin: 10px auto; 
+}
+th, td { 
+  border: 1px solid #aaa; 
+  padding: 8px 12px; 
+  text-align: left; 
+}
+th { 
+  background: #d0e0f0; 
+  font-weight: bold; 
+}
+@media print {
+  .slides { overflow: visible; height: auto; }
+  .slide { height: auto; min-height: 100vh; page-break-after: always; }
+  .nav { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="slides">
+
+<!-- ========== 页面1：封面 ========== -->
+<section class="slide" id="page1">
+  <h1>分数的初步认识</h1>
+  <h2>第一课时</h2>
+  <p style="font-size:1.8em; margin-top:20px;">三年级上册 · 人教版</p>
+  <p style="font-size:1.5em; margin-top:10px;">课时：40分钟 ｜ 班级：38人（中等水平）</p>
+  <div style="margin-top:40px; padding:20px; background:#f0f8ff; border-radius:10px; max-width:800px; text-align:left;">
+    <p style="font-size:1.3em;"><strong>改编说明：</strong>本课件已依据教学要求改编，删除越界内容，建立“整体—平均分—其中一份—1/n”主线，加入学生操作、反例辨析和退出证据，答案与题目分离。</p>
+  </div>
+  <div class="nav">
+    <a href="#page2">开始 →</a>
+  </div>
+</section>
+
+<!-- ========== 页面2：改编决策与教学目的 ========== -->
+<section class="slide" id="page2">
+  <h2>改编决策与教学目的</h2>
+  <div style="width:100%; max-width:1100px; text-align:left;">
+    <h3>改编决策简述</h3>
+    <ul style="font-size:1.3em; margin-bottom:15px;">
+      <li>删除“分母越大分数越小”机械记忆，从平均分入手。</li>
+      <li>纠正“任意分4块就是1/4”，强调平均分前提。</li>
+      <li>删除3/4与分数单位、分数加法等越界内容。</li>
+      <li>增加学生折纸操作、跨外形辨认、非等分反例。</li>
+      <li>答案与题目分离，设置退出题收集证据。</li>
+    </ul>
+    <h3>整体教学目的</h3>
+    <ol style="font-size:1.3em; margin-bottom:15px;">
+      <li>结合情境理解“平均分”。</li>
+      <li>通过折纸认识几分之一，能正确读写。</li>
+      <li>能判断图形是否表示几分之一并说明理由。</li>
+      <li>培养观察、比较和表达能力。</li>
+    </ol>
+    <h3>每页教学目的</h3>
+    <table>
+      <tr><th>页码</th><th>教学目的</th></tr>
+      <tr><td>1</td><td>呈现课题与改编说明</td></tr>
+      <tr><td>2</td><td>明确改编依据与教学目标</td></tr>
+      <tr><td>3</td><td>激活平均分经验</td></tr>
+      <tr><td>4</td><td>通过折纸认识1/2</td></tr>
+      <tr><td>5</td><td>通过折纸认识1/4</td></tr>
+      <tr><td>6</td><td>跨外形辨认1/4，非等分反例</td></tr>
+      <tr><td>7</td><td>基础练习检测概念</td></tr>
+      <tr><td>8</td><td>退出题收集个体证据</td></tr>
+      <tr><td>9</td><td>（可选）单位分数比较</td></tr>
+      <tr><td>10</td><td>教师参考：答案与提示</td></tr>
+    </table>
+  </div>
+  <div class="nav">
+    <a href="#page1">← 上一页</a>
+    <a href="#page3">下一页 →</a>
+  </div>
+</section>
+
+<!-- ========== 页面3：活动1 情景导入 ========== -->
+<section class="slide" id="page3">
+  <h2>活动1：情景导入——分月饼</h2>
+  <div class="activity-grid">
+    <span class="label">参与者：</span><span class="value">全班（38人）</span>
+    <span class="label">用时：</span><span class="value">5分钟</span>
+    <span class="label">材料：</span><span class="value">无（教师口述或板书）</span>
+    <span class="label">学生动作：</span><span class="value">观察情景，思考“怎样分才公平？”</span>
+    <span class="label">预期证据：</span><span class="value">学生说出“每人一样多”“平均分”</span>
+    <span class="label">教师回应：</span><span class="value">肯定回答，强调“平均分就是每份分得同样多”</span>
+    <span class="label">回退：</span><span class="value">如果学生不理解，用实物（如粉笔）演示“平均分”</span>
+  </div>
+  <div class="main-content">
+    <p style="font-size:2em;">🍰 中秋节，妈妈要把一个月饼分给2个小朋友，</p>
+    <p style="font-size:2em;">怎样分才公平？</p>
+    <p style="font-size:1.5em; margin-top:20px; color:#1a5a8c;">→ 引出「平均分」</p>
+  </div>
+  <div class="nav">
+    <a href="#page2">← 上一页</a>
+    <a href="#page4">下一页 →</a>
+  </div>
+</section>
+
+<!-- ========== 页面4：活动2 认识1/2 ========== -->
+<section class="slide" id="page4">
+  <h2>活动2：折纸——认识 1/2</h2>
+  <div class="activity-grid">
+    <span class="label">参与者：</span><span class="value">全班（每人一张方纸）</span>
+    <span class="label">用时：</span><span class="value">8分钟</span>
+    <span class="label">材料：</span><span class="value">每人一张方形纸（或纸带）</span>
+    <span class="label">学生动作：</span><span class="value">将纸折一折，涂色表示“一半”</span>
+    <span class="label">预期证据：</span><span class="value">学生折出并涂色，说出“把一张纸平均分成2份，其中的1份就是1/2”</span>
+    <span class="label">教师回应：</span><span class="value">展示不同折法，强调“平均分”</span>
+    <span class="label">回退：</span><span class="value">教师示范对折，学生跟随操作</span>
+  </div>
+  <div class="main-content">
+    <div style="display:flex; justify-content:center; gap:40px; flex-wrap:wrap;">
+      <div>
+        <svg width="180" height="180" viewBox="0 0 100 100">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="3"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#333" stroke-width="3"/>
+          <rect x="0" y="0" width="50" height="100" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.5em; margin-top:10px;">把正方形<span class="highlight">平均分成2份</span>，<br>涂色部分是<span class="fraction">1/2</span></p>
+      </div>
+      <div>
+        <svg width="180" height="180" viewBox="0 0 100 100">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="3"/>
+          <line x1="0" y1="50" x2="100" y2="50" stroke="#333" stroke-width="3"/>
+          <rect x="0" y="0" width="100" height="50" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.5em; margin-top:10px;">另一种折法，也是<span class="fraction">1/2</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="nav">
+    <a href="#page3">← 上一页</a>
+    <a href="#page5">下一页 →</a>
+  </div>
+</section>
+
+<!-- ========== 页面5：活动3a 折纸认识1/4 ========== -->
+<section class="slide" id="page5">
+  <h2>活动3a：折纸——认识 1/4</h2>
+  <div class="activity-grid">
+    <span class="label">参与者：</span><span class="value">全班（每人一张方纸）</span>
+    <span class="label">用时：</span><span class="value">5分钟</span>
+    <span class="label">材料：</span><span class="value">每人一张方形纸</span>
+    <span class="label">学生动作：</span><span class="value">折出1/4，涂色表示</span>
+    <span class="label">预期证据：</span><span class="value">学生折出并涂色，说出“把一张纸平均分成4份，其中的1份就是1/4”</span>
+    <span class="label">教师回应：</span><span class="value">展示不同折法，强调“平均分成4份，取其中1份”</span>
+    <span class="label">回退：</span><span class="value">教师示范折法（先对折再对折），学生跟随</span>
+  </div>
+  <div class="main-content">
+    <div style="display:flex; justify-content:center; gap:40px; flex-wrap:wrap;">
+      <div>
+        <svg width="180" height="180" viewBox="0 0 100 100">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="3"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#333" stroke-width="3"/>
+          <line x1="0" y1="50" x2="100" y2="50" stroke="#333" stroke-width="3"/>
+          <rect x="0" y="0" width="50" height="50" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.5em; margin-top:10px;">平均分成4份，涂色部分是<span class="fraction">1/4</span></p>
+      </div>
+      <div>
+        <svg width="180" height="180" viewBox="0 0 100 100">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="3"/>
+          <line x1="25" y1="0" x2="25" y2="100" stroke="#333" stroke-width="3"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#333" stroke-width="3"/>
+          <line x1="75" y1="0" x2="75" y2="100" stroke="#333" stroke-width="3"/>
+          <rect x="0" y="0" width="25" height="100" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.5em; margin-top:10px;">其他折法，也是<span class="fraction">1/4</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="nav">
+    <a href="#page4">← 上一页</a>
+    <a href="#page6">下一页 →</a>
+  </div>
+</section>
+
+<!-- ========== 页面6：活动3b 跨外形辨认 & 非等分反例 ========== -->
+<section class="slide" id="page6">
+  <h2>活动3b：跨外形辨认 &amp; 非等分反例</h2>
+  <div class="activity-grid">
+    <span class="label">参与者：</span><span class="value">全班</span>
+    <span class="label">用时：</span><span class="value">5分钟（辨认2分钟，反例3分钟）</span>
+    <span class="label">材料：</span><span class="value">图形卡片（教师展示）</span>
+    <span class="label">学生动作：</span><span class="value">观察图形，辨认1/4；判断图形是否表示1/4</span>
+    <span class="label">预期证据：</span><span class="value">能正确辨认不同形状的1/4；能识别非等分图形并说出“不是平均分”</span>
+    <span class="label">教师回应：</span><span class="value">肯定正确，纠正错误，强调“平均分”</span>
+    <span class="label">回退：</span><span class="value">回顾1/4的定义：平均分成4份，取1份</span>
+  </div>
+  <div class="main-content">
+    <div style="display:flex; justify-content:space-around; flex-wrap:wrap; width:100%;">
+      <div style="flex:1; min-width:300px; margin:10px;">
+        <p style="font-size:1.6em; font-weight:bold;">✅ 跨外形辨认</p>
+        <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+          <div>
+            <svg width="120" height="120" viewBox="0 0 100 100">
+              <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="2"/>
+              <line x1="50" y1="0" x2="50" y2="100" stroke="#333" stroke-width="2"/>
+              <line x1="0" y1="50" x2="100" y2="50" stroke="#333" stroke-width="2"/>
+              <rect x="0" y="0" width="50" height="50" fill="#FFD700" opacity="0.6"/>
+            </svg>
+            <p style="font-size:1.2em;">正方形</p>
+          </div>
+          <div>
+            <svg width="120" height="120" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#333" stroke-width="2"/>
+              <line x1="50" y1="50" x2="50" y2="5" stroke="#333" stroke-width="2"/>
+              <line x1="50" y1="50" x2="95" y2="50" stroke="#333" stroke-width="2"/>
+              <path d="M50 50 L50 5 A45 45 0 0 1 95 50 Z" fill="#FFD700" opacity="0.6"/>
+            </svg>
+            <p style="font-size:1.2em;">圆形</p>
+          </div>
+          <div>
+            <svg width="160" height="100" viewBox="0 0 160 100">
+              <rect x="0" y="0" width="160" height="100" fill="none" stroke="#333" stroke-width="2"/>
+              <line x1="80" y1="0" x2="80" y2="100" stroke="#333" stroke-width="2"/>
+              <line x1="0" y1="50" x2="160" y2="50" stroke="#333" stroke-width="2"/>
+              <rect x="0" y="0" width="80" height="50" fill="#FFD700" opacity="0.6"/>
+            </svg>
+            <p style="font-size:1.2em;">长方形</p>
+          </div>
+        </div>
+        <p style="font-size:1.3em; margin-top:10px;">都是<span class="fraction">1/4</span>，因为都<span class="highlight">平均分成4份，涂色1份</span></p>
+      </div>
+      <div style="flex:1; min-width:300px; margin:10px;">
+        <p style="font-size:1.6em; font-weight:bold;">❌ 非等分反例</p>
+        <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+          <div>
+            <svg width="160" height="100" viewBox="0 0 160 100">
+              <rect x="0" y="0" width="160" height="100" fill="none" stroke="#333" stroke-width="2"/>
+              <line x1="30" y1="0" x2="30" y2="100" stroke="#333" stroke-width="2"/>
+              <line x1="80" y1="0" x2="80" y2="100" stroke="#333" stroke-width="2"/>
+              <line x1="130" y1="0" x2="130" y2="100" stroke="#333" stroke-width="2"/>
+              <rect x="0" y="0" width="30" height="100" fill="#FFD700" opacity="0.6"/>
+            </svg>
+            <p style="font-size:1.2em;">不是平均分</p>
+          </div>
+          <div>
+            <svg width="120" height="120" viewBox="0 0 100 100">
+              <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="2"/>
+              <line x1="0" y1="50" x2="100" y2="50" stroke="#333" stroke-width="2"/>
+              <rect x="0" y="0" width="100" height="50" fill="#FFD700" opacity="0.6"/>
+            </svg>
+            <p style="font-size:1.2em;">只分成2份，不是4份</p>
+          </div>
+        </div>
+        <p style="font-size:1.3em; margin-top:10px;">这些都不是<span class="fraction">1/4</span>，因为<span class="highlight">不是平均分</span>或<span class="highlight">不是4份</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="nav">
+    <a href="#page5">← 上一页</a>
+    <a href="#page7">下一页 →</a>
+  </div>
+</section>
+
+<!-- ========== 页面7：活动4 基础练习 ========== -->
+<section class="slide" id="page7">
+  <h2>活动4：基础练习</h2>
+  <div class="activity-grid">
+    <span class="label">参与者：</span><span class="value">全班</span>
+    <span class="label">用时：</span><span class="value">10分钟</span>
+    <span class="label">材料：</span><span class="value">练习题（教师展示，学生可举手回答或写在纸上）</span>
+    <span class="label">学生动作：</span><span class="value">判断哪些图形是1/4，并说明理由</span>
+    <span class="label">预期证据：</span><span class="value">学生能正确判断并说出理由（平均分+4份+1份）</span>
+    <span class="label">教师回应：</span><span class="value">对于错误，引导回扣“平均分”概念</span>
+    <span class="label">回退：</span><span class="value">再次强调“平均分”是前提</span>
+  </div>
+  <div class="main-content">
+    <p style="font-size:1.8em; font-weight:bold;">📝 下面图形中，哪些涂色部分是 <span class="fraction">1/4</span> ？</p>
+    <div style="display:flex; justify-content:center; gap:30px; flex-wrap:wrap; margin-top:20px;">
+      <div>
+        <svg width="120" height="120" viewBox="0 0 100 100">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="2"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#333" stroke-width="2"/>
+          <line x1="0" y1="50" x2="100" y2="50" stroke="#333" stroke-width="2"/>
+          <rect x="0" y="0" width="50" height="50" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.2em;">①</p>
+      </div>
+      <div>
+        <svg width="120" height="120" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#333" stroke-width="2"/>
+          <line x1="50" y1="50" x2="50" y2="5" stroke="#333" stroke-width="2"/>
+          <line x1="50" y1="50" x2="95" y2="50" stroke="#333" stroke-width="2"/>
+          <path d="M50 50 L50 5 A45 45 0 0 1 95 50 Z" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.2em;">②</p>
+      </div>
+      <div>
+        <svg width="120" height="120" viewBox="0 0 100 100">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="2"/>
+          <line x1="30" y1="0" x2="30" y2="100" stroke="#333" stroke-width="2"/>
+          <line x1="0" y1="60" x2="100" y2="60" stroke="#333" stroke-width="2"/>
+          <rect x="0" y="0" width="30" height="60" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.2em;">③</p>
+      </div>
+      <div>
+        <svg width="120" height="120" viewBox="0 0 100 100">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="2"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#333" stroke-width="2"/>
+          <rect x="0" y="0" width="50" height="100" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.2em;">④</p>
+      </div>
+      <div>
+        <svg width="120" height="120" viewBox="0 0 100 100">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="#333" stroke-width="2"/>
+          <line x1="25" y1="0" x2="25" y2="100" stroke="#333" stroke-width="2"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#333" stroke-width="2"/>
+          <line x1="75" y1="0" x2="75" y2="100" stroke="#333" stroke-width="2"/>
+          <rect x="0" y="0" width="25" height="100" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.2em;">⑤</p>
+      </div>
+    </div>
+    <p style="font-size:1.5em; margin-top:20px;">💬 请说出你的理由！</p>
+    <p style="font-size:1.3em; color:#888;">（答案见教师参考页）</p>
+  </div>
+  <div class="nav">
+    <a href="#page6">← 上一页</a>
+    <a href="#page8">下一页 →</a>
+  </div>
+</section>
+
+<!-- ========== 页面8：活动5 退出题 ========== -->
+<section class="slide" id="page8">
+  <h2>活动5：退出题</h2>
+  <div class="activity-grid">
+    <span class="label">参与者：</span><span class="value">全班</span>
+    <span class="label">用时：</span><span class="value">5分钟</span>
+    <span class="label">材料：</span><span class="value">每人一张白纸（或小纸条）</span>
+    <span class="label">学生动作：</span><span class="value">画一个图形表示1/4，并写出分数</span>
+    <span class="label">预期证据：</span><span class="value">学生画出正确的图形（平均分成4份，涂色1份），写出1/4</span>
+    <span class="label">教师回应：</span><span class="value">收集学生作品，课后评估</span>
+    <span class="label">回退：</span><span class="value">如果学生普遍不会，下节课复习</span>
+  </div>
+  <div class="main-content">
+    <p style="font-size:2em; font-weight:bold;">✏️ 请你在纸上画一个图形，</p>
+    <p style="font-size:2em; font-weight:bold;">表示 <span class="fraction">1/4</span>，并写出分数。</p>
+    <p style="font-size:1.5em; margin-top:30px; color:#888;">（教师收集，不作当堂展示）</p>
+  </div>
+  <div class="nav">
+    <a href="#page7">← 上一页</a>
+    <a href="#page9">下一页 →</a>
+  </div>
+</section>
+
+<!-- ========== 页面9：活动6（可选）单位分数比较 ========== -->
+<section class="slide" id="page9">
+  <h2>活动6（可选）：比较 1/2 和 1/4</h2>
+  <div class="activity-grid">
+    <span class="label">参与者：</span><span class="value">全班</span>
+    <span class="label">用时：</span><span class="value">2分钟</span>
+    <span class="label">材料：</span><span class="value">两个同样大小的圆形（或长方形）图示</span>
+    <span class="label">学生动作：</span><span class="value">观察并比较1/2和1/4的大小，用图示说明理由</span>
+    <span class="label">预期证据：</span><span class="value">学生能说出“1/2大于1/4”，因为分的份数越多，每份越小</span>
+    <span class="label">教师回应：</span><span class="value">肯定学生的推理，强调“同样大小的整体”是前提</span>
+    <span class="label">回退：</span><span class="value">此活动仅限核心理解通过且时间允许时进行</span>
+  </div>
+  <div class="main-content">
+    <p style="font-size:1.8em; font-weight:bold;">🔍 比一比：<span class="fraction">1/2</span> 和 <span class="fraction">1/4</span>，谁大？</p>
+    <div style="display:flex; justify-content:center; gap:40px; flex-wrap:wrap; margin-top:20px;">
+      <div>
+        <svg width="180" height="180" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#333" stroke-width="2"/>
+          <line x1="5" y1="50" x2="95" y2="50" stroke="#333" stroke-width="2"/>
+          <path d="M50 50 L5 50 A45 45 0 0 1 95 50 Z" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.5em;"><span class="fraction">1/2</span></p>
+      </div>
+      <div>
+        <svg width="180" height="180" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#333" stroke-width="2"/>
+          <line x1="50" y1="50" x2="50" y2="5" stroke="#333" stroke-width="2"/>
+          <line x1="50" y1="50" x2="95" y2="50" stroke="#333" stroke-width="2"/>
+          <path d="M50 50 L50 5 A45 45 0 0 1 95 50 Z" fill="#FFD700" opacity="0.6"/>
+        </svg>
+        <p style="font-size:1.5em;"><span class="fraction">1/4</span></p>
+      </div>
+    </div>
+    <p style="font-size:1.5em; margin-top:20px;">📌 同样大小的整体，<span class="fraction">1/2</span> 比 <span class="fraction">1/4</span> 大。</p>
+    <p style="font-size:1.3em;">因为平均分的份数越少，每份就越大。</p>
+  </div>
+  <div class="nav">
+    <a href="#page8">← 上一页</a>
+    <a href="#page10">下一页 →</a>
+  </div>
+</section>
+
+<!-- ========== 页面10：教师参考 答案与提示 ========== -->
+<section class="slide teacher-ref" id="page10">
+  <h2>教师参考：答案与提示</h2>
+  <div style="width:100%; max-width:1100px; text-align:left; font-size:1.3em;">
+    <h3>活动4 基础练习答案</h3>
+    <p>图形①、②、⑤是 <span class="fraction">1/4</span>。</p>
+    <ul>
+      <li>①：正方形平均分成4份，涂色1份。</li>
+      <li>②：圆形平均分成4份，涂色1份。</li>
+      <li>③：不是平均分，所以不是1/4。</li>
+      <li>④：只分成2份，不是4份，是1/2。</li>
+      <li>⑤：长方形平均分成4份，涂色1份。</li>
+    </ul>
+    <h3>活动5 退出题参考答案</h3>
+    <p>学生画出的图形应满足：<span class="highlight">平均分成4份，涂色1份</span>，并写出 <span class="fraction">1/4</span>。</p>
+    <p>常见正确画法：正方形、圆形、长方形等，平均分4份，涂1份。</p>
+    <p>常见错误：不是平均分、不是4份、涂色超过1份。</p>
+    <h3>教学建议</h3>
+    <ul>
+      <li>本课件按40分钟设计，教师可根据实际情况灵活调整。</li>
+      <li>活动6为可选内容，若学生核心概念未掌握，应跳过。</li>
+      <li>鼓励学生用完整的语言表达分数的含义。</li>
+      <li>收集退出题作品，作为本节课形成性评价的依据。</li>
+    </ul>
+  </div>
+  <div class="nav">
+    <a href="#page9">← 上一页</a>
+    <a href="#page1">回到首页</a>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

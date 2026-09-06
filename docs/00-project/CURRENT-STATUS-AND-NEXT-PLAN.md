@@ -1,13 +1,17 @@
 ---
 title: ClassIn TeachBuddy 当前状态与下一阶段计划
-status: M4_5_COMPLETE_USER_ACCEPTED
-version: v0.18
-date: 2026-08-25
+status: COURSEWARE_V2_M1_COMPLETE_USER_AUTHORIZED
+version: v0.22
+date: 2026-09-06
 ---
 
 # 当前状态与下一阶段计划
 
 > D-108 已锁定当前展示品牌：正式名称为 **ClassIn TeachBuddy**，界面简称 **TeachBuddy**，中文描述为 **AI 教学搭档**。下文 `WorkBuddyRun` 等 PascalCase 名称及 `workbuddy` 路径仍表示内部工程兼容标识；阶段验收原始名称仅用于历史追踪。
+
+> **2026-09-05 课件生成 V2 计划**：按 D-116，下一阶段以中国公立小学三年级数学正式课堂为首条内容质量切片。先完成教材与课题范围、固定任务与 V1 基线、Knowledge Pack、Instructional Rules、结构化内容、Courseware Skill 和内容评价闭环；达到可复核的 60-70 分 Gate 后，再进入 PPTAgent / Renderer 表达层 Spike，并依据瓶颈决定是否引入专业 Agent。当前只批准计划，尚未开始功能实现。详细路线见 [课件生成 V2 内容优先实施计划](../06-architecture/COURSEWARE-GENERATION-V2-IMPLEMENTATION-PLAN.md)。
+
+> **2026-09-06 课件生成 V2 M0/M1**：M0-A 至 M0-J 已全部关闭，M0 加权进度为 100%，状态为 `COMPLETE_USER_REVIEWED`。M1 已冻结 8 个 Case 与 Rubric v0.1，并使用未改动的真实 Harness V1 完成首轮运行：3/4 生成型 Case 形成 HTML，1/4 在 10 分钟停止；4/4 澄清型 Case 无 Artifact，但没有一项同时满足最少追问、事实准确和不补猜。两个生成产物含阻断数学图形错误，三个均未通过视觉 Gate，四个生成型 Case 的 Agent 试评平均内容分为 43.44。该分数不是教师/教研评价或课堂效果。用户授权 M1 过程 Review 默认确认并在交付后统一复审，M1 当前为 `COMPLETE_USER_AUTHORIZED`，M2 已解锁但尚未启动。事实见 [M0 Readiness Report](../04-specs/features/courseware-v2-grade3-math/M0-READINESS-REPORT.md) 与 [M1 V1 Baseline Report](../04-specs/features/courseware-v2-grade3-math/M1-V1-BASELINE-REPORT.md)。
 
 ## 1. 当前完成事实
 

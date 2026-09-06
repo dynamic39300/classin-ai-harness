@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分数的初步认识——几分之一</title>
+<style>
+  /* ===== 全局重置 & 基础 ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background: #FFF8F0;
+    color: #2C2C2C;
+    line-height: 1.6;
+  }
+
+  /* ===== 幻灯片容器 ===== */
+  .slide {
+    display: none;
+    min-height: 100vh;
+    width: 100%;
+    padding: 2rem 3rem;
+    background: #FFF8F0;
+    position: relative;
+    overflow-y: auto;
+  }
+  .slide:target { display: block; }
+
+  /* 当没有 hash 时显示第一张 */
+  body:not(:target) .slide-1 { display: block; }
+
+  /* 辅助：在无 target 时强制显示第一张 */
+  .slide-1 { display: block; }
+  .slide:target ~ .slide-1 { display: none; }
+  .slide-1:target { display: block; }
+
+  /* ===== 导航栏 ===== */
+  .nav-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3.2rem;
+    background: rgba(255,248,240,0.96);
+    backdrop-filter: blur(4px);
+    border-bottom: 2px solid #FFD700;
+    display: flex;
+    align-items: center;
+    padding: 0 1.2rem;
+    gap: 0.6rem;
+    z-index: 100;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .nav-bar a {
+    text-decoration: none;
+    color: #004E89;
+    background: #E8F4FD;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: 0.2s;
+    white-space: nowrap;
+  }
+  .nav-bar a:hover { background: #FFD700; color: #2C2C2C; }
+  .nav-bar .nav-sep { color: #AAA; font-weight: 300; }
+  .nav-bar .nav-title {
+    font-weight: 700;
+    color: #D35400;
+    margin-right: 0.4rem;
+    white-space: nowrap;
+  }
+
+  /* ===== 幻灯片内容样式 ===== */
+  .slide-inner {
+    max-width: 1200px;
+    margin: 3.6rem auto 2rem;
+    padding: 1.8rem 2rem;
+    background: #FFFFFF;
+    border-radius: 28px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    border: 1px solid #FFE0B2;
+  }
+
+  h1 {
+    font-size: 2.8rem;
+    color: #D35400;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+    border-left: 8px solid #FF6B35;
+    padding-left: 1.2rem;
+  }
+  h2 {
+    font-size: 2rem;
+    color: #004E89;
+    margin: 1.2rem 0 0.8rem;
+    border-bottom: 3px solid #FFD700;
+    padding-bottom: 0.3rem;
+  }
+  h3 {
+    font-size: 1.5rem;
+    color: #2C3E50;
+    margin: 1rem 0 0.5rem;
+  }
+  h4 {
+    font-size: 1.2rem;
+    color: #2C3E50;
+    margin: 0.8rem 0 0.4rem;
+  }
+  p  { font-size: 1.1rem; margin: 0.5rem 0; }
+  ul, ol { margin: 0.5rem 0 0.5rem 1.6rem; }
+  li  { font-size: 1.1rem; margin: 0.3rem 0; }
+
+  /* 教学环节标签 */
+  .phase-tag {
+    display: inline-block;
+    background: #FF6B35;
+    color: #FFF;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.2rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 0.6rem;
+  }
+  .time-badge {
+    display: inline-block;
+    background: #E8F4FD;
+    color: #004E89;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.15rem 0.8rem;
+    border-radius: 12px;
+    margin-left: 0.5rem;
+  }
+
+  /* 活动卡片 */
+  .activity-card {
+    background: #FAFAF5;
+    border-left: 6px solid #FFD700;
+    border-radius: 14px;
+    padding: 1.2rem 1.6rem;
+    margin: 1.2rem 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .activity-card.teacher-note { border-left-color: #004E89; background: #F0F7FF; }
+  .activity-card .row { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; margin: 0.3rem 0; }
+  .activity-card .label { font-weight: 700; color: #D35400; min-width: 5rem; }
+  .activity-card .label.blue { color: #004E89; }
+
+  /* 题组 */
+  .question-block {
+    background: #FEF9F0;
+    border: 2px dashed #FFD700;
+    border-radius: 16px;
+    padding: 1.2rem 1.6rem;
+    margin: 1rem 0;
+  }
+  .question-block .q { font-weight: 600; font-size: 1.2rem; color: #D35400; }
+  .answer-box {
+    margin-top: 0.8rem;
+    border-top: 1px solid #FFE0B2;
+    padding-top: 0.8rem;
+  }
+  .answer-box .a-label { font-weight: 600; color: #004E89; }
+
+  /* details 用于答案隐藏 */
+  details.answer-reveal {
+    margin-top: 0.6rem;
+    background: #F5F5F0;
+    border-radius: 10px;
+    padding: 0.3rem 0.8rem;
+    cursor: pointer;
+  }
+  details.answer-reveal summary {
+    font-weight: 600;
+    color: #004E89;
+    padding: 0.3rem 0;
+    outline: none;
+  }
+  details.answer-reveal[open] { background: #E8F4FD; }
+  details.answer-reveal .answer-content { padding: 0.4rem 0 0.6rem; }
+
+  /* 图形展示区 */
+  .figure-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+  .figure-item {
+    background: #FFF;
+    border: 2px solid #E0E0E0;
+    border-radius: 14px;
+    padding: 0.8rem;
+    text-align: center;
+    min-width: 120px;
+    flex: 0 1 auto;
+  }
+  .figure-item .fig-label { font-size: 0.9rem; color: #666; margin-top: 0.3rem; }
+  .figure-item .fig { display: flex; justify-content: center; align-items: center; }
+
+  /* SVG 辅助 */
+  .fig-svg { display: block; margin: 0 auto; }
+
+  /* 表格 */
+  .tbl { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  .tbl th, .tbl td {
+    border: 1px solid #E0D5C0;
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    font-size: 1rem;
+  }
+  .tbl th { background: #FFE0B2; color: #2C2C2C; font-weight: 700; }
+  .tbl tr:nth-child(even) { background: #FAFAF5; }
+
+  /* 按钮 / 链接 */
+  .btn-slide {
+    display: inline-block;
+    background: #FF6B35;
+    color: #FFF;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 0.6rem 1.8rem;
+    border-radius: 30px;
+    text-decoration: none;
+    transition: 0.2s;
+    margin: 0.3rem;
+  }
+  .btn-slide:hover { background: #D35400; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+  .btn-slide.blue { background: #004E89; }
+  .btn-slide.blue:hover { background: #003366; }
+  .btn-slide.gold { background: #D4A017; }
+  .btn-slide.gold:hover { background: #B8860B; }
+
+  .nav-links { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin: 1.2rem 0; }
+
+  /* 提示框 */
+  .tip-box {
+    background: #FFF3CD;
+    border: 1px solid #FFD700;
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    margin: 0.8rem 0;
+  }
+  .tip-box.green { background: #D4EDDA; border-color: #28A745; }
+  .tip-box.red { background: #F8D7DA; border-color: #DC3545; }
+  .tip-box.blue { background: #D1ECF1; border-color: #17A2B8; }
+
+  /* 页脚 */
+  .slide-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #999;
+    border-top: 1px solid #F0E0D0;
+    padding-top: 1rem;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .slide { padding: 1rem; }
+    .slide-inner { padding: 1rem; margin-top: 4rem; }
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.4rem; }
+    h3 { font-size: 1.2rem; }
+    .nav-bar { font-size: 0.7rem; height: 2.8rem; padding: 0 0.6rem; }
+    .nav-bar a { font-size: 0.7rem; padding: 0.1rem 0.4rem; }
+    .figure-grid { gap: 0.6rem; }
+    .figure-item { min-width: 80px; }
+  }
+
+  /* 打印样式 */
+  @media print {
+    .nav-bar { display: none; }
+    .slide { display: block !important; min-height: auto; page-break-after: always; }
+    .slide-inner { box-shadow: none; border: 1px solid #DDD; }
+  }
+
+  /* 专为"几分之一"设计的图形 */
+  .frac-viz { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+  .frac-viz .frac { font-size: 2.5rem; font-weight: 700; color: #D35400; }
+  .frac-viz .eq { font-size: 2rem; color: #666; }
+
+  /* 平均分判断的标记 */
+  .check-mark { color: #28A745; font-size: 2rem; font-weight: 700; }
+  .cross-mark { color: #DC3545; font-size: 2rem; font-weight: 700; }
+
+  /* 学生作品展示区（模拟） */
+  .student-work {
+    background: #FFF8F0;
+    border: 2px solid #FFE0B2;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  .student-work .work-item {
+    background: #FFF;
+    border-radius: 10px;
+    padding: 0.5rem;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  /* 退出题卡片 */
+  .exit-ticket {
+    background: #F0F7FF;
+    border: 2px solid #004E89;
+    border-radius: 16px;
+    padding: 1.2rem;
+    margin: 1rem 0;
+  }
+  .exit-ticket .et-q { font-weight: 600; margin: 0.5rem 0; }
+  .exit-ticket .et-answer { margin: 0.3rem 0; padding: 0.3rem 0.6rem; background: #E8F4FD; border-radius: 6px; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- 导航栏 -->
+<!-- ============================================================ -->
+<nav class="nav-bar">
+  <span class="nav-title">🍎 几分之一</span>
+  <a href="#s1">📖 设计说明</a><span class="nav-sep">|</span>
+  <a href="#s2">📋 流程</a><span class="nav-sep">|</span>
+  <a href="#s3">🔍 诊断</a><span class="nav-sep">|</span>
+  <a href="#s4">✂️ ½</a><span class="nav-sep">|</span>
+  <a href="#s5">✂️ ¼</a><span class="nav-sep">|</span>
+  <a href="#s6">✂️ ⅓ ⅛</a><span class="nav-sep">|</span>
+  <a href="#s7">📐 图→符号</a><span class="nav-sep">|</span>
+  <a href="#s8">📐 符号→图</a><span class="nav-sep">|</span>
+  <a href="#s9">🔷 跨外形</a><span class="nav-sep">|</span>
+  <a href="#s10">🚫 反例</a><span class="nav-sep">|</span>
+  <a href="#s11">📝 练习</a><span class="nav-sep">|</span>
+  <a href="#s12">📌 总结</a><span class="nav-sep">|</span>
+  <a href="#s13">🎯 退出题</a><span class="nav-sep">|</span>
+  <a href="#s14">🌟 拓展</a>
+</nav>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 1：教学设计说明（教师备课参考） -->
+<!-- ============================================================ -->
+<section id="s1" class="slide slide-1">
+<div class="slide-inner">
+  <h1>🍎 分数的初步认识 · 几分之一</h1>
+  <p style="font-size:1.2rem;color:#666;margin-bottom:1.2rem;">人教版三年级上册 第八单元 第一课时 ｜ 40分钟 ｜ 38人 ｜ 普通公立小学三年级中等水平</p>
+
+  <div class="phase-tag">📖 教学设计说明</div>
+
+  <div class="activity-card teacher-note">
+    <h3>一、核心目标</h3>
+    <ol>
+      <li><strong>判断整体与平均分</strong>：能指出一个整体，判断是否平均分。</li>
+      <li><strong>多模态表达</strong>：能用动作（折、指）、图形（涂色、画图）、语言（口头描述）和 1/n 符号解释"把一个整体平均分成 n 份，其中一份是 1/n"。</li>
+      <li><strong>跨外形辨认</strong>：能跨外形辨认同一单位分数（如不同形状中的 1/4）。</li>
+      <li><strong>反例辨析</strong>：能辨析至少一个没有平均分的反例，理解"平均分"是使用分数的前提。</li>
+    </ol>
+  </div>
+
+  <div class="activity-card teacher-note">
+    <h3>二、设计思路</h3>
+    <p>本课是学生第一次正式学习分数，核心是从"整数"思维跨越到"分数"思维。设计遵循：</p>
+    <ul>
+      <li><strong>从生活到数学</strong>：从"分物""一半"激活经验，建立"平均分"与"分数"的联结。</li>
+      <li><strong>从动作到符号</strong>：通过折纸、涂色等操作活动，让学生先做后说再说，最后抽象为符号。</li>
+      <li><strong>从单一到多元</strong>：同一分数（如 1/4）在不同图形中辨认，打破形状定势，突出"份数"本质。</li>
+      <li><strong>从正例到反例</strong>：通过典型反例强化"平均分"这一前提条件。</li>
+    </ul>
+  </div>
+
+  <div class="activity-card teacher-note">
+    <h3>三、活动结构总览</h3>
+    <table class="tbl">
+      <tr><th>环节</th><th>用时</th><th>核心活动</th><th>核心问题</th></tr>
+      <tr><td>前置诊断</td><td>4 min</td><td>分物判断、平均分辨识</td><td>"一半"是什么意思？这样分公平吗？</td></tr>
+      <tr><td>操作与概念形成</td><td>14 min</td><td>折纸认识 1/2、1/4、1/3、1/8</td><td>为什么折法不同都表示 1/2？</td></tr>
+      <tr><td>符号整理与跨表征</td><td>8 min</td><td>图→符号、符号→图、跨外形辨认</td><td>形状不同，为什么都能用 1/4 表示？</td></tr>
+      <tr><td>反例与反馈</td><td>9 min</td><td>辨析非平均分、综合练习</td><td>这样分能用分数表示吗？为什么？</td></tr>
+      <tr><td>总结与退出证据</td><td>5 min</td><td>口头总结、退出题</td><td>今天你学到了什么？</td></tr>
+    </table>
+    <p style="margin-top:0.6rem;font-size:0.95rem;color:#888;">※ 单位分数比较（1/2 与 1/4）只在核心理解通过且时间允许时出现，作为拓展。</p>
+  </div>
+
+  <div class="activity-card teacher-note">
+    <h3>四、教师侧概念提示（不教给学生）</h3>
+    <p><strong>分数单位</strong>：如 1/2、1/4、1/3 等，每个分数由分数单位累加而成。本课不涉及"分数单位"术语，只让学生感知"一份"的概念。</p>
+    <p><strong>不涉及</strong>：集合整体、分数与除法、几分之几（大于一份）、等值分数、基本性质、通分、约分、真/假分数、分数运算。</p>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s2">📋 查看教学流程 →</a>
+  </div>
+  <div class="slide-footer">📌 教师备课参考 · 教学前请熟读</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 2：教学流程总览 -->
+<!-- ============================================================ -->
+<section id="s2" class="slide">
+<div class="slide-inner">
+  <h2>📋 教学流程总览</h2>
+  <div style="display:flex;flex-wrap:wrap;gap:1rem;margin:1rem 0;">
+    <div style="flex:1;min-width:160px;background:#FFE0B2;border-radius:14px;padding:1rem;text-align:center;">
+      <div style="font-size:2rem;font-weight:700;color:#D35400;">4′</div>
+      <div style="font-weight:600;">前置诊断</div>
+      <div style="font-size:0.85rem;color:#666;">分物引入 · 平均分判断</div>
+    </div>
+    <div style="flex:1;min-width:160px;background:#FFD700;border-radius:14px;padding:1rem;text-align:center;">
+      <div style="font-size:2rem;font-weight:700;color:#D35400;">14′</div>
+      <div style="font-weight:600;">操作与概念形成</div>
+      <div style="font-size:0.85rem;color:#666;">折纸认识 ½ ¼ ⅓ ⅛</div>
+    </div>
+    <div style="flex:1;min-width:160px;background:#B3D9FF;border-radius:14px;padding:1rem;text-align:center;">
+      <div style="font-size:2rem;font-weight:700;color:#004E89;">8′</div>
+      <div style="font-weight:600;">符号整理与跨表征</div>
+      <div style="font-size:0.85rem;color:#666;">图↔符号 · 跨外形</div>
+    </div>
+    <div style="flex:1;min-width:160px;background:#F8D7DA;border-radius:14px;padding:1rem;text-align:center;">
+      <div style="font-size:2rem;font-weight:700;color:#C0392B;">9′</div>
+      <div style="font-weight:600;">反例与反馈</div>
+      <div style="font-size:0.85rem;color:#666;">辨析反例 · 综合练习</div>
+    </div>
+    <div style="flex:1;min-width:160px;background:#D4EDDA;border-radius:14px;padding:1rem;text-align:center;">
+      <div style="font-size:2rem;font-weight:700;color:#28A745;">5′</div>
+      <div style="font-weight:600;">总结与退出</div>
+      <div style="font-size:0.85rem;color:#666;">口头总结 · 退出题</div>
+    </div>
+  </div>
+
+  <div class="tip-box blue">
+    <strong>💡 本页导航提示：</strong> 使用顶部导航栏或下方按钮切换页面。每页上方标注环节名称、用时和教学目的。
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide" href="#s3">🔍 开始上课：前置诊断 →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 1 页</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 3：前置诊断（活动 1.1 分物引入 + 1.2 平均分判断） -->
+<!-- ============================================================ -->
+<section id="s3" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">🔍 前置诊断</span> <span class="time-badge">4 分钟</span>
+  <h2>活动一：分物引入 · 激活平均分与"一半"经验</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>唤醒学生已有生活经验，诊断对"平均分"和"一半"的理解水平，为本课学习奠定基础。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（集体回答 + 手势回应）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>2 分钟（活动 1.1）+ 2 分钟（活动 1.2）</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>PPT 图片（苹果、矿泉水、蛋糕）、平均分/非平均分图片组</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>口头回答、用手势表示"一半"（两手比划）、举牌判断（平均分/不平均分）</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能说出"每人 2 个苹果""每人 1 瓶水""每人一半"；能用"公平""一样多"解释平均分；能正确判断 4 组中至少 3 组</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>聚焦"平均分"和"一半"两个关键词，板书 ✍️ <strong>平均分</strong>、<strong>一半</strong>；对正确判断追问"你怎么看出来的？"</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>如果学生说不出"一半"，用实物蛋糕模型切一刀演示；如果判断有误，引导学生数一数每份是否一样多</span></div>
+  </div>
+
+  <!-- 活动 1.1 问题 -->
+  <div class="question-block">
+    <p class="q">🍎 问题 1：把 4 个苹果平均分给 2 个小朋友，每人几个？</p>
+    <p class="q">🥤 问题 2：把 2 瓶水平均分给 2 个小朋友，每人几瓶？</p>
+    <p class="q">🎂 问题 3：把 1 个蛋糕平均分给 2 个小朋友，每人多少？</p>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：预期答案与回应</summary>
+      <div class="answer-content">
+        <p><strong>答案：</strong>每人 2 个苹果，每人 1 瓶水，每人"一半"（或"半个"）蛋糕。</p>
+        <p><strong>回应要点：</strong></p>
+        <ul>
+          <li>追问第 3 题："一半"用数学符号怎么表示呢？——引出学习需求。</li>
+          <li>板书 ✍️ <strong>平均分</strong>（强调每份同样多）和 <strong>一半</strong>。</li>
+          <li>如果学生说"0.5"，肯定并过渡："0.5 是小数，今天我们学习一种新的数——分数。"</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <!-- 活动 1.2 平均分判断 -->
+  <div class="question-block">
+    <p class="q">🔍 问题 4：下面这些分法，哪些是"平均分"？</p>
+    <div class="figure-grid">
+      <div class="figure-item">
+        <svg width="120" height="80" viewBox="0 0 120 80" class="fig-svg">
+          <rect x="0" y="0" width="120" height="80" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="8"/>
+          <line x1="60" y1="0" x2="60" y2="80" stroke="#D35400" stroke-width="3" stroke-dasharray="6,4"/>
+          <text x="30" y="45" font-size="14" text-anchor="middle" fill="#28A745" font-weight="bold">✓</text>
+          <text x="90" y="45" font-size="14" text-anchor="middle" fill="#28A745" font-weight="bold">✓</text>
+        </svg>
+        <div class="fig-label">① 正方形 · 平均分 ✓</div>
+      </div>
+      <div class="figure-item">
+        <svg width="120" height="80" viewBox="0 0 120 80" class="fig-svg">
+          <rect x="0" y="0" width="120" height="80" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="8"/>
+          <line x1="40" y1="0" x2="40" y2="80" stroke="#DC3545" stroke-width="3" stroke-dasharray="6,4"/>
+          <text x="20" y="45" font-size="14" text-anchor="middle" fill="#DC3545" font-weight="bold">✗</text>
+          <text x="80" y="45" font-size="14" text-anchor="middle" fill="#DC3545" font-weight="bold">✗</text>
+        </svg>
+        <div class="fig-label">② 长方形 · 未平均分 ✗</div>
+      </div>
+      <div class="figure-item">
+        <svg width="120" height="80" viewBox="0 0 120 80" class="fig-svg">
+          <circle cx="60" cy="40" r="36" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <line x1="60" y1="4" x2="60" y2="76" stroke="#D35400" stroke-width="3" stroke-dasharray="6,4"/>
+          <text x="30" y="45" font-size="14" text-anchor="middle" fill="#28A745" font-weight="bold">✓</text>
+          <text x="90" y="45" font-size="14" text-anchor="middle" fill="#28A745" font-weight="bold">✓</text>
+        </svg>
+        <div class="fig-label">③ 圆形 · 平均分 ✓</div>
+      </div>
+      <div class="figure-item">
+        <svg width="120" height="80" viewBox="0 0 120 80" class="fig-svg">
+          <rect x="0" y="0" width="120" height="80" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="8"/>
+          <line x1="30" y1="0" x2="30" y2="80" stroke="#D35400" stroke-width="3" stroke-dasharray="6,4"/>
+          <line x1="80" y1="0" x2="80" y2="80" stroke="#D35400" stroke-width="3" stroke-dasharray="6,4"/>
+          <text x="15" y="45" font-size="14" text-anchor="middle" fill="#28A745" font-weight="bold">✓</text>
+          <text x="55" y="45" font-size="14" text-anchor="middle" fill="#28A745" font-weight="bold">✓</text>
+          <text x="100" y="45" font-size="14" text-anchor="middle" fill="#28A745" font-weight="bold">✓</text>
+        </svg>
+        <div class="fig-label">④ 长方形 · 平均分 ✓</div>
+      </div>
+    </div>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：判断答案</summary>
+      <div class="answer-content">
+        <p>① 平均分 ✓（正方形从中间竖着平分，两边一样大）</p>
+        <p>② <strong>未平均分 ✗</strong>（左边小右边大，不公平）</p>
+        <p>③ 平均分 ✓（圆形从中间竖着平分，两边一样大）</p>
+        <p>④ 平均分 ✓（长方形被分成 3 份，每份一样大）</p>
+        <p><strong>追问：</strong>"你怎么看出②不是平均分的？" 引导学生用"一样大""公平"等语言描述。</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide" href="#s4">✂️ 进入操作环节：认识 ½ →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 2 页 | 前置诊断</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 4：操作与概念形成 —— 认识 1/2（活动 2.1） -->
+<!-- ============================================================ -->
+<section id="s4" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">✂️ 操作与概念形成</span> <span class="time-badge">14 分钟</span>
+  <h2>活动二：折纸认识 ½</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>通过折一折、涂一涂、说一说的活动，让学生建立 1/2 的表象，理解"平均分成 2 份，每份是它的 1/2"。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人 + 2 人小组合作</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>6 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>圆形纸片（每人 1 张）、彩笔、展示磁贴</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）折一折：将圆形纸片对折，压平； （2）涂一涂：用彩笔涂出其中一份； （3）说一说：跟同桌说说"你把圆形平均分成了几份？涂色部分是它的几分之几？"</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能折出 1/2（对折）；能说出"把圆形平均分成 2 份，涂色部分占 1 份，是它的 1/2"；不同折法（竖折、横折、斜折）都出现</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>展示不同折法，贴在黑板上，追问："为什么折法不同，涂色部分都表示 1/2？" 引导发现"都是平均分成 2 份，取 1 份"</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>教师示范折法（竖折），学生跟折；用"一半"过渡："一半就是 1/2"</span></div>
+  </div>
+
+  <!-- 展示 -->
+  <div class="question-block">
+    <p class="q">✂️ 操作任务：拿出圆形纸片，折一折，涂出它的 ½。</p>
+    <div class="figure-grid">
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <circle cx="50" cy="50" r="45" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <path d="M 50 5 A 45 45 0 0 0 50 95 Z" fill="#FF6B35" opacity="0.6"/>
+          <line x1="50" y1="5" x2="50" y2="95" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+        </svg>
+        <div class="fig-label">竖折 ½</div>
+      </div>
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <circle cx="50" cy="50" r="45" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <path d="M 50 5 A 45 45 0 0 1 50 95 Z" fill="#FF6B35" opacity="0.6"/>
+          <line x1="50" y1="5" x2="50" y2="95" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+        </svg>
+        <div class="fig-label">横折 ½</div>
+      </div>
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <circle cx="50" cy="50" r="45" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <path d="M 50 5 L 95 50 L 50 95 Z" fill="#FF6B35" opacity="0.6"/>
+          <line x1="50" y1="5" x2="50" y2="95" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+        </svg>
+        <div class="fig-label">斜折 ½</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-weight:600;color:#D35400;margin-top:0.6rem;">🤔 追问：折法不同，为什么涂色部分都表示 ½ ？</p>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：核心追问处理</summary>
+      <div class="answer-content">
+        <p><strong>预期回应：</strong>因为都是把圆形<strong>平均分成 2 份</strong>，涂了其中的 <strong>1 份</strong>，所以都表示 ½。</p>
+        <p><strong>板书 ✍️：</strong>把一个整体平均分成 2 份，每份是它的 <strong>½</strong>。</p>
+        <p>介绍写法：先写横线（分数线），再写下面的 2（分母），最后写上面的 1（分子）。读作：<strong>二分之一</strong>。</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s3">← 返回诊断</a>
+    <a class="btn-slide" href="#s5">✂️ 继续：认识 ¼ →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 3 页 | 操作与概念形成 · ½</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 5：操作与概念形成 —— 认识 1/4（活动 2.2） -->
+<!-- ============================================================ -->
+<section id="s5" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">✂️ 操作与概念形成</span> <span class="time-badge">14 分钟</span>
+  <h2>活动三：折纸认识 ¼</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>从 1/2 迁移到 1/4，让学生通过折正方形纸认识 1/4，理解"平均分成 4 份，每份是 1/4"。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人 + 2 人小组合作</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>4 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>正方形纸片（每人 1 张）、彩笔</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）折一折：将正方形纸折出 4 份，要平均分； （2）涂一涂：涂出其中 1 份； （3）说一说：同桌交流"把正方形平均分成 4 份，涂色部分是它的 ¼"</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能折出 1/4（至少一种折法）；能说出"把正方形平均分成 4 份，涂色部分占 1 份，是它的 ¼"；不同折法（田字格、斜线等）</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>展示多种折法，追问"都表示 ¼ 吗？为什么？" 强调"平均分成 4 份，取 1 份"</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>教师示范对折再对折（田字格折法）；引导学生回忆 1/2 的学习方法，迁移到 1/4</span></div>
+  </div>
+
+  <div class="question-block">
+    <p class="q">✂️ 操作任务：拿出正方形纸片，折出它的 ¼，并涂色。</p>
+    <div class="figure-grid">
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <rect x="0" y="0" width="100" height="100" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="0" y1="50" x2="100" y2="50" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="50" height="50" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">田字格折法 ¼</div>
+      </div>
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <rect x="0" y="0" width="100" height="100" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="0" y1="0" x2="100" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="100" y1="0" x2="0" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <path d="M 50 0 L 100 50 L 50 100 Z" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">斜线折法 ¼</div>
+      </div>
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <rect x="0" y="0" width="100" height="100" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="0" y1="0" x2="0" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="33" y1="0" x2="33" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="66" y1="0" x2="66" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="33" height="100" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">竖条折法 ¼</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-weight:600;color:#D35400;margin-top:0.6rem;">🤔 追问：这些折法都表示 ¼ 吗？为什么？</p>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：核心追问处理</summary>
+      <div class="answer-content">
+        <p><strong>答案：</strong>都表示 ¼，因为都是把正方形<strong>平均分成 4 份</strong>，涂了其中的 <strong>1 份</strong>。</p>
+        <p><strong>板书 ✍️：</strong>把一个正方形平均分成 4 份，每份是它的 <strong>¼</strong>。</p>
+        <p>对比 ½ 和 ¼ 的写法，强调"分母表示平均分成的份数，分子表示取的份数"。</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s4">← 返回 ½</a>
+    <a class="btn-slide" href="#s6">✂️ 继续：认识 ⅓ 和 ⅛ →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 4 页 | 操作与概念形成 · ¼</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 6：操作与概念形成 —— 认识 1/3、1/8 及概念抽象 -->
+<!-- ============================================================ -->
+<section id="s6" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">✂️ 操作与概念形成</span> <span class="time-badge">14 分钟</span>
+  <h2>活动四：认识 ⅓ 和 ⅛ · 概念抽象</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>通过观察和操作，让学生认识 1/3、1/8，并抽象出"把一个整体平均分成 n 份，每份是它的 1/n"。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（集体观察 + 个别操作演示）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>4 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>PPT 展示长方形纸三等分、八等分；长方形纸（教师演示）</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）观察教师折纸，数一数份数； （2）用手势表示"三分之一""八分之一"； （3）口头描述"把长方形平均分成 3 份，每份是它的 ⅓"</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能说出 ⅓ 和 ⅛ 的含义；能发现"分母越大，每份越小"（直观感受，不深化）</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>引导学生总结："把一个整体平均分成几份，每份就是它的几分之一"</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>用实物折纸慢速演示；用数字"3"对应"⅓"建立联系</span></div>
+  </div>
+
+  <div class="question-block">
+    <p class="q">📐 观察与思考</p>
+    <div class="figure-grid">
+      <div class="figure-item">
+        <svg width="150" height="60" viewBox="0 0 150 60" class="fig-svg">
+          <rect x="0" y="0" width="150" height="60" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="50" y1="0" x2="50" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="100" y1="0" x2="100" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="50" height="60" fill="#FF6B35" opacity="0.5"/>
+          <text x="25" y="75" font-size="12" text-anchor="middle" fill="#D35400" font-weight="bold">⅓</text>
+        </svg>
+        <div class="fig-label">平均分成 3 份，每份是 ⅓</div>
+      </div>
+      <div class="figure-item">
+        <svg width="150" height="60" viewBox="0 0 150 60" class="fig-svg">
+          <rect x="0" y="0" width="150" height="60" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="18.75" y1="0" x2="18.75" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="37.5" y1="0" x2="37.5" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="56.25" y1="0" x2="56.25" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="75" y1="0" x2="75" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="93.75" y1="0" x2="93.75" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="112.5" y1="0" x2="112.5" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="131.25" y1="0" x2="131.25" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="18.75" height="60" fill="#FF6B35" opacity="0.5"/>
+          <text x="9" y="75" font-size="12" text-anchor="middle" fill="#D35400" font-weight="bold">⅛</text>
+        </svg>
+        <div class="fig-label">平均分成 8 份，每份是 ⅛</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-weight:600;color:#D35400;margin-top:0.6rem;">🤔 你能用一句话说说什么是"几分之一"吗？</p>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：概念抽象引导</summary>
+      <div class="answer-content">
+        <p><strong>引导总结：</strong></p>
+        <ul>
+          <li>把一个月饼平均分成 2 份，每份是它的 <strong>½</strong>。</li>
+          <li>把一张正方形纸平均分成 4 份，每份是它的 <strong>¼</strong>。</li>
+          <li>把一张长方形纸平均分成 3 份，每份是它的 <strong>⅓</strong>。</li>
+          <li>把一张长方形纸平均分成 8 份，每份是它的 <strong>⅛</strong>。</li>
+        </ul>
+        <p><strong>✨ 核心板书 ✍️：</strong><br>
+        <span style="font-size:1.4rem;font-weight:700;color:#D35400;">把一个整体平均分成 n 份，每份是它的 1/n。</span></p>
+        <p>介绍各部分名称：<strong>分数线</strong>（横线）、<strong>分母</strong>（总份数）、<strong>分子</strong>（取的份数）。</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s5">← 返回 ¼</a>
+    <a class="btn-slide" href="#s7">📐 进入符号整理环节 →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 5 页 | 操作与概念形成 · ⅓ ⅛</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 7：符号整理与跨表征 —— 图到符号（活动 3.1） -->
+<!-- ============================================================ -->
+<section id="s7" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">📐 符号整理与跨表征</span> <span class="time-badge">8 分钟</span>
+  <h2>活动五：图 → 符号</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>训练学生从图形表征过渡到符号表征，巩固"看图写分数"的能力。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（集体回答 + 练习纸）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>3 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>PPT 展示图形、练习纸（每人 1 张）</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）看图形，用手势表示分数（用手指数表示分母，再表示分子）； （2）在练习纸上写出分数</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能正确写出 3 题中至少 2 题，能说出"分母是平均分成的份数，分子是取的份数"</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>追问"你是怎么想的？" 强调先看"平均分成了几份"（分母），再看"涂了几份"（分子）</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>用手指帮助数份数；在图形上标出数字</span></div>
+  </div>
+
+  <div class="question-block">
+    <p class="q">✏️ 看图形，写分数</p>
+    <div class="figure-grid">
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <rect x="0" y="0" width="100" height="100" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="0" y1="50" x2="100" y2="50" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="50" height="50" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">① 分数：______</div>
+      </div>
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <circle cx="50" cy="50" r="45" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <path d="M 50 5 A 45 45 0 0 1 50 95 Z" fill="#FF6B35" opacity="0.6"/>
+          <line x1="50" y1="5" x2="50" y2="95" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+        </svg>
+        <div class="fig-label">② 分数：______</div>
+      </div>
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <rect x="0" y="0" width="100" height="100" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="33" y1="0" x2="33" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="66" y1="0" x2="66" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="33" height="100" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">③ 分数：______</div>
+      </div>
+    </div>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：答案与解释</summary>
+      <div class="answer-content">
+        <p>① <strong>¼</strong>（正方形平均分成 4 份，涂色 1 份）</p>
+        <p>② <strong>½</strong>（圆形平均分成 2 份，涂色 1 份）</p>
+        <p>③ <strong>⅓</strong>（长方形平均分成 3 份，涂色 1 份）</p>
+        <p><strong>解释：</strong>分母看"平均分成了几份"，分子看"涂了几份（取了几份）"。</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s6">← 返回概念形成</a>
+    <a class="btn-slide" href="#s8">📐 继续：符号 → 图 →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 6 页 | 图→符号</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 8：符号整理与跨表征 —— 符号到图（活动 3.2） -->
+<!-- ============================================================ -->
+<section id="s8" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">📐 符号整理与跨表征</span> <span class="time-badge">8 分钟</span>
+  <h2>活动六：符号 → 图</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>训练学生从符号表征回到图形表征，检验对分数含义的理解是否灵活。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（独立完成 + 同桌互评）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>2 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>练习纸、彩笔</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）在练习纸上画一个图形，表示 ⅓； （2）涂色表示； （3）同桌交换检查是否平均分</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能画出至少一种正确表示 ⅓ 的图形（正方形、圆形、长方形等均可）；同桌能判断是否平均分</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>展示不同画法，追问"都表示 ⅓ 吗？为什么？" 强化"平均分成 3 份，取 1 份"</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>提供模板（已画好等分线的图形供学生涂色）；教师示范画一个</span></div>
+  </div>
+
+  <div class="question-block">
+    <p class="q">✏️ 画一画：画一个图形，表示 ⅓。</p>
+    <div class="student-work">
+      <div class="work-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <rect x="0" y="0" width="100" height="100" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="33" y1="0" x2="33" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="66" y1="0" x2="66" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="33" height="100" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">学生作品示例 A</div>
+      </div>
+      <div class="work-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <circle cx="50" cy="50" r="45" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <path d="M 50 5 L 50 95 L 5 50 Z" fill="#FF6B35" opacity="0.5"/>
+          <line x1="50" y1="5" x2="50" y2="95" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="5" y1="50" x2="95" y2="50" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+        </svg>
+        <div class="fig-label">学生作品示例 B</div>
+      </div>
+      <div class="work-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <rect x="0" y="0" width="100" height="100" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="0" y1="33" x2="100" y2="33" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="0" y1="66" x2="100" y2="66" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="100" height="33" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">学生作品示例 C</div>
+      </div>
+    </div>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：评价标准</summary>
+      <div class="answer-content">
+        <p><strong>正确标准：</strong></p>
+        <ul>
+          <li>图形被<strong>平均分成 3 份</strong>（形状可以不同，但三份必须一样大）。</li>
+          <li>涂色部分占 <strong>1 份</strong>。</li>
+          <li>能口头说出"把图形平均分成 3 份，涂色部分是它的 ⅓"。</li>
+        </ul>
+        <p><strong>常见错误：</strong>没有平均分（三份不一样大）。教师利用学生错误作为反例资源。</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s7">← 返回 图→符号</a>
+    <a class="btn-slide" href="#s9">🔷 继续：跨外形辨认 →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 7 页 | 符号→图</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 9：符号整理与跨表征 —— 跨外形辨认（活动 3.3） -->
+<!-- ============================================================ -->
+<section id="s9" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">🔷 符号整理与跨表征</span> <span class="time-badge">8 分钟</span>
+  <h2>活动七：跨外形辨认同一分数</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>打破形状定势，让学生理解"只要平均分成 4 份，取 1 份，无论什么形状都表示 ¼"。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（集体观察 + 小组讨论）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>3 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>PPT 展示不同形状的图形</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）观察不同图形，判断涂色部分能否用 ¼ 表示； （2）小组讨论"形状不同，为什么都能用 ¼？"</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能辨认出不同形状中的 ¼；能说出"因为它们都是平均分成 4 份，涂了 1 份"</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>追问"为什么形状不同都表示 ¼？" 引导学生关注"份数"而非"形状"</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>用折纸演示：圆形纸和正方形纸都折出 ¼，对比</span></div>
+  </div>
+
+  <div class="question-block">
+    <p class="q">🔍 下面这些图形，涂色部分都能用 ¼ 表示吗？</p>
+    <div class="figure-grid">
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <circle cx="50" cy="50" r="45" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <path d="M 50 5 A 45 45 0 0 0 50 95 Z" fill="#FF6B35" opacity="0.5"/>
+          <line x1="50" y1="5" x2="50" y2="95" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="5" y1="50" x2="95" y2="50" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+        </svg>
+        <div class="fig-label">① 圆形 ¼？</div>
+      </div>
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <rect x="0" y="0" width="100" height="100" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="0" y1="50" x2="100" y2="50" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="50" height="50" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">② 正方形 ¼？</div>
+      </div>
+      <div class="figure-item">
+        <svg width="120" height="80" viewBox="0 0 120 80" class="fig-svg">
+          <rect x="0" y="0" width="120" height="80" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="60" y1="0" x2="60" y2="80" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="0" y1="40" x2="120" y2="40" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="60" height="40" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">③ 长方形 ¼？</div>
+      </div>
+      <div class="figure-item">
+        <svg width="100" height="100" viewBox="0 0 100 100" class="fig-svg">
+          <polygon points="50,5 95,95 5,95" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <line x1="50" y1="5" x2="50" y2="95" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="5" y1="95" x2="95" y2="95" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <path d="M 50 5 L 50 95 L 5 95 Z" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">④ 三角形 ¼？</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-weight:600;color:#D35400;margin-top:0.6rem;">🤔 小组讨论：形状不同，为什么都能用 ¼ 表示？</p>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：答案与核心追问</summary>
+      <div class="answer-content">
+        <p><strong>答案：</strong>四个图形涂色部分都 <strong>能用 ¼ 表示</strong>。</p>
+        <p><strong>理由：</strong>虽然形状不同（圆形、正方形、长方形、三角形），但每个图形都被<strong>平均分成 4 份</strong>，涂色部分占了 <strong>1 份</strong>，所以都用 ¼ 表示。</p>
+        <p><strong>核心追问：</strong>"形状不同，为什么都能用 ¼ 表示？"<br>
+        → 引导学生回答："因为分数看的是'平均分成了几份，取了几份'，跟形状没有关系。"</p>
+        <p><strong>板书 ✍️：</strong>分数与形状无关，只与平均分的份数和取的份数有关。</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s8">← 返回 符号→图</a>
+    <a class="btn-slide" href="#s10">🚫 进入反例辨析环节 →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 8 页 | 跨外形辨认</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 10：反例与反馈 —— 辨析没有平均分的反例（活动 4.1） -->
+<!-- ============================================================ -->
+<section id="s10" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">🚫 反例与反馈</span> <span class="time-badge">9 分钟</span>
+  <h2>活动八：辨析没有平均分的反例</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>通过典型反例强化"平均分"是使用分数的前提，培养学生批判性思维。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（举牌判断 + 指名说理）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>4 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>PPT 展示反例图、判断牌（平均分/不平均分）</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）举牌判断"涂色部分能用分数表示吗？"； （2）说明理由"为什么不能？"</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能识别非平均分，并说明"因为没有平均分，所以不能用分数表示"</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>强调"平均分是分数的前提，没有平均分就没有分数"；板书 ✍️ <strong>平均分 → 分数</strong></span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>用实物（蛋糕模型）切出不平均的两块，问"这样分公平吗？能用分数表示吗？"</span></div>
+  </div>
+
+  <div class="question-block">
+    <p class="q">🚫 判断：涂色部分能用分数表示吗？</p>
+    <div class="figure-grid">
+      <div class="figure-item">
+        <svg width="120" height="80" viewBox="0 0 120 80" class="fig-svg">
+          <rect x="0" y="0" width="120" height="80" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="40" y1="0" x2="40" y2="80" stroke="#DC3545" stroke-width="3"/>
+          <rect x="0" y="0" width="40" height="80" fill="#FF6B35" opacity="0.5"/>
+          <text x="60" y="45" font-size="28" text-anchor="middle" fill="#DC3545" font-weight="bold">?</text>
+        </svg>
+        <div class="fig-label">① 未平均分，能用分数吗？</div>
+      </div>
+      <div class="figure-item">
+        <svg width="120" height="80" viewBox="0 0 120 80" class="fig-svg">
+          <rect x="0" y="0" width="120" height="80" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="60" y1="0" x2="60" y2="80" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="60" height="80" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">② 平均分，能用分数吗？</div>
+      </div>
+      <div class="figure-item">
+        <svg width="120" height="80" viewBox="0 0 120 80" class="fig-svg">
+          <rect x="0" y="0" width="120" height="80" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+          <line x1="30" y1="0" x2="30" y2="80" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="80" y1="0" x2="80" y2="80" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <rect x="0" y="0" width="30" height="80" fill="#FF6B35" opacity="0.5"/>
+          <rect x="30" y="0" width="50" height="80" fill="#FFD700" opacity="0.3"/>
+          <rect x="80" y="0" width="40" height="80" fill="#FFD700" opacity="0.3"/>
+        </svg>
+        <div class="fig-label">③ 三份不一样大，能用分数吗？</div>
+      </div>
+      <div class="figure-item">
+        <svg width="120" height="80" viewBox="0 0 120 80" class="fig-svg">
+          <circle cx="60" cy="40" r="38" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <line x1="60" y1="2" x2="60" y2="78" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="2" y1="40" x2="118" y2="40" stroke="#DC3545" stroke-width="3"/>
+          <path d="M 60 2 A 38 38 0 0 0 60 78 Z" fill="#FF6B35" opacity="0.5"/>
+        </svg>
+        <div class="fig-label">④ 分法不平均，能用分数吗？</div>
+      </div>
+    </div>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：答案与解释</summary>
+      <div class="answer-content">
+        <p>① <strong>不能 ✗</strong>（竖线不在中间，两边不一样大，未平均分）</p>
+        <p>② <strong>能 ✓</strong>（平均分成 2 份，涂色 1 份，是 ½）</p>
+        <p>③ <strong>不能 ✗</strong>（三份分别是 30、50、40，不一样大，未平均分）</p>
+        <p>④ <strong>不能 ✗</strong>（两条线将圆分成 4 份，但未平均分，每份不一样大）</p>
+        <p><strong>核心结论：</strong>只有 <strong>平均分</strong> 了，才能用分数表示其中的一份或几份。<br>
+        <span style="font-size:1.2rem;font-weight:700;color:#D35400;">没有平均分 → 没有分数！</span></p>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s9">← 返回跨外形辨认</a>
+    <a class="btn-slide" href="#s11">📝 继续：综合练习 →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 9 页 | 反例辨析</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 11：反例与反馈 —— 综合练习（活动 4.2） -->
+<!-- ============================================================ -->
+<section id="s11" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">📝 反例与反馈</span> <span class="time-badge">9 分钟</span>
+  <h2>活动九：综合练习</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>通过多层次练习检测学生对本课核心概念的掌握程度，为教师提供反馈。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（独立完成 + 同桌互批）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>5 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>练习纸（每人 1 张）</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）独立完成 4 道练习题； （2）同桌交换，对照答案互批； （3）举手反馈正确题数</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>全班正确率 80% 以上（4 题对 3 题及以上）</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>根据举手情况针对性讲解错误较多的题目；追问错误原因</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>错误率高的题目用折纸或图形重新演示；小组互助</span></div>
+  </div>
+
+  <div class="question-block">
+    <p class="q">✏️ 综合练习（4 题）</p>
+    <ol style="font-size:1.1rem;">
+      <li><strong>判断</strong>：下面涂色部分能用 ½ 表示吗？（给一个平均分和一个未平均分的图）</li>
+      <li><strong>填空</strong>：把一个月饼平均分成 8 份，每份是它的（  ），读作（  ）。</li>
+      <li><strong>写分数</strong>：看图写分数（给出一个平均分成 6 份涂 1 份的图形）。</li>
+      <li><strong>画图</strong>：画一个图形，表示 ⅕，并涂色。</li>
+    </ol>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：答案与讲解要点</summary>
+      <div class="answer-content">
+        <p><strong>第 1 题：</strong>平均分 → 能用 ½ 表示 ✓；未平均分 → 不能用分数表示 ✗。</p>
+        <p><strong>第 2 题：</strong>⅛，读作"八分之一"。</p>
+        <p><strong>第 3 题：</strong>⅙（平均分成 6 份，涂色 1 份）。</p>
+        <p><strong>第 4 题：</strong>任意图形平均分成 5 份，涂 1 份即可。检查是否平均分。</p>
+        <p><strong>讲解要点：</strong></p>
+        <ul>
+          <li>强调"平均分"是前提。</li>
+          <li>分母 = 总份数，分子 = 取的份数。</li>
+          <li>读分数时先读分母，再读"分之"，最后读分子。</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s10">← 返回反例辨析</a>
+    <a class="btn-slide" href="#s12">📌 进入总结环节 →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 10 页 | 综合练习</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 12：总结（活动 5.1） -->
+<!-- ============================================================ -->
+<section id="s12" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">📌 总结与退出证据</span> <span class="time-badge">5 分钟</span>
+  <h2>活动十：课堂总结</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>引导学生回顾本课核心知识，形成结构化认知。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（集体回顾 + 指名总结）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>2 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>板书</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）回顾今天学了什么； （2）同桌互相说一说； （3）指名 2-3 人全班分享</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能说出"平均分""几分之一""把一个整体平均分成 n 份，每份是它的 1/n"</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>补充完善，呈现板书结构图；强调"平均分"是分数的前提</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>教师引导："今天我们学了什么新数？""分数要用什么分法？"</span></div>
+  </div>
+
+  <div class="tip-box green" style="text-align:center;">
+    <h3 style="color:#28A745;margin-bottom:0.6rem;">📌 今天我们学到了什么？</h3>
+    <div style="font-size:1.3rem;line-height:2;">
+      <p>✅ <strong>平均分</strong>——每份同样多</p>
+      <p>✅ <strong>分数</strong>——表示"平均分"的结果</p>
+      <p>✅ <strong>几分之一</strong>——把一个整体平均分成 n 份，每份是它的 <strong>1/n</strong></p>
+      <p>✅ 分数与形状无关，只与<strong>份数</strong>有关</p>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s11">← 返回综合练习</a>
+    <a class="btn-slide" href="#s13">🎯 进入退出题 →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 11 页 | 总结</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 13：退出题（活动 5.2） -->
+<!-- ============================================================ -->
+<section id="s13" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">🎯 总结与退出证据</span> <span class="time-badge">5 分钟</span>
+  <h2>活动十一：退出题（Exit Ticket）</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>通过 2-3 道独立完成的题目诊断每位学生的目标达成情况，作为课后分析依据。</p>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（独立完成，不讨论）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>3 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>退出题小纸条（每人 1 张）或 PPT 展示+白纸</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）独立完成退出题； （2）写完后举手，教师收齐</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>正确率 70% 以上（2 题全对或 3 题对 2 题）</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>课后批改，统计错误类型，下节课针对性反馈</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>（课后）对未达标学生进行个别辅导或小组补学</span></div>
+  </div>
+
+  <div class="exit-ticket">
+    <h3 style="color:#004E89;">🎯 退出题（共 3 题）</h3>
+    <div class="et-q">
+      <strong>1. 判断（⭐）</strong>：下面涂色部分能用 ¼ 表示吗？能的画 ✓，不能的画 ✗。
+      <div class="figure-grid" style="margin:0.5rem 0;">
+        <div class="figure-item" style="min-width:80px;">
+          <svg width="80" height="80" viewBox="0 0 80 80" class="fig-svg">
+            <rect x="0" y="0" width="80" height="80" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+            <line x1="40" y1="0" x2="40" y2="80" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+            <line x1="0" y1="40" x2="80" y2="40" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+            <rect x="0" y="0" width="40" height="40" fill="#FF6B35" opacity="0.5"/>
+          </svg>
+          <div class="fig-label">图 A</div>
+        </div>
+        <div class="figure-item" style="min-width:80px;">
+          <svg width="80" height="80" viewBox="0 0 80 80" class="fig-svg">
+            <rect x="0" y="0" width="80" height="80" fill="#FFF3E0" stroke="#D35400" stroke-width="2" rx="4"/>
+            <line x1="30" y1="0" x2="30" y2="80" stroke="#DC3545" stroke-width="3"/>
+            <rect x="0" y="0" width="30" height="80" fill="#FF6B35" opacity="0.5"/>
+          </svg>
+          <div class="fig-label">图 B</div>
+        </div>
+      </div>
+    </div>
+    <div class="et-q">
+      <strong>2. 填空（⭐⭐）</strong>：把一张长方形纸平均分成 5 份，每份是它的（  ），读作（  ）。 
+    </div>
+    <div class="et-q">
+      <strong>3. 画图（⭐⭐⭐）</strong>：画一个图形，表示 ⅙，并涂色。（要求：平均分，标出 ⅙）
+    </div>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：退出题答案</summary>
+      <div class="answer-content">
+        <p><strong>第 1 题：</strong>图 A ✓（平均分成 4 份，涂 1 份，是 ¼）；图 B ✗（未平均分，不能用分数表示）。</p>
+        <p><strong>第 2 题：</strong>⅕，读作"五分之一"。</p>
+        <p><strong>第 3 题：</strong>任意图形（正方形、圆形、长方形等）平均分成 6 份，涂 1 份，标注"⅙"。关键看是否平均分。</p>
+        <p><strong>评价标准：</strong></p>
+        <ul>
+          <li>全对 → 核心目标达成</li>
+          <li>第 1 题错 → 平均分概念未掌握，需补学</li>
+          <li>第 2 题错 → 分数读写不熟练，需练习</li>
+          <li>第 3 题错 → 表征转换能力不足，需加强</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s12">← 返回总结</a>
+    <a class="btn-slide gold" href="#s14">🌟 拓展：单位分数比较（时间允许时）→</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 12 页 | 退出题</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 14：拓展 —— 单位分数比较（选学） -->
+<!-- ============================================================ -->
+<section id="s14" class="slide">
+<div class="slide-inner">
+  <span class="phase-tag">🌟 拓展（选学）</span> <span class="time-badge">约 3 分钟</span>
+  <h2>活动十二：单位分数比较（½ 与 ¼）</h2>
+  <p style="font-size:1rem;color:#666;margin-bottom:0.8rem;"><strong>🎯 教学目的：</strong>在核心理解通过且时间允许时，引导学生直观感受分子相同（都是 1）时，分母越大分数越小。</p>
+
+  <div class="tip-box red">
+    <strong>⚠️ 注意：</strong>此活动为拓展内容，<strong>只在核心目标已达成且时间充裕时进行</strong>。如果学生在前序环节表现吃力，请跳过此页，直接进入结束。
+  </div>
+
+  <div class="activity-card">
+    <div class="row"><span class="label">👥 参与者</span><span>全班 38 人（集体观察 + 指名回答）</span></div>
+    <div class="row"><span class="label">⏱ 用时</span><span>约 3 分钟</span></div>
+    <div class="row"><span class="label">📦 材料</span><span>PPT 展示两个同样大小的圆形或长方形</span></div>
+    <div class="row"><span class="label">🫂 学生动作</span><span>（1）观察两个同样大小的圆形，分别表示 ½ 和 ¼； （2）比较哪个更大； （3）用手势表示"大于"或"小于"</span></div>
+    <div class="row"><span class="label">📌 预期证据</span><span>能直观看出 ½ ＞ ¼；能说出"分的份数越多，每份越小"</span></div>
+    <div class="row"><span class="label">💬 教师回应</span><span>强调"同样大小的整体，平均分的份数越多，每份就越小"；不引入"分数单位"术语</span></div>
+    <div class="row"><span class="label">🔄 回退策略</span><span>如果学生困惑，用折纸实物演示；不强行推进</span></div>
+  </div>
+
+  <div class="question-block">
+    <p class="q">🔍 观察：两个同样大的圆形，涂色部分哪个更大？</p>
+    <div class="figure-grid">
+      <div class="figure-item">
+        <svg width="120" height="120" viewBox="0 0 120 120" class="fig-svg">
+          <circle cx="60" cy="60" r="50" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <path d="M 60 10 A 50 50 0 0 0 60 110 Z" fill="#FF6B35" opacity="0.5"/>
+          <line x1="60" y1="10" x2="60" y2="110" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <text x="60" y="130" font-size="18" text-anchor="middle" fill="#D35400" font-weight="bold">½</text>
+        </svg>
+        <div class="fig-label">½</div>
+      </div>
+      <div class="figure-item">
+        <svg width="120" height="120" viewBox="0 0 120 120" class="fig-svg">
+          <circle cx="60" cy="60" r="50" fill="#FFF3E0" stroke="#D35400" stroke-width="2"/>
+          <path d="M 60 10 A 50 50 0 0 0 60 110 Z" fill="#FF6B35" opacity="0.5"/>
+          <line x1="60" y1="10" x2="60" y2="110" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <line x1="10" y1="60" x2="110" y2="60" stroke="#D35400" stroke-width="2" stroke-dasharray="4,3"/>
+          <text x="60" y="130" font-size="18" text-anchor="middle" fill="#D35400" font-weight="bold">¼</text>
+        </svg>
+        <div class="fig-label">¼</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-weight:600;color:#D35400;margin-top:0.6rem;">🤔 ½ 和 ¼ 谁更大？为什么？</p>
+    <details class="answer-reveal">
+      <summary>📌 教师参考：答案与解释</summary>
+      <div class="answer-content">
+        <p><strong>答案：</strong>½ ＞ ¼。</p>
+        <p><strong>理由（图示解释）：</strong>两个圆形<strong>一样大</strong>，½ 表示平均分成 2 份取 1 份，¼ 表示平均分成 4 份取 1 份。分的份数越多，每份就越小，所以 ½ 比 ¼ 大。</p>
+        <p><strong>板书 ✍️：</strong>同样大的整体，平均分的份数越多，每份越小。</p>
+        <p style="color:#888;font-size:0.95rem;">※ 不引入"分数单位""分子相同比分母"等术语，只做直观感受。</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s13">← 返回退出题</a>
+    <a class="btn-slide" href="#s15">🏁 结束课程 →</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 13 页 | 拓展 · 单位分数比较</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 幻灯片 15：结束页 -->
+<!-- ============================================================ -->
+<section id="s15" class="slide">
+<div class="slide-inner" style="text-align:center;">
+  <h1 style="border-left:none;text-align:center;font-size:3rem;">🏁 今天的课就到这里</h1>
+  <div style="margin:2rem 0;">
+    <svg width="120" height="120" viewBox="0 0 120 120" class="fig-svg" style="display:inline-block;">
+      <circle cx="60" cy="60" r="50" fill="#FFD700" stroke="#D35400" stroke-width="3"/>
+      <path d="M 60 10 A 50 50 0 0 0 60 110 Z" fill="#FF6B35" opacity="0.6"/>
+      <line x1="60" y1="10" x2="60" y2="110" stroke="#D35400" stroke-width="3" stroke-dasharray="6,4"/>
+      <text x="60" y="68" font-size="28" text-anchor="middle" fill="#FFF" font-weight="bold">½</text>
+    </svg>
+  </div>
+  <div style="font-size:1.6rem;font-weight:700;color:#D35400;margin:1rem 0;">
+    平均分 → 分数
+  </div>
+  <div style="font-size:1.2rem;color:#666;margin:0.5rem 0;">
+    把一个整体平均分成 n 份，每份是它的 1/n
+  </div>
+  <div style="margin:2rem 0;">
+    <p style="font-size:1.1rem;color:#888;">🎉 同学们今天表现真棒！</p>
+    <p style="font-size:1.1rem;color:#888;">下节课我们继续学习分数！</p>
+  </div>
+  <div class="nav-links">
+    <a class="btn-slide blue" href="#s1">📖 返回教学设计说明</a>
+    <a class="btn-slide" href="#s3">🔄 回到第一页（上课循环）</a>
+  </div>
+  <div class="slide-footer">课堂大屏投放 · 第 14 页 | 结束</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 默认显示第一张的 fallback -->
+<!-- ============================================================ -->
+<div style="display:none;">&nbsp;</div>
+
+</body>
+</html>
