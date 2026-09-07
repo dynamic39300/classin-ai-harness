@@ -14,7 +14,6 @@ import { SpaceWorkspaceProvider } from '@features/space-workspace/SpaceWorkspace
 import { addClassActivity, type ClassCourse } from '@domain/class/class';
 import type { ClassAgentReply } from '@domain/class-agent/class-agent';
 import type { PublishedHomework } from '@domain/homework/homework';
-import { WORKBUDDY_HISTORY } from '@mocks/scenarios/workbuddy';
 import { HOMEWORK_NOW } from '@mocks/scenarios/homework';
 import { WORKBUDDY_CONTEXT_ITEMS, WORKBUDDY_MOMENTUM_RECOMMENDATION } from '@mocks/scenarios/workbuddy-context';
 import {
@@ -179,7 +178,6 @@ function ClassInWorkBuddyBridge({ children }: { children: ReactNode }) {
     <WorkBuddyWorkspaceProvider
       key={workspaceNamespace}
       workspaceNamespace={workspaceNamespace}
-      initialRuns={WORKBUDDY_HISTORY}
       initialContextItems={WORKBUDDY_CONTEXT_ITEMS}
       recommendedContextItemIds={WORKBUDDY_MOMENTUM_RECOMMENDATION}
       coursewareDefinition={WORKBUDDY_COURSEWARE_DEFINITION}
@@ -233,7 +231,6 @@ function StandaloneWorkBuddyBridge() {
     <WorkBuddyWorkspaceProvider
       key={workspaceNamespace}
       workspaceNamespace={workspaceNamespace}
-      initialRuns={[]}
       initialContextItems={STANDALONE_WORKBUDDY_CONTEXT_ITEMS}
       recommendedContextItemIds={STANDALONE_WORKBUDDY_RECOMMENDATION}
       coursewareDefinition={WORKBUDDY_COURSEWARE_DEFINITION}

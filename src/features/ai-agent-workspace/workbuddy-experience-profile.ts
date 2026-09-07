@@ -1,4 +1,3 @@
-import type { WorkBuddyTaskType } from '@domain/workbuddy/core-context';
 import { STANDALONE_TEACHBUDDY_ROUTES } from '@contracts/workbuddy/product-brand';
 import type { WorkBuddyCapability } from './capability-registry';
 
@@ -18,8 +17,8 @@ export type WorkBuddyExperienceProfile = Readonly<{
   productBoundary: 'classin-integrated' | 'standalone-consumer';
   basePath: string;
   sessionNamespace: string;
-  visibleTaskTypes: readonly WorkBuddyTaskType[];
   visibleCapabilityIds: readonly WorkBuddyCapabilityId[];
+  navigationCapabilityIds: readonly WorkBuddyCapabilityId[];
   launchContext: WorkBuddyLaunchContext | null;
   returnTarget: Readonly<{ label: string; to: string }> | null;
   search: string;
@@ -56,16 +55,14 @@ export function workBuddyNewTaskPath(profile: WorkBuddyExperienceProfile): strin
   return `${profile.basePath}/new${profile.search}`;
 }
 
-export function workBuddyRunPath(profile: WorkBuddyExperienceProfile, runId: string): string {
-  return `${profile.basePath}/runs/${encodeURIComponent(runId)}${profile.search}`;
+export function workBuddyRuntimeSessionPath(profile: WorkBuddyExperienceProfile, sessionId: string): string {
+  const params = new URLSearchParams(profile.search.startsWith('?') ? profile.search.slice(1) : profile.search);
+  params.set('session', sessionId);
+  return `${profile.basePath}/new?${params}`;
 }
 
 export function workBuddyCapabilityPath(profile: WorkBuddyExperienceProfile, capabilityId: WorkBuddyCapabilityId): string {
   return `${profile.basePath}/${capabilityId}${profile.search}`;
-}
-
-export function profileAllowsTaskType(profile: WorkBuddyExperienceProfile, taskType: WorkBuddyTaskType): boolean {
-  return profile.visibleTaskTypes.includes(taskType);
 }
 
 export function profileAllowsCapability(profile: WorkBuddyExperienceProfile, capabilityId: string): boolean {

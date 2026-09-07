@@ -1,9 +1,22 @@
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vitest/config';
+import { createTeachBuddyRuntime, maintainRuntime, runtimeMiddleware } from './server/teachbuddy-runtime.ts';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), {
+    name: 'teachbuddy-runtime',
+    configureServer(server) {
+      const runtime = createTeachBuddyRuntime();
+      server.middlewares.use(runtimeMiddleware(runtime));
+      server.httpServer?.once('close', maintainRuntime(runtime));
+    },
+    configurePreviewServer(server) {
+      const runtime = createTeachBuddyRuntime();
+      server.middlewares.use(runtimeMiddleware(runtime));
+      server.httpServer.once('close', maintainRuntime(runtime));
+    },
+  }],
   resolve: {
     alias: {
       '@app': fileURLToPath(new URL('./src/app', import.meta.url)),
@@ -19,6 +32,9 @@ export default defineConfig({
   server: {
     host: '127.0.0.1',
     port: 4173,
+    watch: {
+      ignored: ['**/.runtime/**'],
+    },
   },
   preview: {
     host: '127.0.0.1',
@@ -27,7 +43,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.{ts,tsx}'],
+    include: ['src/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.{ts,tsx}', 'server/**/*.test.ts'],
     exclude: ['tests/e2e/**', 'tests/visual/**'],
     coverage: {
       provider: 'v8',

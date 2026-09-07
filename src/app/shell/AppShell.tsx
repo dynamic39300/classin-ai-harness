@@ -27,6 +27,7 @@ export function AppShell({ role }: AppShellProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [capability, setCapability] = useState<CapabilityKind | null>(null);
+  const [agentNavigationOpen, setAgentNavigationOpen] = useState(false);
   const messageWorkspaceActive = (
     role === 'teacher' && location.pathname === '/teacher/messages'
   ) || /^\/(?:teacher|student)\/classes\/[^/]+\/chat$/.test(location.pathname);
@@ -97,7 +98,7 @@ export function AppShell({ role }: AppShellProps) {
   return (
     <div
       className={styles.shell}
-      data-contextual-navigation={agentWorkspaceActive ? 'true' : undefined}
+      data-contextual-navigation={agentWorkspaceActive || agentNavigationOpen ? 'true' : undefined}
       data-message-shell-mode={renderedMessageShellMode}
       data-shell-mode="linear-workbench"
     >
@@ -107,8 +108,10 @@ export function AppShell({ role }: AppShellProps) {
         navigationExtension={role === 'teacher' ? {
           afterItemId: 'teacher-ai-agent',
           activePathPrefix: shellExperience.basePath,
+          parentBehavior: 'disclosure',
           content: <AgentSecondaryNav profile={shellExperience} />,
         } : undefined}
+        onNavigationExtensionOpenChange={setAgentNavigationOpen}
         onOpenSettings={() => navigate(`/${role === 'teacher' ? 'teacher' : 'student'}/settings/benefits`)}
         onOpenHelp={() => openCapability('help')}
       />

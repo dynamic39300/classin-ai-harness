@@ -7,7 +7,7 @@ async function openSurface(page: Page, label: string) {
   if (await teacherButton.count()) await teacherButton.click();
   await page
     .getByRole("navigation", { name: "老师视角主导航" })
-    .getByRole("link", { name: "TeachBuddy" })
+    .getByRole("button", { name: "TeachBuddy", exact: true })
     .click();
   await page
     .getByRole("group", { name: "TeachBuddy 二级导航" })

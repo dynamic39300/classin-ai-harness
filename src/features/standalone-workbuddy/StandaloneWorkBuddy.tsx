@@ -59,7 +59,7 @@ function StandaloneWorkBuddyShell({ profile, children }: Readonly<{ profile: Wor
   const navigate = useNavigate();
   const location = useLocation();
   if (identity.status !== 'signed_in') return null;
-  const taskActive = location.pathname === profile.basePath || location.pathname.startsWith(`${profile.basePath}/new`) || location.pathname.startsWith(`${profile.basePath}/runs/`);
+  const taskActive = location.pathname === profile.basePath || location.pathname.startsWith(`${profile.basePath}/new`);
   return (
     <div className={styles.appShell} data-testid="standalone-workbuddy-shell">
       <aside className={styles.appSidebar} aria-label={`${TEACHBUDDY_BRAND.officialName} 独立产品导航`}>

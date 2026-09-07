@@ -134,6 +134,15 @@
   min-width: 0;
 }
 
+.extensionContent {
+  min-width: 0;
+}
+
+.navItem[data-active='true'] {
+  color: var(--color-shell-text);
+  font-weight: var(--font-weight-semibold);
+}
+
 .navItemWithToggle {
   padding-right: 2.5rem;
 }
@@ -461,4 +470,56 @@
     display: none;
   }
 
+}
+
+@media (max-width: 52rem) {
+  .sidebar .navItem .chevron {
+    position: absolute;
+    right: 0;
+    bottom: var(--space-2xs);
+    width: .75rem;
+    height: .75rem;
+  }
+
+  .sidebar[data-contextual-navigation='true'] .brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .sidebar[data-contextual-navigation='true'] .wordmark,
+  .sidebar[data-contextual-navigation='true'] .navLabel,
+  .sidebar[data-contextual-navigation='true'] .accountCopy,
+  .sidebar[data-contextual-navigation='true'] .accountButton > svg,
+  .sidebar[data-contextual-navigation='true'] .badge {
+    display: none;
+  }
+
+  .sidebar[data-contextual-navigation='true'] .navigation {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: var(--space-sm) var(--space-xs);
+  }
+
+  .sidebar[data-contextual-navigation='true'] .navItem {
+    width: 3rem;
+    height: 3rem;
+    min-height: 0;
+    grid-template-columns: 1fr;
+    place-items: center;
+    padding: 0;
+  }
+
+  .sidebar[data-contextual-navigation='true'] .accountButton {
+    grid-template-columns: 1fr;
+    place-items: center;
+    padding: var(--space-xs) 0;
+  }
+
+  .sidebar[data-contextual-navigation='true'] .extensionToggle {
+    display: none;
+  }
+
+  .sidebar[data-contextual-navigation='true'] .navItem[data-label]:is(:hover, :focus, :focus-visible)::after {
+    display: block;
+  }
 }

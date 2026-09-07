@@ -18,3 +18,16 @@
   overflow: hidden;
   background: var(--color-surface);
 }
+
+@media (max-width: 720px) {
+  .layout[data-integrated-navigation='true'] {
+    position: fixed;
+    inset: 0;
+    height: 100dvh;
+    z-index: var(--z-modal);
+  }
+
+  :global(body):has(.layout[data-integrated-navigation='true']) :global(#root) :is(button, a, input, textarea, select):not(.layout *) {
+    visibility: hidden;
+  }
+}

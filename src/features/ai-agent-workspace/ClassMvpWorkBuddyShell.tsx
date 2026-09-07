@@ -2,7 +2,7 @@ import { ArrowLeft, ClipboardList, LockKeyhole, Sparkles } from 'lucide-react';
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { TEACHBUDDY_BRAND } from '@contracts/workbuddy/product-brand';
-import { WORKBUDDY_VISIBLE_CAPABILITIES } from './capability-registry';
+import { getVisibleWorkBuddyCapability, type WorkBuddyCapability } from './capability-registry';
 import {
   workBuddyCapabilityPath,
   workBuddyNewTaskPath,
@@ -18,14 +18,13 @@ type ClassMvpWorkBuddyShellProps = Readonly<{
 export function ClassMvpWorkBuddyShell({ children, profile }: ClassMvpWorkBuddyShellProps) {
   const location = useLocation();
   const pageRef = useRef<HTMLElement>(null);
-  const visibleCapabilities = WORKBUDDY_VISIBLE_CAPABILITIES.filter(({ id }) => (
-    profile.visibleCapabilityIds.includes(id)
-  ));
+  const visibleCapabilities = profile.navigationCapabilityIds
+    .filter((id) => profile.visibleCapabilityIds.includes(id))
+    .flatMap((id) => getVisibleWorkBuddyCapability(id) ?? []);
   const resourceCapabilities = visibleCapabilities.filter(({ placement }) => placement === 'resource');
   const systemCapabilities = visibleCapabilities.filter(({ placement }) => placement === 'system');
   const taskWorkspaceActive = location.pathname === profile.basePath
-    || location.pathname.startsWith(`${profile.basePath}/new`)
-    || location.pathname.startsWith(`${profile.basePath}/runs/`);
+    || location.pathname.startsWith(`${profile.basePath}/new`);
 
   useEffect(() => {
     pageRef.current?.focus({ preventScroll: true });
@@ -46,6 +45,8 @@ export function ClassMvpWorkBuddyShell({ children, profile }: ClassMvpWorkBuddyS
           <section className={styles.navSection} aria-label="任务">
             <Link
               aria-current={taskWorkspaceActive ? 'page' : undefined}
+              aria-label="我的任务"
+              title="我的任务"
               className={styles.navItem}
               to={workBuddyNewTaskPath(profile)}
             >
@@ -66,7 +67,7 @@ export function ClassMvpWorkBuddyShell({ children, profile }: ClassMvpWorkBuddyS
             </span>
           ) : null}
           {profile.returnTarget ? (
-            <Link className={styles.returnLink} to={profile.returnTarget.to}>
+            <Link aria-label={profile.returnTarget.label} title={profile.returnTarget.label} className={styles.returnLink} to={profile.returnTarget.to}>
               <ArrowLeft aria-hidden="true" size={15} />
               <span>{profile.returnTarget.label}</span>
             </Link>
@@ -86,7 +87,7 @@ export function ClassMvpWorkBuddyShell({ children, profile }: ClassMvpWorkBuddyS
   );
 }
 
-type VisibleCapability = (typeof WORKBUDDY_VISIBLE_CAPABILITIES)[number];
+type VisibleCapability = WorkBuddyCapability;
 
 function CapabilityLinks({ capabilities, label, profile }: Readonly<{
   capabilities: readonly VisibleCapability[];
@@ -97,7 +98,7 @@ function CapabilityLinks({ capabilities, label, profile }: Readonly<{
   return (
     <section className={styles.navSection} aria-label={label}>
       {capabilities.map(({ id, icon: Icon, label: capabilityLabel }) => (
-        <NavLink className={styles.navItem} key={id} to={workBuddyCapabilityPath(profile, id)}>
+        <NavLink aria-label={capabilityLabel} title={capabilityLabel} className={styles.navItem} key={id} to={workBuddyCapabilityPath(profile, id)}>
           <Icon aria-hidden="true" size={17} />
           <span>{capabilityLabel}</span>
         </NavLink>

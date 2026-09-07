@@ -13,10 +13,8 @@ export { createStandaloneTeacherWorkBuddyExperience } from './standalone-teacher
 export {
   parseWorkBuddyWorkspaceRoute,
   profileAllowsCapability,
-  profileAllowsTaskType,
   workBuddyCapabilityPath,
   workBuddyNewTaskPath,
-  workBuddyRunPath,
 } from './workbuddy-experience-profile';
 export type { WorkBuddyExperienceProfile, WorkBuddyExperienceProfileId } from './workbuddy-experience-profile';
 export { WorkBuddyTaskAdmissionProvider } from './workbuddy-task-admission';

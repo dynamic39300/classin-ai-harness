@@ -54,7 +54,7 @@ import { FileLibrary } from "./FileLibrary";
 import { getFileAssetReference } from './file-library';
 import { useWorkBuddyWorkspace } from './workbuddy-workspace';
 import { useWorkBuddyExperience } from './workbuddy-experience-context';
-import { workBuddyNewTaskPath, workBuddyRunPath } from './workbuddy-experience-profile';
+import { workBuddyNewTaskPath, workBuddyRuntimeSessionPath } from './workbuddy-experience-profile';
 import { standaloneContentItems } from './standalone-content-library';
 import { standaloneCapabilityItems } from './standalone-capability-library';
 import { standaloneFileAssets } from './standalone-file-library';
@@ -241,6 +241,7 @@ export function CapabilityWorkspace({ surface }: Props) {
       ) : null}
       {surface === "files" ? (
         <FileLibrary
+          scope={profile.id}
           productBoundary={profile.productBoundary}
           initialAssets={standalone ? standaloneFileAssets() : undefined}
           draftReceipts={workspace.teacherIn.draftReceipts}
@@ -275,7 +276,8 @@ export function CapabilityWorkspace({ surface }: Props) {
           }}
           onOpenTeacherIn={(path) => navigate(path)}
           onLocateInSpace={(asset) => navigate(`/teacher/space?parentId=my-workbuddy-artifacts&file=${getFileAssetReference(asset).spaceFileRef.id}`)}
-          onOpenRun={(runId) => navigate(workBuddyRunPath(profile, runId))}
+          onOpenRun={(runId) => navigate(workBuddyNewTaskPath(profile), { state: { capabilityId: runId, capabilityTitle: `历史产物 ${runId}`, intent: 'context-attached' } })}
+          onOpenSession={(sessionId) => navigate(workBuddyRuntimeSessionPath(profile, sessionId))}
         />
       ) : null}
       {surface === "schedules" ? (

@@ -1,17 +1,16 @@
 import type { ClassRecord } from '@domain/class/class';
-import type { WorkBuddyTaskType } from '@domain/workbuddy/core-context';
 import type { WorkBuddyCapabilityId, WorkBuddyExperienceProfile } from './workbuddy-experience-profile';
-
-const CLASSIN_MVP_TASK_TYPES: readonly WorkBuddyTaskType[] = Object.freeze([
-  'single-courseware',
-  'course-package',
-  'quiz-activity-creation',
-]);
 
 const CLASSIN_MVP_CAPABILITY_IDS: readonly WorkBuddyCapabilityId[] = Object.freeze([
   'skills',
+  'agentin',
   'tools',
   'files',
+  'schedules',
+]);
+
+const CLASSIN_MVP_NAVIGATION_IDS: readonly WorkBuddyCapabilityId[] = Object.freeze([
+  'skills', 'agentin', 'files', 'tools', 'schedules',
 ]);
 
 function safeSearch(courseId?: string): string {
@@ -30,8 +29,8 @@ export function createClassMvpWorkBuddyExperience(input: Readonly<{
     productBoundary: 'classin-integrated',
     basePath: `/teacher/classes/${encodeURIComponent(input.classId)}/workbuddy`,
     sessionNamespace: 'classin-mvp',
-    visibleTaskTypes: CLASSIN_MVP_TASK_TYPES,
     visibleCapabilityIds: CLASSIN_MVP_CAPABILITY_IDS,
+    navigationCapabilityIds: CLASSIN_MVP_NAVIGATION_IDS,
     launchContext: Object.freeze({ kind: 'class-detail', ...input }),
     returnTarget: Object.freeze({
       label: `返回${input.className}`,

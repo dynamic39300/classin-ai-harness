@@ -73,9 +73,6 @@ test('class detail opens the isolated full WorkBuddy MVP experience and returns 
   await page.setViewportSize({ width: 1440, height: 900 });
   await selectRole(page, /老师视角/);
 
-  await page.goto('/teacher/ai-agent/new');
-  await page.getByRole('textbox', { name: '描述教学任务' }).fill('终局入口中的未提交任务草稿');
-
   await page.goto('/teacher/classes/physics-3?course=course-momentum');
   await expect(page.getByRole('button', { name: 'AI 应用' })).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByText('老师已授权 · 班级成员可用')).toBeVisible();
@@ -98,11 +95,11 @@ test('class detail opens the isolated full WorkBuddy MVP experience and returns 
   await expect(page.getByRole('link', { name: 'TeachBuddy', exact: true })).toHaveCount(0);
   const workBuddyNavigation = page.getByRole('navigation', { name: 'TeachBuddy 导航' });
   await expect(workBuddyNavigation.getByRole('link', { name: '我的任务', exact: true })).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByRole('textbox', { name: '描述教学任务' })).toHaveValue('');
-  for (const label of ['技能市场', '工具连接', '我的文件']) {
+  await expect(page.getByRole('textbox', { name: '向 TeachBuddy 输入要求' })).toHaveValue('');
+  for (const label of ['技能市场', 'AgentIn', '我的文件', '工具连接', '定时任务']) {
     await expect(workBuddyNavigation.getByRole('link', { name: label, exact: true })).toBeVisible();
   }
-  for (const label of ['定时任务', '设置']) {
+  for (const label of ['设置']) {
     await expect(workBuddyNavigation.getByRole('link', { name: label, exact: true })).toHaveCount(0);
   }
   await expect(page.getByText('资源与能力', { exact: true })).toHaveCount(0);
@@ -116,7 +113,7 @@ test('class detail opens the isolated full WorkBuddy MVP experience and returns 
   await page.goto('/teacher/classes/physics-3/workbuddy/settings?course=course-momentum');
   await expect(page).toHaveURL(/\/teacher\/classes\/physics-3\/workbuddy\/new\?course=course-momentum$/);
   await expect(workBuddyNavigation.getByRole('link', { name: '我的任务', exact: true })).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByRole('textbox', { name: '描述教学任务' })).toHaveValue('');
+  await expect(page.getByRole('textbox', { name: '向 TeachBuddy 输入要求' })).toHaveValue('');
   await expect(workBuddyNavigation.getByRole('link', { name: '我的文件' })).toBeVisible();
   await workBuddyNavigation.getByRole('link', { name: '我的文件' }).click();
   await expect(page).toHaveURL(/\/teacher\/classes\/physics-3\/workbuddy\/files\?course=course-momentum$/);
@@ -124,19 +121,19 @@ test('class detail opens the isolated full WorkBuddy MVP experience and returns 
   await expect(page.getByRole('link', { name: '返回高二物理 3 班' })).toBeVisible();
   await workBuddyNavigation.getByRole('link', { name: '我的任务', exact: true }).click();
   await expect(page).toHaveURL(/\/teacher\/classes\/physics-3\/workbuddy\/new\?course=course-momentum$/);
-  await page.getByRole('textbox', { name: '描述教学任务' }).fill('MVP 内跨班保留的未提交任务草稿');
+  await expect(page.getByRole('textbox', { name: '向 TeachBuddy 输入要求' })).toBeVisible();
   await page.getByRole('link', { name: '返回高二物理 3 班' }).click();
   await expect(page).toHaveURL(/\/teacher\/classes\/physics-3\?course=course-momentum$/);
 
   await page.goto('/teacher/classes/physics-1?course=course-physics-1');
   await page.getByRole('button', { name: '打开 TeachBuddy' }).click();
   await expect(page).toHaveURL(/\/teacher\/classes\/physics-1\/workbuddy\/new\?course=course-physics-1$/);
-  await expect(page.getByRole('textbox', { name: '描述教学任务' })).toHaveValue('MVP 内跨班保留的未提交任务草稿');
+  await expect(page.getByRole('textbox', { name: '向 TeachBuddy 输入要求' })).toHaveValue('');
   await page.getByRole('link', { name: '返回高二物理 1 班' }).click();
   await expect(page).toHaveURL(/\/teacher\/classes\/physics-1\?course=course-physics-1$/);
 
   await page.goto('/teacher/ai-agent/new');
-  await expect(page.getByRole('textbox', { name: '描述教学任务' })).toHaveValue('终局入口中的未提交任务草稿');
+  await expect(page.getByRole('textbox', { name: '向 TeachBuddy 输入要求' })).toHaveValue('');
   await expectNoSeriousA11yViolations(page);
 });
 

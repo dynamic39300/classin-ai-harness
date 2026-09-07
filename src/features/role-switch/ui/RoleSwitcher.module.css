@@ -1,4 +1,6 @@
 .wrapper {
+  position: relative;
+  container: role-switch / inline-size;
   display: grid;
   min-width: 0;
   gap: var(--space-xs);
@@ -106,5 +108,18 @@
 
   .notice button:hover {
     text-decoration: underline;
+  }
+}
+
+@container role-switch (max-width: 10rem) {
+  .control { justify-content: center; }
+  .currentRole, .switchButton span { display: none; }
+  .switchButton { width: 100%; min-height: 2rem; justify-content: center; }
+  .notice {
+    position: absolute;
+    z-index: var(--z-dropdown);
+    top: 100%;
+    left: 0;
+    width: min(18rem, calc(100vw - 1.5rem));
   }
 }

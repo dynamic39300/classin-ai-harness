@@ -118,6 +118,12 @@
   }
 }
 
+@media (max-width: 52rem) {
+  .shell[data-contextual-navigation='true'] {
+    grid-template-columns: var(--sidebar-compact-width) minmax(0, 1fr);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .shell,
   .stage,

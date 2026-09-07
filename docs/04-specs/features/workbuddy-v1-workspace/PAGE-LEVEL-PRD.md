@@ -8,6 +8,8 @@ page_count: active_plus_dormant
 
 # ClassIn WorkBuddy V1 页面级 PRD
 
+> 当前导航修订以 D-113 和 [TeachBuddy 六入口 PRD](../teachbuddy-navigation-migration/FEATURE-SPEC.md) 为准：一级 TeachBuddy 只展开/收起，“我的任务”承载现有工作台；工具连接、定时任务保留，新增 AgentIn 市场。下文旧导航与阶段首页描述不再作为当前默认入口验收标准。
+
 ## 1. 共通页面契约
 
 每个页面/Overlay 均须具备：

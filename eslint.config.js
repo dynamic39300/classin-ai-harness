@@ -5,9 +5,10 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['.agents', '.scratch', '.codex-tmp', 'dist', 'coverage', 'playwright-report', 'test-results', 'vendor'] },
+  { ignores: ['.agents', '.scratch', '.codex-tmp', '.runtime', 'dist', 'coverage', 'playwright-report', 'test-results', 'vendor'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  { files: ['scripts/**/*.mjs', 'runtime/**/*.mjs'], languageOptions: { globals: globals.node } },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {

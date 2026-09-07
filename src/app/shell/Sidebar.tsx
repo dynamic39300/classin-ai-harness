@@ -16,8 +16,10 @@ type SidebarProps = {
   navigationExtension?: {
     afterItemId: string;
     activePathPrefix: string;
+    parentBehavior?: 'link' | 'disclosure';
     content: ReactNode;
   };
+  onNavigationExtensionOpenChange?: (open: boolean) => void;
   onOpenSettings: () => void;
   onOpenHelp: () => void;
 };
@@ -28,7 +30,7 @@ const GROUP_LABELS: Record<NavigationGroup, string> = {
   'instant-tool': '即时工具',
 };
 
-export function Sidebar({ role, inactive = false, navigationExtension, onOpenSettings, onOpenHelp }: SidebarProps) {
+export function Sidebar({ role, inactive = false, navigationExtension, onNavigationExtensionOpenChange, onOpenSettings, onOpenHelp }: SidebarProps) {
   const location = useLocation();
   const [accountOpen, setAccountOpen] = useState(false);
   const [classManagementManualOpen, setClassManagementManualOpen] = useState(false);
@@ -57,6 +59,10 @@ export function Sidebar({ role, inactive = false, navigationExtension, onOpenSet
     if (extensionRouteActive && !previousExtensionRouteActive.current) setNavigationExtensionOpen(true);
     previousExtensionRouteActive.current = extensionRouteActive;
   }, [extensionRouteActive]);
+
+  useEffect(() => {
+    onNavigationExtensionOpenChange?.(navigationExtensionOpen);
+  }, [navigationExtensionOpen, onNavigationExtensionOpenChange]);
 
   return (
     <aside
@@ -135,10 +141,13 @@ export function Sidebar({ role, inactive = false, navigationExtension, onOpenSet
                   onToggle={() => setClassManagementManualOpen((current) => !current)}
                   extensionOpen={navigationExtensionOpen}
                   hasExtension={navigationExtension?.afterItemId === node.id}
+                  extensionParentBehavior={navigationExtension?.parentBehavior ?? 'link'}
                   forceActive={Boolean(extensionRouteActive && navigationExtension?.afterItemId === node.id)}
                   onToggleExtension={() => setNavigationExtensionOpen((current) => !current)}
                 />
-                {navigationExtension?.afterItemId === node.id && navigationExtensionOpen ? navigationExtension.content : null}
+                {navigationExtension?.afterItemId === node.id && navigationExtensionOpen ? (
+                  <div className={styles.extensionContent} id={`${node.id}-extension`}>{navigationExtension.content}</div>
+                ) : null}
               </Fragment>
             ))}
           </section>
@@ -157,13 +166,34 @@ type NavigationNodeViewProps = {
   onToggle: () => void;
   hasExtension: boolean;
   extensionOpen: boolean;
+  extensionParentBehavior: 'link' | 'disclosure';
   onToggleExtension: () => void;
   forceActive: boolean;
 };
 
-function NavigationNodeView({ node, open, disableCollapse, onNavigate, onToggle, hasExtension, extensionOpen, onToggleExtension, forceActive }: NavigationNodeViewProps) {
+function NavigationNodeView({ node, open, disableCollapse, onNavigate, onToggle, hasExtension, extensionOpen, extensionParentBehavior, onToggleExtension, forceActive }: NavigationNodeViewProps) {
   if (node.kind === 'item') {
     const Icon = node.icon;
+    if (hasExtension && extensionParentBehavior === 'disclosure') {
+      return (
+        <button
+          className={styles.navItem}
+          type="button"
+          aria-label={node.label}
+          title={node.label}
+          data-label={node.label}
+          data-extension-disclosure="true"
+          data-active={forceActive || undefined}
+          aria-expanded={extensionOpen}
+          aria-controls={`${node.id}-extension`}
+          onClick={onToggleExtension}
+        >
+          <Icon aria-hidden="true" size={18} />
+          <span className={styles.navLabel}>{node.label}</span>
+          <ChevronRight className={`${styles.chevron} ${extensionOpen ? styles.chevronExpanded : ''}`} aria-hidden="true" size={16} />
+        </button>
+      );
+    }
     const className = `${styles.navItem} ${hasExtension ? styles.navItemWithToggle : ''}`;
     const handleClick = () => {
         onNavigate();

@@ -1,5 +1,4 @@
 import { createContext, useContext } from 'react';
-import type { WorkBuddyRunViewModel } from '@contracts/workbuddy/workspace';
 import type { WritebackScenario } from '@contracts/workbuddy/classin-writeback';
 import type { PackageWritebackScenario } from '@contracts/workbuddy/package-writeback';
 import type { ConversationRunModule } from '@contracts/workbuddy/conversation-run';
@@ -19,14 +18,6 @@ import type { CoreContextView, CoursewareRunView, PackageRunView, QuizActivityRu
 
 export type CoursewarePanel = 'artifact' | 'core_context' | 'process_detail' | 'action' | 'receipt' | 'replan' | 'none';
 export type PackagePanel = 'navigator' | 'approval' | 'receipt' | 'core_context' | 'none';
-
-export type WorkBuddyHistory = Readonly<{
-  runs: readonly WorkBuddyRunViewModel[];
-  getRun: (runId: string) => WorkBuddyRunViewModel | undefined;
-  renameRun: (runId: string, title: string) => void;
-  togglePinRun: (runId: string) => void;
-  removeRun: (runId: string) => void;
-}>;
 
 export type WorkBuddyTaskDraft = Readonly<{
   goal: string;
@@ -126,7 +117,6 @@ export type WorkBuddyQuizActivity = Readonly<{
 
 export type WorkBuddyWorkspace = Readonly<{
   conversationRun: ConversationRunModule;
-  history: WorkBuddyHistory;
   taskDraft: WorkBuddyTaskDraft;
   context: WorkBuddyContext;
   teacherIn: WorkBuddyTeacherIn;

@@ -7,7 +7,6 @@ import {
   parseWorkBuddyWorkspaceRoute,
   workBuddyCapabilityPath,
   workBuddyNewTaskPath,
-  workBuddyRunPath,
 } from './workbuddy-experience-profile';
 
 describe('WorkBuddyExperienceProfileModule', () => {
@@ -18,8 +17,6 @@ describe('WorkBuddyExperienceProfileModule', () => {
     });
     expect(standalone.sessionNamespace).toBe('standalone-teacher:anonymous');
     expect(createStandaloneTeacherWorkBuddyExperience('teacher-2').sessionNamespace).toBe('standalone-teacher:teacher-2');
-    expect(standalone.visibleTaskTypes).toEqual(['single-courseware', 'course-package', 'quiz-activity-creation']);
-    expect(workBuddyRunPath(standalone, 'run 1')).toBe('/teachbuddy/app/runs/run%201');
   });
   it('projects the ideal and MVP experiences onto different routes and data namespaces', () => {
     const ideal = createIdealWorkBuddyExperience();
@@ -31,15 +28,19 @@ describe('WorkBuddyExperienceProfileModule', () => {
     });
 
     expect(ideal.sessionNamespace).toBe('ideal-full');
-    expect(ideal.visibleCapabilityIds).toEqual(['skills', 'tools', 'content', 'files', 'schedules']);
+    expect(ideal.visibleCapabilityIds).toEqual(['skills', 'agentin', 'tools', 'content', 'files', 'schedules']);
     expect(ideal.visibleCapabilityIds).not.toContain('settings');
     expect(mvp.sessionNamespace).toBe('classin-mvp');
-    expect(mvp.visibleTaskTypes).toEqual(ideal.visibleTaskTypes);
-    expect(mvp.visibleCapabilityIds).toEqual(['skills', 'tools', 'files']);
-    expect(mvp.visibleTaskTypes).not.toBe(ideal.visibleTaskTypes);
+    expect(mvp.visibleCapabilityIds).toEqual(['skills', 'agentin', 'tools', 'files', 'schedules']);
+    expect(ideal.navigationCapabilityIds).toEqual(['skills', 'agentin', 'files', 'tools', 'schedules']);
+    expect(mvp.navigationCapabilityIds).toEqual(ideal.navigationCapabilityIds);
+    expect(mvp.navigationCapabilityIds).not.toBe(ideal.navigationCapabilityIds);
+    expect(mvp.visibleCapabilityIds).not.toContain('settings');
+    const standalone = createStandaloneTeacherWorkBuddyExperience();
+    expect(standalone.navigationCapabilityIds).toEqual(['skills', 'tools', 'content', 'files', 'schedules', 'settings']);
+    expect(standalone.visibleCapabilityIds).not.toContain('agentin');
     expect(mvp.visibleCapabilityIds).not.toBe(ideal.visibleCapabilityIds);
     expect(workBuddyNewTaskPath(mvp)).toBe('/teacher/classes/physics-3/workbuddy/new?course=course-momentum');
-    expect(workBuddyRunPath(mvp, 'run-1')).toBe('/teacher/classes/physics-3/workbuddy/runs/run-1?course=course-momentum');
     expect(workBuddyCapabilityPath(mvp, 'files')).toBe('/teacher/classes/physics-3/workbuddy/files?course=course-momentum');
     expect(mvp.returnTarget).toEqual({ label: '返回高二物理 3 班', to: '/teacher/classes/physics-3?course=course-momentum' });
   });

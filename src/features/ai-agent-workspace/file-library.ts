@@ -1,3 +1,5 @@
+import type { SessionFile } from '@contracts/workbuddy/session-files';
+
 export type FileAssetKind =
   "课件" | "教案" | "练习" | "学情报告" | "表格" | "素材包" | "交互讲解";
 
@@ -6,6 +8,7 @@ export type FileAssetProject = Readonly<{
   title: string;
   context: string;
   runId?: string;
+  runtimeSession?: boolean;
 }>;
 
 export type FileAsset = Readonly<{
@@ -25,6 +28,7 @@ export type FileAsset = Readonly<{
   project: FileAssetProject;
   canUseAsContext: boolean;
   canShare: boolean;
+  sessionFile?: SessionFile;
 }>;
 
 export type FileAssetQuery = Readonly<{

@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
-import type { WorkBuddyRunViewModel } from '@contracts/workbuddy/workspace';
 import type { ClassInWritebackAdapter, WritebackScenario, WritebackScenarioController } from '@contracts/workbuddy/classin-writeback';
 import type { PackageWritebackAdapter, PackageWritebackScenario, PackageWritebackScenarioController } from '@contracts/workbuddy/package-writeback';
 import type { WorkBuddyRuntimeFixture } from '@contracts/workbuddy/runtime-fixture';
@@ -18,7 +17,6 @@ import type { Approval, CoursewareSaveActionInput, ExecutionReceipt, ProposedAct
 import type { QuizActivityCreationRun, QuizPaperArtifact } from '@domain/workbuddy/quiz-activity-creation';
 import { createWorkBuddyCoursewareController } from './workbuddy-courseware-controller';
 import { projectCoreContextView, projectCoursewareRunView, projectPackageRunView } from './workbuddy-course-production-view';
-import { useWorkBuddyHistory } from './use-workbuddy-history';
 import { createWorkBuddyPackageController } from './workbuddy-package-controller';
 import { createWorkBuddyQuizActivityController } from './workbuddy-quiz-activity-controller';
 import { projectCoursewareConversationRun, projectPackageConversationRun } from './conversation-run-projection';
@@ -38,7 +36,6 @@ import { clearTeacherInDraftReceipts, loadTeacherInDraftReceipts, saveTeacherInD
 
 type WorkBuddyWorkspaceProviderProps = Readonly<{
   workspaceNamespace?: string;
-  initialRuns: readonly WorkBuddyRunViewModel[];
   initialContextItems: readonly CoreContextItem[];
   recommendedContextItemIds: readonly string[];
   coursewareDefinition: CoursewareRunDefinition;
@@ -78,7 +75,7 @@ function contextItemsForTaskType(items: readonly CoreContextItem[], taskType: Wo
 export function WorkBuddyWorkspaceProvider(props: WorkBuddyWorkspaceProviderProps) {
   const {
     workspaceNamespace = 'ideal-full',
-    initialRuns, initialContextItems, recommendedContextItemIds, coursewareDefinition, coursewareOutput, replannedCoursewareOutput,
+    initialContextItems, recommendedContextItemIds, coursewareDefinition, coursewareOutput, replannedCoursewareOutput,
     capabilityManifests, coursewareActionInput, packageDefinition, packageActionInput, packageFailedArtifactIds, runtimeFixture, clock,
     writebackAdapter, writebackScenarioController, packageWritebackAdapter, packageWritebackScenarioController, teacherInAdapter, personalContent = null,
     quizPaper, quizActivityDraftAdapter, quizActivityDraftScenarioController, children,
@@ -137,7 +134,6 @@ export function WorkBuddyWorkspaceProvider(props: WorkBuddyWorkspaceProviderProp
     adapter: quizActivityDraftAdapter, scenarioController: quizActivityDraftScenarioController,
     setRun: setQuizRun, setScenario: setQuizScenarioState,
   });
-  const history = useWorkBuddyHistory(initialRuns, coursewareRun, packageRun, quizRun, snapshotsById, runtimeFixture);
   const coursewareSnapshot = coursewareRun ? snapshotsById[coursewareRun.contextSnapshotId] ?? null : null;
   const projections = useMemo(() => coursewareSnapshot && coursewareRun
     ? capabilityManifests.map((manifest) => projectContext(coursewareSnapshot, manifest, {
@@ -250,13 +246,6 @@ export function WorkBuddyWorkspaceProvider(props: WorkBuddyWorkspaceProviderProp
 
   const workspace: WorkBuddyWorkspace = Object.freeze({
     conversationRun: conversationModule,
-    history: Object.freeze({
-      runs: history.runs,
-      getRun: history.getRun,
-      renameRun: history.renameRun,
-      togglePinRun: history.togglePinRun,
-      removeRun: history.removeRun,
-    }),
     taskDraft: Object.freeze({
       goal: draftGoal,
       setGoal: setDraftGoal,
@@ -292,7 +281,7 @@ export function WorkBuddyWorkspaceProvider(props: WorkBuddyWorkspaceProviderProp
         setContextSnapshot(null); setSnapshotsById({});
         setContextProposal(createContextProposal(initialContextItems, 'single-courseware')); setTaskTypeState('single-courseware');
         quizController.reset();
-        coursewareController.reset(); packageController.reset(); history.resetHistory();
+        coursewareController.reset(); packageController.reset();
       },
       taskType,
       setTaskType: (nextTaskType: WorkBuddyTaskType) => {

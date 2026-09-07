@@ -8,6 +8,8 @@ review_gate: PHASE_3_PASSED
 
 # ClassIn WorkBuddy V1 页面与交互详细规格包
 
+> 2026-09-05 导航增量：D-113 已替代下文的一级直接导航与旧能力顺序。当前终局/班级入口统一采用“我的任务、技能市场、AgentIn、我的文件、工具连接、定时任务”，详见 [TeachBuddy 导航迁移规格](../teachbuddy-navigation-migration/FEATURE-SPEC.md)。本包其余内容保留阶段基线，真实默认工作台与文件留存分别以 Runtime、Session Files 规格为准。
+
 ## 1. 阶段目标
 
 本包把已确认的产品转换、Core Context 和任务模型落实为可直接制作结构/交互高保真原型的页面级 PRD。它定义目标信息架构、页面地图、工作区布局、完整跳转、组件字段、状态、权限与验收，不开始产品代码。

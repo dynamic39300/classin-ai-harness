@@ -19,14 +19,20 @@
 
 ## 运行工作台
 
-使用 Node.js 22+，按 lockfile 安装并启动：
+使用 Node.js 22.19+ 或 24+，按 lockfile 安装并启动。此机器的启动器可自动使用已安装的 Codex Node 24：
 
 ```bash
 npm ci
 npm run dev
 ```
 
-打开 `http://localhost:4173/`，先选择教师或学生视角。当前应用只使用本地固定数据，不连接真实 ClassIn 服务；AI 生成、业务写回和外部集成均不能视为生产可用。
+`npm run dev` 同时启动前端/BFF（通常 `http://127.0.0.1:4173/`）和专用 DeepSeek Harness（`http://127.0.0.1:3080/`）。先选择教师视角，再进入 TeachBuddy。原确定性课程任务从“课程工作流”进入。
+
+模型凭据只在项目根目录未提交的 `.env` 中配置，字段见 [.env.example](./.env.example)。修改后重启 `npm run dev`。没有凭据时页面会明确提示，不能发送真实模型请求。请勿在 `VITE_*` 变量中配置密钥。
+
+真实运行入口支持持续文本对话、教学文稿生成、停止、会话恢复、审阅保存和 Markdown 下载。ClassIn 业务数据仍为固定 Demo；保存只进入本机 `.runtime/`，不代表正式发布。运行时、历史与产物按教师 Product Profile 隔离，均不提交 Git。
+
+详细范围与验收见 [运行时 Spec](./docs/04-specs/features/teachbuddy-agent-runtime/README.md)。`npm run dev:ui` 仅启动前端/BFF；`npm run harness:teachbuddy` 单独启动专用运行时。
 
 常用质量命令：
 

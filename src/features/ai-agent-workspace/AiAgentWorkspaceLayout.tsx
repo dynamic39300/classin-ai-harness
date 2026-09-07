@@ -1,4 +1,3 @@
-import { useState, type Dispatch, type SetStateAction } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { TEACHBUDDY_BRAND } from '@contracts/workbuddy/product-brand';
 import { getWorkBuddyCapabilityFromPathname } from './capability-registry';
@@ -7,11 +6,6 @@ import type { WorkBuddyExperienceProfile } from './workbuddy-experience-profile'
 import { WorkBuddyTaskBar } from './WorkBuddyTaskBar';
 import styles from './AiAgentWorkspaceLayout.module.css';
 
-export type WorkBuddyTaskLayoutContext = Readonly<{
-  contextPanelOpen: boolean;
-  setContextPanelOpen: Dispatch<SetStateAction<boolean>>;
-}>;
-
 export function AiAgentWorkspaceLayout({ profile, showTaskBarReturn = true }: Readonly<{
   profile: WorkBuddyExperienceProfile;
   showTaskBarReturn?: boolean;
@@ -19,25 +13,19 @@ export function AiAgentWorkspaceLayout({ profile, showTaskBarReturn = true }: Re
   const location = useLocation();
   const capabilityActive = Boolean(getWorkBuddyCapabilityFromPathname(location.pathname, { includeDormant: true }));
   const taskChromeActive = !capabilityActive;
-  const newTaskActive = location.pathname.endsWith('/new') || location.pathname === profile.basePath;
-  const contextAttached = (location.state as Readonly<{ intent?: string }> | null)?.intent === 'context-attached';
-  const [contextPanelOverride, setContextPanelOverride] = useState<boolean | null>(null);
-  const contextPanelOpen = contextPanelOverride ?? contextAttached;
-  const setContextPanelOpen: Dispatch<SetStateAction<boolean>> = (next) => {
-    setContextPanelOverride(typeof next === 'function' ? next(contextPanelOpen) : next);
-  };
 
   return (
     <WorkBuddyExperienceProvider profile={profile}>
-    <div className={styles.layout} data-experience-profile={profile.id} data-task-navigation={taskChromeActive ? 'true' : undefined} data-testid="ai-agent-workspace-layout">
+    <div className={styles.layout} data-experience-profile={profile.id} data-integrated-navigation={taskChromeActive && profile.productBoundary === 'classin-integrated' ? 'true' : undefined} data-task-navigation={taskChromeActive ? 'true' : undefined} data-testid="ai-agent-workspace-layout">
       {taskChromeActive ? (
         <WorkBuddyTaskBar
-          contextPanel={newTaskActive ? { open: contextPanelOpen, onOpenChange: setContextPanelOpen } : undefined}
+          key={profile.sessionNamespace}
           showReturnCommand={showTaskBarReturn}
+          compactReturnTarget={profile.productBoundary === 'classin-integrated' ? profile.returnTarget ?? { label: '返回教师工作台', to: '/teacher' } : undefined}
         />
       ) : null}
       <section className={styles.surface} aria-label={`${TEACHBUDDY_BRAND.shortName} 工作区`}>
-        <Outlet context={{ contextPanelOpen, setContextPanelOpen } satisfies WorkBuddyTaskLayoutContext} />
+        <Outlet />
       </section>
     </div>
     </WorkBuddyExperienceProvider>

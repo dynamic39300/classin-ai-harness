@@ -7,21 +7,27 @@ import {
   Download,
   ExternalLink,
   FileArchive,
+  FileCode2,
+  FileJson,
   FileSpreadsheet,
   FileText,
   Filter,
   Link2,
   MessageSquare,
   Presentation,
+  RefreshCw,
   Search,
   Share2,
   Star,
   Users,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import type { RuntimeScope } from '@contracts/workbuddy/agent-runtime';
+import type { SessionFileCatalogAdapter, SessionFileContent } from '@contracts/workbuddy/session-files';
 import type { TeacherInDraftReceipt } from '@domain/workbuddy/teacherin';
 import { useOptionalWorkBuddyArtifactLibrary } from '@features/workbuddy-artifact-library';
+import { createHttpSessionFileCatalog } from '@features/session-files/http-session-files';
 import {
   FILE_ASSET_FIXTURES,
   FILE_ASSET_KIND_OPTIONS,
@@ -32,15 +38,20 @@ import {
 import styles from "./FileLibrary.module.css";
 
 type Props = Readonly<{
+  scope: RuntimeScope;
   productBoundary: 'classin-integrated' | 'standalone-consumer';
   initialAssets?: readonly FileAsset[];
+  fileCatalog?: SessionFileCatalogAdapter;
   onUseAsContext: (asset: FileAsset) => void;
   onOpenRun: (runId: string) => void;
+  onOpenSession: (sessionId: string) => void;
   draftReceipts: Readonly<Record<string, TeacherInDraftReceipt>>;
   onCreateTeacherInDraft: (asset: FileAsset) => TeacherInDraftReceipt;
   onOpenTeacherIn: (path: string) => void;
   onLocateInSpace: (asset: FileAsset) => void;
 }>;
+
+const httpSessionFiles = createHttpSessionFileCatalog();
 
 const SHARE_TARGETS = [
   {
@@ -81,8 +92,11 @@ function AssetIcon({
   asset,
   size = 18,
 }: Readonly<{ asset: FileAsset; size?: number }>) {
-  const Icon =
-    asset.kind === "课件"
+  const Icon = asset.sessionFile?.format === 'html'
+    ? FileCode2
+    : asset.sessionFile?.format === 'json'
+      ? FileJson
+      : asset.kind === "课件"
       ? Presentation
       : asset.kind === "表格"
         ? FileSpreadsheet
@@ -92,14 +106,95 @@ function AssetIcon({
   return <Icon aria-hidden="true" size={size} />;
 }
 
+function fileKind(name: string, format: string): FileAssetKind {
+  if (format === 'html') return '交互讲解';
+  if (/练习|测验|题/.test(name)) return '练习';
+  if (/报告|分析/.test(name)) return '学情报告';
+  if (/课件|演示/.test(name)) return '课件';
+  if (/表格|数据/.test(name) || format === 'json') return '表格';
+  return '教案';
+}
+
+function fileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(bytes < 10 * 1024 ? 1 : 0)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function createdLabel(value: string): string {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return '生成时间未知';
+  return new Intl.DateTimeFormat('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date);
+}
+
+function asAsset(file: SessionFileContent['file'], favorite: boolean): FileAsset {
+  return {
+    id: `session-file-${file.id}`,
+    name: file.name,
+    extension: file.extension.toLocaleUpperCase('en-US'),
+    kind: fileKind(file.name, file.format),
+    summary: `由 TeachBuddy 在“${file.sessionTitle}”中生成的 ${file.extension.toLocaleUpperCase('en-US')} 文件。`,
+    size: fileSize(file.byteSize),
+    version: `v${file.version}`,
+    createdAt: file.createdAt,
+    createdLabel: createdLabel(file.createdAt),
+    status: '可使用',
+    favorite,
+    reuseCount: 0,
+    sharedTargets: [],
+    project: {
+      id: `runtime-session-${file.sessionId}`,
+      title: file.sessionTitle,
+      context: 'TeachBuddy 对话产物',
+      runId: file.sessionId,
+      runtimeSession: true,
+    },
+    canUseAsContext: false,
+    canShare: false,
+    sessionFile: file,
+  };
+}
+
+function sandboxedHtml(content: string): string {
+  const policy = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:">`;
+  if (/<head(?:\s[^>]*)?>/i.test(content)) return content.replace(/<head(\s[^>]*)?>/i, (head) => `${head}${policy}`);
+  if (/<html(?:\s[^>]*)?>/i.test(content)) return content.replace(/<html(\s[^>]*)?>/i, (html) => `${html}<head>${policy}</head>`);
+  return `<!doctype html><html><head>${policy}</head><body>${content}</body></html>`;
+}
+
 export function FileLibrary({
-  productBoundary, initialAssets, onUseAsContext, onOpenRun, draftReceipts, onCreateTeacherInDraft, onOpenTeacherIn, onLocateInSpace,
+  scope, productBoundary, initialAssets, fileCatalog = httpSessionFiles, onUseAsContext, onOpenRun, onOpenSession,
+  draftReceipts, onCreateTeacherInDraft, onOpenTeacherIn, onLocateInSpace,
 }: Props) {
   const standalone = productBoundary === 'standalone-consumer';
   const generatedLibrary = useOptionalWorkBuddyArtifactLibrary();
   const [assets, setAssets] = useState<FileAsset[]>(() =>
     (initialAssets ?? FILE_ASSET_FIXTURES).map((asset) => ({ ...asset, project: { ...asset.project } })),
   );
+  const [sessionFiles, setSessionFiles] = useState<readonly SessionFileContent['file'][]>([]);
+  const [fileState, setFileState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [fileError, setFileError] = useState('');
+  const loadFiles = useCallback((isActive: () => boolean) => {
+    void fileCatalog.list(scope).then((groups) => {
+      if (!isActive()) return;
+      setSessionFiles(groups.flatMap((group) => group.files));
+      setFileState('ready');
+    }).catch((error: unknown) => {
+      if (!isActive()) return;
+      setFileState('error');
+      setFileError(error instanceof Error ? error.message : '读取 Session 文件失败，请重试。');
+    });
+  }, [fileCatalog, scope]);
+  const refreshFiles = useCallback(() => {
+    setFileState('loading');
+    setFileError('');
+    loadFiles(() => true);
+  }, [loadFiles]);
+  useEffect(() => {
+    let active = true;
+    loadFiles(() => active);
+    return () => { active = false; };
+  }, [loadFiles]);
   const libraryAssets = useMemo(() => {
     const generated = (generatedLibrary?.artifacts ?? []).map((artifact): FileAsset => ({
         id: artifact.id, name: artifact.title, extension: '链接', kind: '交互讲解',
@@ -110,8 +205,10 @@ export function FileLibrary({
         project: { id: artifact.runRef, title: 'IM 单题讲解', context: artifact.question, runId: artifact.runRef },
         canUseAsContext: true, canShare: false,
       }));
-    return [...assets.filter(({ id }) => !generated.some((candidate) => candidate.id === id)), ...generated];
-  }, [assets, generatedLibrary?.artifacts]);
+    const live = sessionFiles.map((file) => asAsset(file, assets.find(({ sessionFile }) => sessionFile?.id === file.id)?.favorite ?? false));
+    const projected = [...generated, ...live];
+    return [...assets.filter(({ id }) => !projected.some((candidate) => candidate.id === id)), ...projected];
+  }, [assets, generatedLibrary?.artifacts, sessionFiles]);
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<"all" | FileAssetKind>("all");
   const [typeMenuOpen, setTypeMenuOpen] = useState(false);
@@ -122,6 +219,7 @@ export function FileLibrary({
     SHARE_TARGETS[0].id,
   );
   const [feedback, setFeedback] = useState("");
+  const [preview, setPreview] = useState<Readonly<{ status: 'idle' | 'loading' | 'ready' | 'error'; content?: string; error?: string }>>({ status: 'idle' });
   const typeControlRef = useRef<HTMLDivElement>(null);
   const typeTriggerRef = useRef<HTMLButtonElement>(null);
   const typeMenuRef = useRef<HTMLDivElement>(null);
@@ -135,6 +233,22 @@ export function FileLibrary({
     TYPE_FILTER_OPTIONS.find((option) => option.value === kind)?.label ??
     "全部类型";
   const selectedReceipt = !standalone && selected ? draftReceipts[selected.id] : undefined;
+
+  useEffect(() => {
+    if (!selected?.sessionFile) return;
+    let active = true;
+    void fileCatalog.read(scope, selected.sessionFile.id).then((content) => {
+      if (active) setPreview({ status: 'ready', content: content.content });
+    }).catch((error: unknown) => {
+      if (active) setPreview({ status: 'error', error: error instanceof Error ? error.message : '预览加载失败，请重试。' });
+    });
+    return () => { active = false; };
+  }, [fileCatalog, scope, selected]);
+
+  const openAsset = (asset: FileAsset) => {
+    setPreview({ status: asset.sessionFile ? 'loading' : 'idle' });
+    setSelected(asset);
+  };
 
   useEffect(() => {
     if (!typeMenuOpen) return;
@@ -195,7 +309,23 @@ export function FileLibrary({
     if (asset.canUseAsContext) onUseAsContext(asset);
   };
   const openRun = (asset: FileAsset) => {
-    if (asset.project.runId) onOpenRun(asset.project.runId);
+    if (!asset.project.runId) return;
+    if (asset.project.runtimeSession) onOpenSession(asset.project.runId);
+    else onOpenRun(asset.project.runId);
+  };
+  const downloadFile = (asset: FileAsset, event?: MouseEvent) => {
+    event?.stopPropagation();
+    if (!asset.sessionFile) {
+      setFeedback(`${asset.name} 已准备下载。`);
+      return;
+    }
+    const link = document.createElement('a');
+    link.href = fileCatalog.downloadUrl(scope, asset.sessionFile.id);
+    link.download = asset.name;
+    document.body.append(link);
+    link.click();
+    setTimeout(() => link.remove(), 1000);
+    setFeedback(`${asset.name} 已开始下载。`);
   };
   const createTeacherInDraft = (asset: FileAsset, event?: MouseEvent) => {
     event?.stopPropagation();
@@ -319,9 +449,18 @@ export function FileLibrary({
           <span>{view.favoriteCount}</span>
         </button>
         <output className={styles.resultSummary} aria-live="polite">
-          {view.resultCount} 个文件 / {view.groups.length} 个项目
+          {view.resultCount} 个文件 / {view.groups.length} 个任务
         </output>
       </div>
+
+      {fileState === 'loading' ? (
+        <p className={styles.catalogState} role="status">正在同步 Session 文件…</p>
+      ) : fileState === 'error' ? (
+        <div className={styles.catalogError} role="alert">
+          <span>{fileError}</span>
+          <button type="button" onClick={() => refreshFiles()}><RefreshCw aria-hidden="true" size={14} />重试</button>
+        </div>
+      ) : null}
 
       {view.groups.length ? (
         <div
@@ -361,7 +500,9 @@ export function FileLibrary({
                   <button
                     className={styles.runButton}
                     type="button"
-                    onClick={() => onOpenRun(group.project.runId!)}
+                    onClick={() => group.project.runtimeSession
+                      ? onOpenSession(group.project.runId!)
+                      : onOpenRun(group.project.runId!)}
                   >
                     回到任务
                     <ExternalLink aria-hidden="true" size={14} />
@@ -375,7 +516,7 @@ export function FileLibrary({
                       className={styles.assetOpen}
                       type="button"
                       aria-label={`查看${asset.name}`}
-                      onClick={() => setSelected(asset)}
+                      onClick={() => openAsset(asset)}
                     >
                       <span className={styles.assetIcon} data-kind={asset.kind}>
                         <AssetIcon asset={asset} />
@@ -393,7 +534,7 @@ export function FileLibrary({
                     </time>
                     <span className={styles.fileSize}>{asset.size}</span>
                     <div className={styles.rowActions}>
-                      {!standalone && draftReceipts[asset.id]?.status === 'success' ? (
+                      {!asset.sessionFile && !standalone && draftReceipts[asset.id]?.status === 'success' ? (
                         <button
                           type="button"
                           aria-label={`${asset.name}前往 TeacherIn`}
@@ -406,7 +547,7 @@ export function FileLibrary({
                         >
                           <BookOpen aria-hidden="true" size={16} />
                         </button>
-                      ) : !standalone ? (
+                      ) : !asset.sessionFile && !standalone ? (
                         <button
                           type="button"
                           aria-label={`${asset.name}创建草稿到 TeacherIn`}
@@ -416,6 +557,14 @@ export function FileLibrary({
                           <BookOpen aria-hidden="true" size={16} />
                         </button>
                       ) : null}
+                      {asset.sessionFile ? <button
+                          type="button"
+                          aria-label={`${asset.name}下载`}
+                          title="下载"
+                          onClick={(event) => downloadFile(asset, event)}
+                        >
+                          <Download aria-hidden="true" size={16} />
+                        </button> : null}
                       <button
                         type="button"
                         aria-label={`${asset.name}收藏`}
@@ -429,7 +578,7 @@ export function FileLibrary({
                           fill={asset.favorite ? "currentColor" : "none"}
                         />
                       </button>
-                      <button
+                      {!asset.sessionFile ? <button
                         type="button"
                         aria-label={`${asset.name}作为上下文`}
                         title="作为上下文"
@@ -437,8 +586,8 @@ export function FileLibrary({
                         onClick={(event) => attachAsContext(asset, event)}
                       >
                         <Link2 aria-hidden="true" size={16} />
-                      </button>
-                      <button
+                      </button> : null}
+                      {!asset.sessionFile ? <button
                         type="button"
                         aria-label={`${asset.name}分享`}
                         title="分享"
@@ -446,7 +595,7 @@ export function FileLibrary({
                         onClick={(event) => openShare(asset, event)}
                       >
                         <Share2 aria-hidden="true" size={16} />
-                      </button>
+                      </button> : null}
                     </div>
                   </article>
                 ))}
@@ -496,19 +645,39 @@ export function FileLibrary({
                 <X aria-hidden="true" size={18} />
               </button>
             </header>
-            <div className={styles.preview}>
-              <span className={styles.previewIcon}>
-                <AssetIcon asset={selected} size={34} />
-              </span>
-              <strong>{selected.extension}</strong>
-              <p>{selected.summary}</p>
-              <small>当前展示结构化文件摘要</small>
-            </div>
+            {selected.sessionFile ? (
+              <div className={styles.livePreview} data-format={selected.sessionFile.format}>
+                {preview.status === 'loading' ? <p role="status">正在加载预览…</p> : null}
+                {preview.status === 'error' ? <div role="alert"><p>{preview.error}</p><button type="button" onClick={() => openAsset({ ...selected })}><RefreshCw aria-hidden="true" size={14} />重试</button></div> : null}
+                {preview.status === 'ready' && selected.sessionFile.preview === 'html' ? (
+                  <iframe
+                    title={`${selected.name}安全预览`}
+                    sandbox=""
+                    referrerPolicy="no-referrer"
+                    srcDoc={sandboxedHtml(preview.content ?? '')}
+                  />
+                ) : null}
+                {preview.status === 'ready' && selected.sessionFile.preview === 'text' ? (
+                  <pre tabIndex={0}>{selected.sessionFile.format === 'json' ? (() => {
+                    try { return JSON.stringify(JSON.parse(preview.content ?? ''), null, 2); } catch { return preview.content; }
+                  })() : preview.content}</pre>
+                ) : null}
+              </div>
+            ) : (
+              <div className={styles.preview}>
+                <span className={styles.previewIcon}>
+                  <AssetIcon asset={selected} size={34} />
+                </span>
+                <strong>{selected.extension}</strong>
+                <p>{selected.summary}</p>
+                <small>当前展示结构化文件摘要</small>
+              </div>
+            )}
             <section className={styles.detailSection}>
               <h3>任务与回溯</h3>
               <dl>
                 <div>
-                  <dt>任务 / 项目</dt>
+                  <dt>{selected.sessionFile ? '来源 Session' : '任务 / 项目'}</dt>
                   <dd>{selected.project.title}</dd>
                 </div>
                 <div>
@@ -523,9 +692,13 @@ export function FileLibrary({
                   <dt>版本</dt>
                   <dd>{selected.version}</dd>
                 </div>
+                {selected.sessionFile ? <div>
+                  <dt>文件状态</dt>
+                  <dd>{selected.sessionFile.status === 'saved' ? '已确认保存' : '已生成，待审阅'}</dd>
+                </div> : null}
               </dl>
             </section>
-            <section className={styles.detailSection}>
+            {!selected.sessionFile ? <section className={styles.detailSection}>
               <h3>复用记录</h3>
               <p>
                 已作为上下文引用 {selected.reuseCount} 次
@@ -536,8 +709,11 @@ export function FileLibrary({
                     : "，尚未分享"}
                 。
               </p>
-            </section>
-            {standalone ? (
+            </section> : <section className={styles.detailSection}>
+              <h3>本地文件</h3>
+              <p>此文件由来源 Session 自动留存。确认保存、发送或正式发布仍需单独操作。</p>
+            </section>}
+            {selected.sessionFile ? null : standalone ? (
               <section className={styles.detailSection}>
                 <h3>个人文件库</h3>
                 <p>文件保存在当前独立账号中，可下载、复用或生成个人分享链接。</p>
@@ -555,7 +731,7 @@ export function FileLibrary({
               </section>
             )}
             <div className={styles.detailActions}>
-              {!standalone && selectedReceipt?.status === 'success' ? (
+              {selected.sessionFile ? null : !standalone && selectedReceipt?.status === 'success' ? (
                 <button
                   className={styles.teacherInButton}
                   type="button"
@@ -573,7 +749,7 @@ export function FileLibrary({
                   创建草稿到 TeacherIn
                 </button>
               ) : null}
-              <button
+              {!selected.sessionFile ? <button
                 className={styles.contextButton}
                 type="button"
                 disabled={!selected.canUseAsContext}
@@ -581,8 +757,8 @@ export function FileLibrary({
               >
                 <Link2 aria-hidden="true" size={16} />
                 作为上下文
-              </button>
-              <button
+              </button> : null}
+              {!selected.sessionFile ? <button
                 type="button"
                 disabled={!selected.canShare}
                 onClick={() => standalone
@@ -591,17 +767,15 @@ export function FileLibrary({
               >
                 <Share2 aria-hidden="true" size={16} />
                 {standalone ? '复制分享链接' : '分享'}
-              </button>
+              </button> : null}
               <button
                 type="button"
-                onClick={() =>
-                  setFeedback(`${selected.name} 已准备下载。`)
-                }
+                onClick={() => downloadFile(selected)}
               >
                 <Download aria-hidden="true" size={16} />
                 下载
               </button>
-              {!standalone ? (
+              {!selected.sessionFile && !standalone ? (
                 <button type="button" onClick={() => onLocateInSpace(selected)}>
                   <ExternalLink aria-hidden="true" size={16} />
                   在空间中定位

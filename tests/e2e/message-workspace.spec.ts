@@ -981,7 +981,7 @@ test('teacher approves a guided explanation, opens it from IM and finds the same
 
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
   const primaryNavigation = page.getByRole('navigation', { name: '老师视角主导航' });
-  await primaryNavigation.getByRole('link', { name: 'TeachBuddy' }).click();
+  await primaryNavigation.getByRole('button', { name: 'TeachBuddy', exact: true }).click();
   await primaryNavigation.getByRole('group', { name: 'TeachBuddy 二级导航' }).getByRole('link', { name: '我的文件', exact: true }).click();
   await expect(page.getByText('小球正碰：用动量守恒求碰后速度')).toBeVisible();
   await expect(page.getByText('H5', { exact: true })).toHaveCount(0);

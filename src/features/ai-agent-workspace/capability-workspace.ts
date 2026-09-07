@@ -194,13 +194,13 @@ const CAPABILITY_TABS: Record<CapabilitySurfaceId, readonly CapabilityTab[]> = {
 };
 
 export const CAPABILITY_SURFACE_CONFIGS: readonly CapabilitySurfaceConfig[] =
-  WORKBUDDY_CAPABILITIES.map(({ id, label, description, icon }) => ({
+  WORKBUDDY_CAPABILITIES.flatMap(({ id, label, description, icon }) => id === 'agentin' ? [] : [{
     id,
     label,
     description,
     icon,
     tabs: CAPABILITY_TABS[id],
-  }));
+  }]);
 
 export const SKILL_ITEMS: readonly CapabilityItem[] = [
   {

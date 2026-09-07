@@ -8,6 +8,8 @@ page_count: 43
 
 # ClassIn WorkBuddy V1 页面地图与导航
 
+> 当前导航增量由 D-113 和 [TeachBuddy 六入口规格](../teachbuddy-navigation-migration/FEATURE-SPEC.md) 定义。下表是阶段页面地图；当前一级 TeachBuddy 整行不导航，二级顺序为我的任务、技能市场、AgentIn、我的文件、工具连接、定时任务。Settings 按 D-110 在集成版关闭。
+
 ## 1. 页面 ID 规则
 
 - `WB-G`：ClassIn 全局壳；

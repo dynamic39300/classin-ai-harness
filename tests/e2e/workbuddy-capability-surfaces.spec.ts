@@ -8,7 +8,7 @@ async function openSurface(page: Page, label: string) {
   if (await teacherButton.count()) await teacherButton.click();
   await page
     .getByRole("navigation", { name: "老师视角主导航" })
-    .getByRole("link", { name: "TeachBuddy" })
+    .getByRole("button", { name: "TeachBuddy", exact: true })
     .click();
   await page
     .getByRole("group", { name: "TeachBuddy 二级导航" })
@@ -49,12 +49,9 @@ test("skills market supports search, detail, install and use in task", async ({
   ).toEqual([]);
   await page.getByRole("button", { name: "去使用" }).click();
   await expect(page).toHaveURL(/\/teacher\/ai-agent\/new$/);
-  await expect(page.getByRole("textbox", { name: "描述教学任务" })).toHaveValue(
+  await expect(page.getByRole("textbox", { name: "向 TeachBuddy 输入要求" })).toHaveValue(
     "使用“作业错因聚类”帮我完成：",
   );
-  await expect(
-    page.getByRole("button", { name: "移除已选技能 作业错因聚类" }),
-  ).toBeVisible();
 });
 
 test("skills add menu supports recoverable upload and import", async ({
@@ -103,38 +100,23 @@ test("skills add menu supports recoverable upload and import", async ({
   await expect(page.getByText(/模拟|仿真/)).toHaveCount(0);
 });
 
-test("find, create and direct selection keep Skill use inside the new-task draft", async ({
+test("find and create actions prefill the real task composer", async ({
   page,
 }) => {
   await openSurface(page, "技能市场");
   await page.getByRole("button", { name: "添加技能" }).click();
   await page.getByRole("menuitem", { name: /查找技能/ }).click();
   await expect(page).toHaveURL(/\/teacher\/ai-agent\/new$/);
-  await expect(page.getByRole("textbox", { name: "描述教学任务" })).toHaveValue(
+  await expect(page.getByRole("textbox", { name: "向 TeachBuddy 输入要求" })).toHaveValue(
     "帮我找一个技能，这个技能是为了：",
   );
-  await expect(page.getByText("查找技能", { exact: true })).toBeVisible();
-
-  await page.getByRole("button", { name: "移除已选技能 查找技能" }).click();
-  await page.getByRole("button", { name: "选择技能" }).click();
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("button", { name: "选择技能" })).toBeFocused();
-  await page.getByRole("button", { name: "选择技能" }).click();
-  const picker = page.getByRole("dialog", { name: "选择技能" });
-  await picker.getByRole("textbox", { name: "搜索技能" }).fill("PPT");
-  await picker.getByRole("button", { name: /PPT 演示文稿/ }).click();
-  await expect(page.getByText("PPT 演示文稿", { exact: true })).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "移除已选技能 PPT 演示文稿" }),
-  ).toBeVisible();
 
   await openSurface(page, "技能市场");
   await page.getByRole("button", { name: "添加技能" }).click();
   await page.getByRole("menuitem", { name: /创建技能/ }).click();
-  await expect(page.getByRole("textbox", { name: "描述教学任务" })).toHaveValue(
+  await expect(page.getByRole("textbox", { name: "向 TeachBuddy 输入要求" })).toHaveValue(
     "帮我创建一个新技能，这个技能是为了：",
   );
-  await expect(page.getByText("技能创建器", { exact: true })).toBeVisible();
 });
 
 test("tool connections use ClassIn brand copy and preserve install configuration", async ({
@@ -198,7 +180,7 @@ test("custom tool creation returns a managed connection card", async ({
   await expect(page.getByText("教研资料索引", { exact: true })).toBeVisible();
 });
 
-test("files add a stable Artifact reference without rewriting the task goal", async ({
+test("files prefill their stable reference into the real task composer", async ({
   page,
 }) => {
   await openSurface(page, "我的文件");
@@ -212,9 +194,7 @@ test("files add a stable Artifact reference without rewriting the task goal", as
   ).toContainText("生成函数单调性智能课件");
   await page.getByRole("button", { name: "作为上下文", exact: true }).click();
   await expect(page).toHaveURL(/\/teacher\/ai-agent\/new$/);
-  await expect(page.getByRole("textbox", { name: "描述教学任务" })).toHaveValue("");
-  await expect(page.getByRole('status')).toContainText('稳定引用加入 Core Context');
-  await expect(page.getByRole('complementary', { name: '核心上下文' })).toContainText('函数单调性智能课件.pptx');
+  await expect(page.getByRole("textbox", { name: "向 TeachBuddy 输入要求" })).toHaveValue("请基于“函数单调性智能课件.pptx”继续完成：");
 });
 
 test('files create a TeacherIn draft and keep a direct continuation link', async ({ page }) => {
@@ -419,7 +399,7 @@ test("integrated capability navigation does not publish settings", async ({ page
   if (await teacherButton.count()) await teacherButton.click();
   await page
     .getByRole("navigation", { name: "老师视角主导航" })
-    .getByRole("link", { name: "TeachBuddy" })
+    .getByRole("button", { name: "TeachBuddy", exact: true })
     .click();
   await expect(
     page.getByRole("group", { name: "TeachBuddy 二级导航" }).getByRole("link", { name: "设置", exact: true }),
@@ -435,7 +415,7 @@ test("capability surfaces remain usable in compact desktop without horizontal ov
   if (await teacherButton.count()) await teacherButton.click();
   await page
     .getByRole("navigation", { name: "老师视角主导航" })
-    .getByRole("link", { name: "TeachBuddy" })
+    .getByRole("button", { name: "TeachBuddy", exact: true })
     .click();
   await page
     .getByRole("group", { name: "TeachBuddy 二级导航" })
@@ -469,11 +449,7 @@ test("capability surfaces remain usable in compact desktop without horizontal ov
 
   await page.getByRole("button", { name: "添加技能" }).click();
   await page.getByRole("menuitem", { name: /查找技能/ }).click();
-  await page.getByRole("button", { name: "选择技能" }).click();
-  const pickerBox = await page
-    .getByRole("dialog", { name: "选择技能" })
-    .boundingBox();
-  expect(pickerBox).not.toBeNull();
-  expect(pickerBox!.x).toBeGreaterThanOrEqual(0);
-  expect(pickerBox!.x + pickerBox!.width).toBeLessThanOrEqual(1000);
+  await expect(page).toHaveURL(/\/teacher\/ai-agent\/new$/);
+  await expect(page.getByRole("textbox", { name: "向 TeachBuddy 输入要求" })).toHaveValue("帮我找一个技能，这个技能是为了：");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 });

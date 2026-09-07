@@ -1,8 +1,8 @@
-import { CalendarClock, FileText, FolderOpen, Settings, Shapes, Wrench, type LucideIcon } from 'lucide-react';
+import { Bot, CalendarClock, FileText, FolderOpen, Settings, Shapes, Wrench, type LucideIcon } from 'lucide-react';
 import { parseWorkBuddyWorkspaceRoute } from './workbuddy-experience-profile';
 
 export type WorkBuddyCapability = {
-  id: 'skills' | 'tools' | 'content' | 'files' | 'schedules' | 'settings';
+  id: 'skills' | 'agentin' | 'tools' | 'content' | 'files' | 'schedules' | 'settings';
   label: string;
   description: string;
   icon: LucideIcon;
@@ -12,6 +12,7 @@ export type WorkBuddyCapability = {
 
 export const WORKBUDDY_CAPABILITIES: readonly WorkBuddyCapability[] = [
   { id: 'skills', label: '技能市场', description: '发现、安装与管理可被任务调用的专业能力。', icon: Shapes, placement: 'resource', availability: 'active' },
+  { id: 'agentin', label: 'AgentIn', description: '发现教学智能体。', icon: Bot, placement: 'resource', availability: 'active' },
   { id: 'tools', label: '工具连接', description: '连接与治理 MCP、ClassIn 业务动作及外部工具。', icon: Wrench, placement: 'resource', availability: 'active' },
   { id: 'content', label: '内容资源', description: '管理可复用的教学素材、模板与内容来源。', icon: FileText, placement: 'resource', availability: 'dormant' },
   { id: 'files', label: '我的文件', description: '回溯 TeachBuddy 在 ClassIn Space 中保存的 AI 协作产物。', icon: FolderOpen, placement: 'resource', availability: 'active' },

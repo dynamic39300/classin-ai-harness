@@ -1,0 +1,49 @@
+# rc2 rewrites roots on the original agent-presets row after CLI overlays.
+- id: agent-presets
+  disabled: true
+
+- id: tools
+  config:
+    mode: native
+
+- id: code-runtime
+  disabled: true
+
+- id: file-reference-local
+  disabled: true
+
+- id: webserver
+  config:
+    host: '127.0.0.1'
+    port: 3080
+
+- id: sandbox-policy
+  config:
+    mode: read-only
+    workspaceRoot: !!js process.cwd()
+
+- id: approval
+  config:
+    policy: ask
+
+- id: permission
+  config:
+    defaultPreset: read-only
+    presets:
+      read-only:
+        sandbox: read-only
+        approval: ask
+
+- insert:
+    - id: teachbuddy-agent-presets
+      name: '@deepseek-ai/dsh-agent-presets'
+      config:
+        default: teachbuddy
+        includeUserRoot: false
+        roots:
+          - path: !!js process.env.TEACHBUDDY_HARNESS_CONFIG_ROOT + '/presets'
+            trust: system
+
+    - id: teachbuddy-draft-tools
+      # Names are literal and resolve from .runtime/harness-home/profiles/web.
+      name: '../../../../runtime/harness/teaching-tools.mjs'

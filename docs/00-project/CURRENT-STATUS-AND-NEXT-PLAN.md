@@ -15,6 +15,12 @@ date: 2026-09-06
 
 ## 1. 当前完成事实
 
+> **2026-09-05 我的任务 Mock 清理**：按 D-114，“我的任务”现只展示当前 Profile 的真实 Harness Session。固定课程任务、课程工作流、旧 Run 页面及其专用 UI/测试已删除；旧 URL 只回退真实新建任务，能力动作改为预填真实 Composer。新建/关闭标签仍不删除 Session，技能、AgentIn、文件、工具连接和定时任务不受影响。工程 Gate 为 670 项单元/集成、11 项 Harness 契约、41 项 TeachBuddy 专项及 8 项 Standalone 浏览器测试通过；两 Profile 的 1440/390px 截图已人工检查。全仓 E2E 另有 10 项不经过本次任务路由的既有 Class/Message/Role Switch 断言失败，未在本票扩大修复。详细范围与证据见 [删除旧 Mock Task 产品表面](../04-specs/features/teachbuddy-navigation-migration/REMOVE-LEGACY-MOCK-TASKS.md)，待用户页面验收。NAV-04 的两类历史说明仅保留为阶段记录。
+
+> **2026-09-05 TeachBuddy 导航增量**：按 D-113 完成终局与班级入口六项导航（我的任务、技能市场、AgentIn、我的文件、工具连接、定时任务）。一级 TeachBuddy 只展开/收起；我的任务保留现有真实 Harness 默认工作台。AgentIn 固定目录迁入，工具/定时 Demo 保留；班级来源参数、返回及存储隔离不变。规格、票据和 668 项单元/集成测试、38 项范围浏览器回归结果见 [导航迁移与验收记录](../04-specs/features/teachbuddy-navigation-migration/IMPLEMENTATION.md)。状态为 `IMPLEMENTED_PENDING_USER_REVIEW`；下文 M4.3 四入口是已封存阶段事实，不是当前菜单。
+
+> **2026-09-05 Harness 工作区增量**：本文件主体保留 2026-08-25 的 M4.5 封版事实。分离后的 `classin-ai-harness` 已新增 TeachBuddy 文本运行入口、本机 BFF、固定 DeepSeek Harness Adapter、教学文稿工具和 Session 文件库，并完成真实 DeepSeek 文本、工具、保存、停止、重启恢复及 HTML 文件自动归档验收。最新状态以 [Harness 接入边界](../06-architecture/DEEPSEEK-HARNESS-INTEGRATION.md)、[运行时验收记录](../04-specs/features/teachbuddy-agent-runtime/ACCEPTANCE.md) 和 [Session 文件库 Spec](../04-specs/features/teachbuddy-session-files/FEATURE-SPEC.md) 为准。下面“没有模型 Runtime”只描述原封版基线，不描述新增代码。
+
 | 范围 | 工程状态 | 用户 Review Gate |
 | --- | --- | --- |
 | ClassIn PC 教师/学生产品基座 | 已迁入根 `src/` 单应用并持续可运行 | 已通过既有阶段验收 |
@@ -28,9 +34,10 @@ date: 2026-09-06
 | M4.3 ClassIn 内嵌 MVP 入口 | D-098～D-101 已实施：Demo 双入口共存，终局/MVP 独立 Product Module、Shell/导航、配置、Route 与 Data Space；MVP 左栏将原新建任务入口改名为“我的任务”，页面流程不变，并保留 Skills/Tools/Files、隐藏 Schedules/Settings；Launch Context、返回链路与跨 Experience 隔离均通过工程 Gate | 2026-08-25 用户完成页面验收，`COMPLETE_USER_ACCEPTED` |
 | M4.4 独立教师 ClassIn TeachBuddy Web 产品 | 第三套独立 Product Module 已完成：独立官网、教师个人账号、完整任务/能力工作台、AI 点数预占/结算/释放、模拟会员订单、无 ClassIn Context 执行及 ClassIn 价值转化；不挂载 ClassIn 业务 Provider，不共享终局/MVP 私有数据；内容资源统一采用 TeacherIn 兼容格式，为未来受治理接入内部内容生态保留零格式转换路径 | 2026-08-25 用户完成方案与页面 Review，`COMPLETE_USER_ACCEPTED` |
 | M4.5 全局 Demo 体验收口 | IA、UI、交互、引导和 Demo Release Gate；不改变 M4.2～M4.4 已验收的底层功能和业务逻辑 | 2026-08-25 用户确认阶段体验验收完成，`COMPLETE_USER_ACCEPTED` |
+| TeachBuddy Session 文件库增量 | `SessionFileLibrary`、本地 `.runtime/files` Adapter、MD/HTML/TXT/JSON、按 Session 分组、安全预览、下载及回到来源对话已实现；生成后自动留存与 Approval/正式发布分离 | 工程 Gate 与真实模型验收通过，`IMPLEMENTED_PENDING_USER_REVIEW` |
 | M5–M10 | M5 规格已就绪；后续生产交付路线保留 | `PARKED`，待 M4.5 后独立恢复 |
 
-所有当前运行结果均为固定、脱敏、可重置的 `[模拟]` 数据；没有真实 ClassIn API、模型 Runtime、生产授权或长期记忆。
+既有 ClassIn 业务对象仍为固定、脱敏、可重置的 Demo 数据；TeachBuddy 文本 Runtime 与 Session 文件库已接入真实 DeepSeek 和本机持久化，但仍没有真实 ClassIn API、生产授权、跨设备存储或长期记忆。
 
 ## 2. 周一阶段一到阶段四收尾
 

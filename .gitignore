@@ -15,6 +15,8 @@ test-results/
 *.log
 *.inspect.ndjson
 .codex-tmp/
+.scratch/
+.runtime/
 
 # Derived TeachBuddy demo-video QA artifacts; keep the source frames and final 30s export.
 prototype/teachbuddy-courseware-video/qa/
@@ -24,3 +26,8 @@ prototype/teachbuddy-courseware-video/output/teachbuddy-courseware-full-workflow
 
 # Local product research captures; derived evidence belongs in docs/01-research/.
 reference/
+
+# AgentIn Demo assets are app inputs, not local research captures.
+!public/reference/
+public/reference/*
+!public/reference/agentin/

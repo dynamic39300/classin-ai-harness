@@ -36,7 +36,7 @@ describe("WorkBuddy capability workspace model", () => {
 
   it('exposes only active destinations while retaining the dormant content module', () => {
     expect(WORKBUDDY_VISIBLE_CAPABILITIES.map(({ id }) => id)).toEqual([
-      'skills', 'tools', 'files', 'schedules', 'settings',
+      'skills', 'agentin', 'tools', 'files', 'schedules', 'settings',
     ]);
     expect(getWorkBuddyCapability('content')?.availability).toBe('dormant');
   });
