@@ -11,7 +11,7 @@ import {
   UserRound,
   Wrench,
 } from 'lucide-react';
-import { TEACHBUDDY_BRAND } from '@contracts/workbuddy/product-brand';
+import { TEACHBUDDY_IM_ASSISTANT_LABEL } from '@contracts/workbuddy/product-brand';
 import { useEffect, useMemo, useState } from 'react';
 import type { ConversationRunEvent } from '@contracts/workbuddy/conversation-run';
 import type { WorkBuddyImRunProjection } from '@contracts/workbuddy/im-conversation-run';
@@ -100,7 +100,7 @@ export function WorkBuddyImRunTimeline({ run }: Readonly<{ run: WorkBuddyImRunPr
   )), [run.events]);
 
   return (
-    <section className={styles.runSurface} aria-label={`${TEACHBUDDY_BRAND.shortName} Agent Run`}>
+    <section className={styles.runSurface} aria-label={`${TEACHBUDDY_IM_ASSISTANT_LABEL} Agent Run`}>
       <header className={styles.runHeader}>
         <div><span>Agent Run</span><strong>{run.title}</strong></div>
         <div className={styles.runProgress} data-status={run.progress.status} role="status">

@@ -12,6 +12,9 @@ export const TEACHBUDDY_BRAND = Object.freeze({
   workspaceDescriptor: '教师工作空间',
 });
 
+/** Contextual label used by the assistant embedded inside IM surfaces. */
+export const TEACHBUDDY_IM_ASSISTANT_LABEL = 'AI 消息小助手';
+
 export const STANDALONE_TEACHBUDDY_ROUTES = Object.freeze({
   root: '/teachbuddy',
   login: '/teachbuddy/login',

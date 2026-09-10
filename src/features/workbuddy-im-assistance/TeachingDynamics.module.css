@@ -4,7 +4,7 @@
   overflow: clip;
   border: 0;
   border-radius: 0;
-  background: var(--color-surface);
+  background: color-mix(in srgb, var(--color-brand-soft) 72%, var(--color-surface));
   box-shadow: none;
   transition: background-color var(--message-shell-transition-duration, 320ms) var(--ease-out);
 }
@@ -19,7 +19,7 @@
   justify-content: space-between;
   gap: var(--space-xs);
   padding: var(--space-sm) var(--space-md);
-  background: color-mix(in srgb, var(--color-action-soft) 26%, var(--color-surface));
+  background: transparent;
   transition: min-height var(--message-shell-transition-duration, 320ms) var(--ease-out), padding var(--message-shell-transition-duration, 320ms) var(--ease-out), background-color var(--message-shell-transition-duration, 320ms) var(--ease-out);
 }
 
@@ -80,12 +80,12 @@
 }
 
 .moduleToggle {
-  display: inline-flex;
-  min-height: 2rem;
+  display: inline-grid;
+  width: 2rem;
+  height: 2rem;
   flex: 0 0 auto;
-  align-items: center;
-  gap: var(--space-2xs);
-  padding: 0 var(--space-xs);
+  place-items: center;
+  padding: 0;
   border-radius: var(--radius-control);
   background: transparent;
   color: var(--color-ink-secondary);
@@ -117,7 +117,7 @@
   align-items: center;
   padding: 0 var(--space-xs);
   border-radius: var(--radius-round);
-  background: var(--color-action-soft);
+  background: var(--color-brand-soft);
   color: var(--color-action-strong);
   font-size: .625rem;
   font-weight: var(--font-weight-semibold);
@@ -149,13 +149,6 @@
 
 .content { padding: var(--space-xs) var(--space-md) var(--space-md); }
 
-.guideHint {
-  margin: 0 0 var(--space-xs);
-  color: var(--color-ink-muted);
-  font-size: .6875rem;
-  line-height: 1.45;
-}
-
 .feedback {
   margin: 0 0 var(--space-xs);
   color: var(--color-ink-muted);
@@ -173,7 +166,7 @@
 .stageTabs::before {
   position: absolute;
   z-index: -1;
-  top: 1.25rem;
+  top: 1.5625rem;
   right: 12.5%;
   left: 12.5%;
   height: var(--rule-thin);
@@ -185,8 +178,7 @@
   display: grid;
   min-width: 0;
   justify-items: center;
-  gap: .25rem;
-  padding: 0 .125rem var(--space-3xs);
+  padding: 0 .125rem;
   background: transparent;
   color: var(--color-ink-muted);
   cursor: pointer;
@@ -195,17 +187,23 @@
 
 .stageDot {
   display: inline-grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3.125rem;
+  height: 3.125rem;
   place-items: center;
+  align-content: center;
+  gap: .0625rem;
   border: .125rem solid var(--color-surface);
   border-radius: 50%;
   background: var(--color-surface-selected);
   box-shadow: 0 0 0 var(--rule-thin) var(--color-line-control);
   color: var(--color-ink-muted);
+  transition: background-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+.stageLabel {
   font-size: .6875rem;
   font-weight: var(--font-weight-semibold);
-  transition: background-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+  line-height: 1.15;
 }
 
 .stageTab[aria-selected='true'] .stageDot {
@@ -220,16 +218,12 @@
 }
 
 .stageCount {
-  overflow: hidden;
-  max-width: 100%;
-  color: var(--color-ink-muted);
-  font-size: .625rem;
-  line-height: 1.2;
-  text-overflow: ellipsis;
+  color: currentColor;
+  font-size: .5625rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.1;
   white-space: nowrap;
 }
-
-.stageTab[aria-selected='true'] .stageCount { color: var(--color-action-strong); }
 
 .stageCard {
   overflow: hidden;
@@ -259,10 +253,10 @@
 button.item { cursor: pointer; }
 
 button.item:hover {
-  background: color-mix(in srgb, var(--color-action-soft) 42%, var(--color-surface));
+  background: color-mix(in srgb, var(--color-brand-soft) 42%, var(--color-surface));
 }
 
-button.item:active { background: var(--color-action-soft); }
+button.item:active { background: var(--color-brand-soft); }
 button.item:disabled { cursor: default; opacity: .45; }
 
 .itemCopy {
@@ -353,7 +347,6 @@ button.item:disabled { cursor: default; opacity: .45; }
 }
 
 @container (max-width: 21rem) {
-  .moduleToggle span { display: none; }
   .stageCount { font-size: .5rem; }
   .item { grid-template-columns: minmax(0, 1fr); }
   .itemAction,

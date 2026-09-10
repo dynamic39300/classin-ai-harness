@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useMessageWorkspaceShell } from './MessageWorkspaceShellContext';
-import { TEACHBUDDY_BRAND } from '@contracts/workbuddy/product-brand';
+import { TEACHBUDDY_IM_ASSISTANT_LABEL } from '@contracts/workbuddy/product-brand';
 import {
   readWorkBuddyExitGuidanceSuppressed,
   resetWorkBuddyExitGuidanceOnFullPageReload,
@@ -34,7 +34,7 @@ function isEditingTarget(target: EventTarget | null): boolean {
 
 function hasLocalEscapeSurface(): boolean {
   return Boolean(document.querySelector(
-    `dialog[open], [role="dialog"], [role="menu"], [aria-label="${TEACHBUDDY_BRAND.shortName} 私密协作窗口"][data-dismissible="true"]`,
+    `dialog[open], [role="dialog"], [role="menu"], [aria-label="${TEACHBUDDY_IM_ASSISTANT_LABEL}私密协作窗口"][data-dismissible="true"]`,
   ));
 }
 
@@ -156,7 +156,7 @@ export function ImmersiveMessageWorkspaceFrame({
 
   const requestExitWithGuidance = () => {
     resetEscape();
-    const workBuddyWasVisible = Boolean(document.querySelector(`[aria-label="${TEACHBUDDY_BRAND.shortName} 私密协作窗口"]`));
+    const workBuddyWasVisible = Boolean(document.querySelector(`[aria-label="${TEACHBUDDY_IM_ASSISTANT_LABEL}私密协作窗口"]`));
     if (showWorkBuddyExitGuidance && workBuddyWasVisible && !exitGuidanceSuppressed) {
       clearExitGuidanceTimer();
       exitGuidancePendingRef.current = true;
@@ -234,7 +234,7 @@ export function ImmersiveMessageWorkspaceFrame({
       <div className={styles.content} data-message-shell-content>{children}</div>
       {exitGuidanceVisible ? (
         <section
-          aria-label={`${TEACHBUDDY_BRAND.shortName} 退出引导`}
+          aria-label={`${TEACHBUDDY_IM_ASSISTANT_LABEL}退出引导`}
           className={styles.exitGuidance}
           data-paused={exitGuidancePaused || undefined}
           onBlurCapture={(event) => {
@@ -252,7 +252,7 @@ export function ImmersiveMessageWorkspaceFrame({
               <small>会话和任务进度已保留。</small>
             </span>
             <div className={styles.exitGuidanceActions}>
-              <button type="button" onClick={reopenWorkBuddy}><Sparkles aria-hidden="true" size={14} />重新打开 {TEACHBUDDY_BRAND.shortName}</button>
+              <button type="button" onClick={reopenWorkBuddy}><Sparkles aria-hidden="true" size={14} />重新打开{TEACHBUDDY_IM_ASSISTANT_LABEL}</button>
               <label className={styles.exitGuidancePreference}>
                 <input
                   checked={exitGuidanceSuppressed}

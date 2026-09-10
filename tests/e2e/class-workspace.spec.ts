@@ -161,11 +161,11 @@ test('uses the immersive single-class chat with WorkBuddy and returns to the cla
     await expect(conversation.getByRole('button', { name: label, exact: true })).toBeVisible();
   }
 
-  await expect(page.getByRole('complementary', { name: 'TeachBuddy 私密协作窗口' })).toBeVisible();
+  await expect(page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' })).toBeVisible();
   await expect(conversation.getByRole('button', { name: 'TeachBuddy' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '关闭 TeachBuddy' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '关闭 AI 消息小助手' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: '消息通信主工作台' })).toContainText('高二物理 3 班');
-  const separator = page.getByRole('separator', { name: '调整 TeachBuddy 宽度' });
+  const separator = page.getByRole('separator', { name: '调整AI 消息小助手宽度' });
   await expect(separator).toBeVisible();
   await separator.focus();
   await page.keyboard.press('Home');
@@ -208,7 +208,7 @@ test('student class chat uses one immersive navigation layer without teacher Wor
   await expect(page.getByRole('heading', { level: 1, name: '班级群聊' })).toHaveCount(1);
   await expect(page.getByRole('navigation', { name: '学生视角主导航' })).toBeHidden();
   await expect(page.getByRole('region', { name: '高二物理 3 班会话' })).toBeVisible();
-  await expect(page.getByRole('complementary', { name: 'TeachBuddy 私密协作窗口' })).toHaveCount(0);
+  await expect(page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '会话管理', exact: true })).toHaveCount(0);
   await expectNoSeriousA11yViolations(page);
 

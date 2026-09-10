@@ -1,7 +1,7 @@
 import { Check, ChevronDown, ChevronRight, ChevronUp, Sparkles, X } from 'lucide-react';
 import { useLayoutEffect, useRef } from 'react';
 import type { TeachingDynamicAction, TeachingDynamicItem, TeachingDynamicsSnapshot, TeachingStageId } from '@contracts/workbuddy/teaching-dynamics';
-import { TEACHBUDDY_BRAND } from '@contracts/workbuddy/product-brand';
+import { TEACHBUDDY_IM_ASSISTANT_LABEL } from '@contracts/workbuddy/product-brand';
 import { TeachBuddyAvatar } from '@design-system/TeachBuddyAvatar';
 import { projectTeachingStage, teachingDynamicsCompactLabel, TEACHING_STAGE_ORDER } from '@domain/workbuddy/teaching-dynamics';
 import styles from './TeachingDynamics.module.css';
@@ -13,6 +13,7 @@ type Props = Readonly<{
   loading?: boolean;
   error?: string;
   updatedWhileCompact?: boolean;
+  contextPrefix?: string;
   disabled?: boolean;
   isActionDisabled?: (action: TeachingDynamicAction) => boolean;
   onExpandedChange: (expanded: boolean) => void;
@@ -22,14 +23,22 @@ type Props = Readonly<{
   onClose?: () => void;
 }>;
 
-function StageItem({ item, disabled, onAction }: Readonly<{
+function visibleContextLabel(contextLabel: string | undefined, contextPrefix: string | undefined) {
+  if (!contextLabel || !contextPrefix) return contextLabel;
+  const prefix = `${contextPrefix} · `;
+  return contextLabel.startsWith(prefix) ? contextLabel.slice(prefix.length) : contextLabel;
+}
+
+function StageItem({ item, contextPrefix, disabled, onAction }: Readonly<{
   item: TeachingDynamicItem;
+  contextPrefix?: string;
   disabled: boolean;
   onAction: (action: TeachingDynamicAction) => void;
 }>) {
+  const contextLabel = visibleContextLabel(item.contextLabel, contextPrefix);
   const copy = <>
     <span className={styles.itemCopy}>
-      {item.contextLabel ? <span className={styles.itemContext}>{item.contextLabel}</span> : null}
+      {contextLabel ? <span className={styles.itemContext}>{contextLabel}</span> : null}
       <strong>{item.title}</strong>
       <span className={styles.itemDetail}>{item.detail}</span>
     </span>
@@ -43,7 +52,7 @@ function StageItem({ item, disabled, onAction }: Readonly<{
       className={styles.item}
       type="button"
       disabled={disabled}
-      aria-label={`${item.action.label}：${item.contextLabel ? `${item.contextLabel}，` : ''}${item.title}`}
+      aria-label={`${item.action.label}：${contextLabel ? `${contextLabel}，` : ''}${item.title}`}
       onClick={() => onAction(item.action!)}
     >{copy}</button>;
   }
@@ -57,6 +66,7 @@ export function TeachingDynamics({
   loading = false,
   error = '',
   updatedWhileCompact = false,
+  contextPrefix,
   disabled = false,
   isActionDisabled,
   onExpandedChange,
@@ -88,7 +98,7 @@ export function TeachingDynamics({
   return (
     <section
       className={styles.module}
-      aria-label="TeachBuddy 消息建议"
+      aria-label={`${TEACHBUDDY_IM_ASSISTANT_LABEL}建议`}
       data-expanded={expanded ? 'true' : 'false'}
     >
       <header className={styles.moduleHeader}>
@@ -96,11 +106,11 @@ export function TeachingDynamics({
           <TeachBuddyAvatar size="compact" />
           <div className={styles.assistantCopy}>
             <div className={styles.identityLine}>
-              <strong>{TEACHBUDDY_BRAND.shortName}</strong>
+              <strong>{TEACHBUDDY_IM_ASSISTANT_LABEL}</strong>
               <span>仅你可见</span>
             </div>
             <p>{expanded
-              ? '您好，我会根据当前教学进展，帮您把要发给学生的消息整理好。'
+              ? '选择教学环节，点一条建议，我帮您起草消息，确认后一键发送。'
               : compactSummary}</p>
           </div>
         </div>
@@ -111,14 +121,13 @@ export function TeachingDynamics({
             type="button"
             aria-expanded={expanded}
             aria-controls="teaching-dynamics-content"
-            aria-label={expanded ? '收起 TeachBuddy 消息建议' : '展开 TeachBuddy 消息建议'}
+            aria-label={expanded ? `收起 ${TEACHBUDDY_IM_ASSISTANT_LABEL}建议` : `展开 ${TEACHBUDDY_IM_ASSISTANT_LABEL}建议`}
             onClick={() => onExpandedChange(!expanded)}
             ref={toggleRef}
           >
-            <span>{expanded ? '收起' : '展开'}</span>
             {expanded ? <ChevronUp aria-hidden="true" size={15} /> : <ChevronDown aria-hidden="true" size={15} />}
           </button>
-          {onClose ? <button className={styles.closeButton} type="button" aria-label={`关闭 ${TEACHBUDDY_BRAND.shortName}`} onClick={onClose}><X aria-hidden="true" size={16} /></button> : null}
+          {onClose ? <button className={styles.closeButton} type="button" aria-label={`关闭 ${TEACHBUDDY_IM_ASSISTANT_LABEL}`} onClick={onClose}><X aria-hidden="true" size={16} /></button> : null}
         </div>
       </header>
 
@@ -130,7 +139,6 @@ export function TeachingDynamics({
       >
         <div className={styles.contentRevealInner}>
           <div className={styles.content}>
-            <p className={styles.guideHint}>选个环节，点一条建议，我马上起草，您确认后发送。</p>
             {loading && !snapshot ? <p className={styles.feedback} role="status">正在读取当前教学进度…</p> : null}
             {error ? <div className={styles.error} role="alert"><span>{error}</span>{onRetry ? <button type="button" onClick={onRetry}>重试</button> : null}</div> : null}
             {snapshot ? <>
@@ -153,6 +161,9 @@ export function TeachingDynamics({
                   const stageStatus = stage.actionableCount
                     ? `建议 ${stage.actionableCount} 条`
                     : stage.items.some(({ kind }) => kind === 'unknown') ? '待核对' : '已核对';
+                  const compactStageStatus = stage.actionableCount
+                    ? `${stage.actionableCount}条`
+                    : stage.items.some(({ kind }) => kind === 'unknown') ? '待核' : '已核';
                   return <button
                     className={styles.stageTab}
                     data-current={current ? 'true' : 'false'}
@@ -166,8 +177,10 @@ export function TeachingDynamics({
                     key={stageId}
                     onClick={() => selectStage(stageId)}
                   >
-                    <span className={styles.stageDot} aria-hidden="true">{stage.label}</span>
-                    <span className={styles.stageCount} aria-hidden="true">{stageStatus}</span>
+                    <span className={styles.stageDot} aria-hidden="true">
+                      <span className={styles.stageLabel}>{stage.label}</span>
+                      <span className={styles.stageCount}>{compactStageStatus}</span>
+                    </span>
                   </button>;
                 })}
               </div>
@@ -180,7 +193,7 @@ export function TeachingDynamics({
                 aria-labelledby={`teaching-stage-tab-${activeStage}`}
                 key={activeStage}
               >
-                {projection?.items.length ? <div className={styles.items}>{projection.items.map((item) => <StageItem key={item.id} item={item} disabled={disabled || Boolean(item.action && isActionDisabled?.(item.action))} onAction={onAction} />)}</div>
+                {projection?.items.length ? <div className={styles.items}>{projection.items.map((item) => <StageItem key={item.id} item={item} contextPrefix={contextPrefix} disabled={disabled || Boolean(item.action && isActionDisabled?.(item.action))} onAction={onAction} />)}</div>
                   : <p className={styles.cleared}><Check aria-hidden="true" size={14} />这个阶段当前没有需要处理的事项</p>}
               </section>
             </> : null}

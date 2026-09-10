@@ -47,7 +47,7 @@ import {
   type SetStateAction,
 } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { TEACHBUDDY_BRAND } from '@contracts/workbuddy/product-brand';
+import { TEACHBUDDY_IM_ASSISTANT_LABEL } from '@contracts/workbuddy/product-brand';
 import type { AppRole } from '@domain/account/role';
 import type {
   AgentMentionEntity,
@@ -1165,7 +1165,7 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     const destination = targetThreadRef
       ? threads.find(({ id, category: destinationCategory, visibleTo }) => id === targetThreadRef && destinationCategory === 'direct' && visibleTo.includes(role))
       : thread;
-    if (!destination) { setFeedback('目标学生私聊暂时不可用，内容仍保留在 TeachBuddy 中。'); return; }
+    if (!destination) { setFeedback(`目标学生私聊暂时不可用，内容仍保留在${TEACHBUDDY_IM_ASSISTANT_LABEL}中。`); return; }
     setComposerForThread(destination.id, normalizedBody);
     if (destination.id !== thread.id) setSearchParams({ category: 'direct', thread: destination.id });
     setFeedback('回复建议已插入输入框，请确认后发送。');
@@ -1447,9 +1447,9 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
                 type="button"
                 aria-expanded={onEnterImmersive ? false : workBuddyOpen}
                 onClick={() => activateWorkBuddy(thread)}
-                title={onEnterImmersive ? `打开 ${TEACHBUDDY_BRAND.shortName} 并进入沉浸模式` : `打开 ${TEACHBUDDY_BRAND.shortName}`}
+                title={onEnterImmersive ? `打开${TEACHBUDDY_IM_ASSISTANT_LABEL}并进入沉浸模式` : `打开${TEACHBUDDY_IM_ASSISTANT_LABEL}`}
               >
-                <TeachBuddyAvatar size="micro" />{TEACHBUDDY_BRAND.shortName}
+                <TeachBuddyAvatar size="micro" />{TEACHBUDDY_IM_ASSISTANT_LABEL}
               </button>
             ) : null}
             {conversationMenuAvailable ? (

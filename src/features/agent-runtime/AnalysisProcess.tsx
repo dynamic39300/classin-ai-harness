@@ -8,6 +8,7 @@ type Props = Readonly<{
   session: Pick<RuntimeSession, 'id' | 'status' | 'events'> & Readonly<{ updatedAt?: string }>;
   mode?: 'full' | 'compact';
   context?: AnalysisContextEvidence | null;
+  assistantLabel?: string;
 }>;
 
 const stateLabels: Record<AnalysisProcessStep['state'], string> = {
@@ -42,7 +43,7 @@ function StepIcon({ state }: Readonly<{ state: AnalysisProcessStep['state'] }>) 
   return <Circle size={9} aria-hidden="true" />;
 }
 
-export function AnalysisProcess({ session, mode = 'full', context }: Props) {
+export function AnalysisProcess({ session, mode = 'full', context, assistantLabel = 'TeachBuddy' }: Props) {
   const [now, setNow] = useState(Date.now);
   const projection = useMemo(() => projectAnalysisProcess({ session, now, context }), [context, now, session]);
   const [preference, setPreference] = useState<Readonly<{ runRef: string; status: string; expanded: boolean }> | null>(null);
@@ -60,7 +61,7 @@ export function AnalysisProcess({ session, mode = 'full', context }: Props) {
   const heading = `${statusLabel(projection.status)} · ${projection.steps.length} 个步骤 · ${elapsedLabel(projection.elapsedMs)}`;
 
   return (
-    <section className={styles.process} data-mode={mode} data-status={projection.status} aria-label="TeachBuddy 分析过程">
+    <section className={styles.process} data-mode={mode} data-status={projection.status} aria-label={`${assistantLabel} 分析过程`}>
       <button className={styles.summary} type="button" aria-expanded={expanded} onClick={() => setPreference({ runRef: projection.runRef, status: projection.status, expanded: !expanded })}>
         <span className={styles.summaryState}><span className={styles.summaryIcon}><StepIcon state={projection.status === 'completed' ? 'completed' : projection.status === 'failed' ? 'failed' : projection.status === 'stopped' ? 'stopped' : 'running'} /></span><strong>{heading}</strong></span>
         <span className={styles.toggleLabel}>{expanded ? '收起' : '展开'}<ChevronDown size={14} aria-hidden="true" /></span>

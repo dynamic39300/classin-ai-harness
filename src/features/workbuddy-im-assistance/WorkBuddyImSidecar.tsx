@@ -7,7 +7,7 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { TEACHBUDDY_BRAND } from '@contracts/workbuddy/product-brand';
+import { TEACHBUDDY_IM_ASSISTANT_LABEL } from '@contracts/workbuddy/product-brand';
 import { WorkspaceComposer } from '@design-system/WorkspaceComposer';
 import { TeachBuddyAvatar } from '@design-system/TeachBuddyAvatar';
 import { useWorkBuddyIm, WORKBUDDY_IM_DIRECT_REFERENCE_TASK, WORKBUDDY_IM_GUIDED_EXPLANATION_TASK, WORKBUDDY_IM_REFERENCE_TASK, WORKBUDDY_IM_TASKS } from './workbuddy-im-store';
@@ -98,7 +98,7 @@ function LegacyWorkBuddyImSidecar({ onLocateMessage, onInsertDirectReply, onClos
   const composerDisabled = run.status === 'sending' || run.status === 'explanation-sending';
   const composerActionLabel = run.status === 'ready'
     ? directContext ? '生成回复建议' : '生成消息草稿'
-    : run.status === 'generating' ? '发送补充要求' : `发送给 ${TEACHBUDDY_BRAND.shortName}`;
+    : run.status === 'generating' ? '发送补充要求' : `发送给 ${TEACHBUDDY_IM_ASSISTANT_LABEL}`;
   const composerHint = run.status === 'generating'
     ? '任务执行中；补充内容会作为教师消息加入当前私密 Run'
     : run.status === 'sending'
@@ -109,7 +109,7 @@ function LegacyWorkBuddyImSidecar({ onLocateMessage, onInsertDirectReply, onClos
           ? '回复建议尚未发送；可继续调整或插入当前回复框'
           : directContext
             ? '内容仅用于当前私聊的教师回复辅助'
-            : `内容仅进入教师与 ${TEACHBUDDY_BRAND.shortName} 的私密任务窗口`;
+            : `内容仅进入教师与${TEACHBUDDY_IM_ASSISTANT_LABEL}的私密任务窗口`;
   const submitComposer = () => {
     const text = composerDraft.trim();
     if (!text || composerDisabled) return;
@@ -119,16 +119,16 @@ function LegacyWorkBuddyImSidecar({ onLocateMessage, onInsertDirectReply, onClos
   };
 
   return (
-    <aside className={styles.sidecar} aria-label={`${TEACHBUDDY_BRAND.shortName} 私密协作窗口`} data-dismissible={onClose ? 'true' : 'false'} data-surface="floating-assistant" id="workbuddy-im-sidecar">
+    <aside className={styles.sidecar} aria-label={`${TEACHBUDDY_IM_ASSISTANT_LABEL}私密协作窗口`} data-dismissible={onClose ? 'true' : 'false'} data-surface="floating-assistant" id="workbuddy-im-sidecar">
       <header className={styles.header}>
         <div className={styles.identity}>
           <TeachBuddyAvatar size="compact" />
-          <strong>{TEACHBUDDY_BRAND.shortName}</strong>
+          <strong>{TEACHBUDDY_IM_ASSISTANT_LABEL}</strong>
           <span aria-label={TEACHBUDDY_GREETING} className={styles.greeting}>{greeting}{greeting !== TEACHBUDDY_GREETING ? <i aria-hidden="true" /> : null}</span>
         </div>
         <div className={styles.headerActions}>
           <span className={styles.context}><small>当前上下文</small><strong title={target.classLabel}>{target.classLabel}</strong></span>
-          {onClose ? <button type="button" aria-label={`关闭 ${TEACHBUDDY_BRAND.shortName}`} onClick={onClose}><X aria-hidden="true" size={17} /></button> : null}
+          {onClose ? <button type="button" aria-label={`关闭 ${TEACHBUDDY_IM_ASSISTANT_LABEL}`} onClick={onClose}><X aria-hidden="true" size={17} /></button> : null}
         </div>
       </header>
 
@@ -273,7 +273,7 @@ function LegacyWorkBuddyImSidecar({ onLocateMessage, onInsertDirectReply, onClos
       </div>
 
       <WorkspaceComposer
-        ariaLabel={`向 ${TEACHBUDDY_BRAND.shortName} 输入要求`}
+        ariaLabel={`向 ${TEACHBUDDY_IM_ASSISTANT_LABEL}输入要求`}
         className={styles.runComposerDock}
         countThreshold={COMPOSER_COUNT_THRESHOLD}
         disabled={composerDisabled}
@@ -281,7 +281,7 @@ function LegacyWorkBuddyImSidecar({ onLocateMessage, onInsertDirectReply, onClos
         maxLength={COMPOSER_MAX_LENGTH}
         onSubmit={submitComposer}
         onValueChange={actions.editComposerDraft}
-        placeholder={run.status === 'generating' ? '补充要求或调整语气…' : directContext ? '例如：帮我拟一条简洁、专业的回复…' : `给 ${TEACHBUDDY_BRAND.shortName} 安排任务或继续追问…`}
+        placeholder={run.status === 'generating' ? '补充要求或调整语气…' : directContext ? '例如：帮我拟一条简洁、专业的回复…' : `给${TEACHBUDDY_IM_ASSISTANT_LABEL}安排任务或继续追问…`}
         submitLabel={composerActionLabel}
         value={composerDraft}
       />
