@@ -177,3 +177,5 @@
 修改 `LOCKED` 决策前先在本文件记录替代方案、证据、影响和用户确认状态。研究结果只能提出 `RECOMMENDATION`，不能静默升级为 `LOCKED`。
 
 | D-147 | LOCKED | 普通 IM 的消息交付、历史分页、连接和会话访问统一通过 `MessageLifecyclePort`；用户提交先生成稳定 `clientRequestId` 和 `sending` Snapshot，随后只按 Receipt 证据投影 `sent/delivered/read`。可恢复失败就地保留原消息并复用幂等键，版本冲突先同步，重连不自动重发；退出或结课群保留获授权的历史、群资料和群文件阅读，同时关闭写入和消息修改。 | 用户完成前六阶段 Review 后授权继续完成全部余下阶段；最后阶段需要把本地数组追加升级为生产语义可验证、又不冒充生产服务的闭环。 | `MessageLifecyclePort` 隔离未来 ClassIn Message API、WebSocket、身份、存储与权限实现；默认 Memory Adapter 只输出 `SIMULATED` 回执。Agent Runtime 保持独立。好友通过、成员加入、班级改名和只读历史群作为固定治理场景；临时教室创建的 `ON-GOV-02/07` 冲突继续单独决策。详见 `workbuddy-im-collaboration/IM-MESSAGE-LIFECYCLE-AND-GOVERNANCE-FEATURE-SPEC.md`。 |
+
+| D-149 | LOCKED | IM Copilot 的四阶段导航取消自动轮播及播放/暂停控制，只在首次进入时选中真实当前阶段，之后由老师手动切换。四个放大圆形入口内直接显示`课前 / 课中 / 课后 / 总结`，删除`1 / 2 / 3 / 4`步骤编号、圈外重复阶段名和内容卡内重复的阶段及通用说明行。 | 用户审阅方案二页面后明确确认取消轮播，并要求删去播放按钮、步骤编号、圈外重复阶段文字及内容卡重复标题，同时保留默认展开和对话下滑自动收起。 | 模块进入当前聊天时默认展开；老师点击顶部箭头或向下滚动 TeachBuddy 对话区时收起，点击紧凑摘要原位展开。Tab 角标、业务事项、AI 对话和交付状态均不因展开或收起而改变。 |

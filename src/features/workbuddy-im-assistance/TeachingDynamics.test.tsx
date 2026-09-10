@@ -18,11 +18,10 @@ const snapshot: TeachingDynamicsSnapshot = {
   ],
 };
 
-function Harness({ onAction = vi.fn(), initialAutoRotate = false }: Readonly<{ onAction?: (action: { label: string; teacherRequest: string }) => void; initialAutoRotate?: boolean }>) {
+function Harness({ onAction = vi.fn() }: Readonly<{ onAction?: (action: { label: string; teacherRequest: string }) => void }>) {
   const [expanded, setExpanded] = useState(true);
   const [selectedStage, setSelectedStage] = useState<null | 'before' | 'during' | 'after' | 'summary'>(null);
-  const [autoRotate, setAutoRotate] = useState(initialAutoRotate);
-  return <TeachingDynamics snapshot={snapshot} expanded={expanded} selectedStage={selectedStage} autoRotate={autoRotate} onExpandedChange={setExpanded} onSelectedStageChange={setSelectedStage} onAutoRotateChange={setAutoRotate} onAction={onAction} />;
+  return <TeachingDynamics snapshot={snapshot} expanded={expanded} selectedStage={selectedStage} onExpandedChange={setExpanded} onSelectedStageChange={setSelectedStage} onAction={onAction} />;
 }
 
 describe('TeachingDynamics', () => {
@@ -38,7 +37,8 @@ describe('TeachingDynamics', () => {
     expect(within(module).getByText('6 人尚未提交')).toBeVisible();
     expect(within(module).getByText('1 份待批改')).toBeVisible();
     expect(within(module).queryByText('正在上课，3 人迟到')).not.toBeInTheDocument();
-    expect(within(module).getByRole('button', { name: '继续自动切换' })).toBeVisible();
+    expect(within(module).queryByRole('button', { name: /自动切换/ })).not.toBeInTheDocument();
+    expect(within(module).queryByText('当前班级的课程、学生与任务')).not.toBeInTheDocument();
   });
 
   it('collapses in place and starts an AI prompt from the selected stage', async () => {
@@ -52,17 +52,14 @@ describe('TeachingDynamics', () => {
     expect(screen.getByRole('button', { name: '教学动态｜4 项建议' })).toHaveAttribute('aria-expanded', 'false');
   });
 
-  it('auto-rotates stages and stops rotating after a manual tab choice', async () => {
+  it('keeps the current stage selected until the teacher chooses another tab', () => {
     vi.useFakeTimers();
     try {
-      render(<Harness initialAutoRotate />);
+      render(<Harness />);
       expect(screen.getByRole('tab', { name: /课中/ })).toHaveAttribute('aria-selected', 'true');
-      act(() => vi.advanceTimersByTime(8_000));
-      expect(screen.getByRole('tab', { name: /课后/ })).toHaveAttribute('aria-selected', 'true');
-      act(() => screen.getByRole('tab', { name: /课前/ }).click());
-      expect(screen.getByRole('button', { name: '继续自动切换' })).toBeVisible();
-      act(() => vi.advanceTimersByTime(16_000));
-      expect(screen.getByRole('tab', { name: /课前/ })).toHaveAttribute('aria-selected', 'true');
+      act(() => vi.advanceTimersByTime(60_000));
+      expect(screen.getByRole('tab', { name: /课中/ })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.queryByRole('button', { name: /自动切换/ })).not.toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }

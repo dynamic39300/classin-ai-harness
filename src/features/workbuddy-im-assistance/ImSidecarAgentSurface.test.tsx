@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AgentRuntimeAdapter, RuntimeSession } from '@contracts/workbuddy/agent-runtime';
@@ -21,7 +21,10 @@ function OpenSidecar() {
 }
 
 describe('ImSidecarAgentSurface', () => {
-  beforeEach(() => window.localStorage.clear());
+  beforeEach(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
 
   it('uses the shared runtime, hides the context envelope and sends only after teacher approval', async () => {
     const append = vi.fn();
@@ -60,6 +63,12 @@ describe('ImSidecarAgentSurface', () => {
     expect(within(sidecar).queryByText('DeepSeek 已连接')).not.toBeInTheDocument();
     expect(within(sidecar).queryByText('同一教学 Agent')).not.toBeInTheDocument();
     expect(within(sidecar).queryByRole('combobox')).not.toBeInTheDocument();
+    expect(within(sidecar).getByRole('button', { name: '教学动态' })).toHaveAttribute('aria-expanded', 'true');
+    fireEvent.wheel(within(sidecar).getByRole('region', { name: 'TeachBuddy 对话' }), { deltaY: 80 });
+    const compactDynamics = within(sidecar).getByRole('button', { name: '教学动态｜4 项建议' });
+    expect(compactDynamics).toHaveAttribute('aria-expanded', 'false');
+    await user.click(compactDynamics);
+    expect(within(sidecar).getByRole('button', { name: '教学动态' })).toHaveAttribute('aria-expanded', 'true');
     const composer = within(sidecar).getByRole('textbox', { name: '向 TeachBuddy 输入要求' });
     expect(within(sidecar).getByRole('button', { name: '添加图片' })).toBeVisible();
     await user.type(composer, '拟一条实验提醒');
@@ -67,6 +76,7 @@ describe('ImSidecarAgentSurface', () => {
     expect(await within(sidecar).findByText('拟一条实验提醒')).toBeInTheDocument();
     expect(within(sidecar).queryByText(/TEACHBUDDY_CONTEXT_V1/)).not.toBeInTheDocument();
     expect(within(sidecar).getByText('同学们，请明天带上实验报告。')).toBeInTheDocument();
+    expect(within(sidecar).getByRole('button', { name: '教学动态' })).toHaveAttribute('aria-expanded', 'true');
     await user.click(within(sidecar).getByRole('button', { name: '作为群消息草稿审阅' }));
     expect(append).not.toHaveBeenCalled();
     await user.click(within(sidecar).getByRole('button', { name: '确认并发送至高二物理 3 班' }));

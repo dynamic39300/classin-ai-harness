@@ -30,10 +30,8 @@
   text-align: left;
 }
 
-.moduleToggle:hover,
-.rotateToggle:hover { background: var(--color-surface-hover); }
-.moduleToggle:active,
-.rotateToggle:active { background: var(--color-surface-selected); }
+.moduleToggle:hover { background: var(--color-surface-hover); }
+.moduleToggle:active { background: var(--color-surface-selected); }
 
 .moduleTitle {
   overflow: hidden;
@@ -44,8 +42,7 @@
   white-space: nowrap;
 }
 
-.updateHint,
-.currentBadge {
+.updateHint {
   display: inline-flex;
   min-height: 1.25rem;
   align-items: center;
@@ -56,17 +53,6 @@
   font-size: .625rem;
   font-weight: var(--font-weight-semibold);
   white-space: nowrap;
-}
-
-.rotateToggle {
-  display: inline-grid;
-  width: 2.25rem;
-  height: 2.25rem;
-  flex: 0 0 auto;
-  place-items: center;
-  border-radius: var(--radius-control);
-  color: var(--color-ink-muted);
-  cursor: pointer;
 }
 
 .content { padding: var(--space-xs) var(--space-sm) var(--space-sm); }
@@ -88,7 +74,7 @@
 .stageTabs::before {
   position: absolute;
   z-index: -1;
-  top: .6875rem;
+  top: 1.25rem;
   right: 12.5%;
   left: 12.5%;
   height: var(--rule-thin);
@@ -100,7 +86,7 @@
   display: grid;
   min-width: 0;
   justify-items: center;
-  gap: .125rem;
+  gap: .25rem;
   padding: 0 .125rem var(--space-3xs);
   background: transparent;
   color: var(--color-ink-muted);
@@ -110,15 +96,15 @@
 
 .stageDot {
   display: inline-grid;
-  width: 1.375rem;
-  height: 1.375rem;
+  width: 2.5rem;
+  height: 2.5rem;
   place-items: center;
   border: .125rem solid var(--color-surface);
   border-radius: 50%;
   background: var(--color-surface-selected);
   box-shadow: 0 0 0 var(--rule-thin) var(--color-line-control);
   color: var(--color-ink-muted);
-  font-size: .625rem;
+  font-size: .6875rem;
   font-weight: var(--font-weight-semibold);
   transition: background-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
 }
@@ -129,24 +115,16 @@
   color: var(--color-on-action);
 }
 
-.stageTab[aria-selected='true'] .stageLabel { color: var(--color-ink); }
-
 .stageTab[data-current='true']:not([aria-selected='true']) .stageDot {
   box-shadow: 0 0 0 .125rem color-mix(in srgb, var(--color-action-strong) 28%, transparent);
   color: var(--color-action-strong);
-}
-
-.stageLabel {
-  font-size: .6875rem;
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.25;
 }
 
 .stageCount {
   overflow: hidden;
   max-width: 100%;
   color: var(--color-ink-muted);
-  font-size: .5625rem;
+  font-size: .625rem;
   line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -162,21 +140,6 @@
   box-shadow: 0 .125rem .5rem color-mix(in srgb, var(--color-ink) 6%, transparent);
   animation: stage-card-enter 180ms ease-out;
 }
-
-.stageCardHeader {
-  display: flex;
-  min-height: 2.75rem;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
-  border-bottom: var(--rule-thin) solid var(--color-line-faint);
-  background: color-mix(in srgb, var(--color-action-soft) 34%, var(--color-surface));
-}
-
-.stageCardHeader div { display: grid; min-width: 0; gap: .125rem; }
-.stageCardHeader strong { color: var(--color-ink); font-size: var(--text-xs); }
-.stageCardHeader div span { color: var(--color-ink-muted); font-size: .625rem; }
 
 .items { display: grid; }
 
@@ -279,7 +242,6 @@ button.item:disabled { cursor: default; opacity: .45; }
 .error button { flex: 0 0 auto; color: inherit; cursor: pointer; font-weight: var(--font-weight-semibold); }
 
 .moduleToggle:focus-visible,
-.rotateToggle:focus-visible,
 .stageTab:focus-visible,
 .item:focus-visible {
   outline: .125rem solid var(--color-focus);

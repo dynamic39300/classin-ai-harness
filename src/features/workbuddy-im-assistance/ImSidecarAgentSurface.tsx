@@ -35,30 +35,28 @@ type DeliveryState =
 type TeachingDynamicsPresentation = Readonly<{
   expanded: boolean;
   selectedStage: TeachingStageId | null;
-  autoRotate: boolean;
 }>;
 
 function presentationStorageKey(threadRef: string) {
   return `teachbuddy:teaching-dynamics:${threadRef}`;
 }
 
-function loadPresentation(threadRef: string, hasBoundSession: boolean): TeachingDynamicsPresentation {
+function loadPresentation(threadRef: string): TeachingDynamicsPresentation {
   try {
     const saved = window.sessionStorage.getItem(presentationStorageKey(threadRef));
     if (saved) {
       const value = JSON.parse(saved) as Partial<TeachingDynamicsPresentation>;
       return {
-        expanded: value.expanded !== false,
+        expanded: true,
         selectedStage: value.selectedStage ?? null,
-        autoRotate: value.autoRotate !== false,
       };
     }
   } catch { /* The local preference must not block the teaching workflow. */ }
-  return { expanded: !hasBoundSession, selectedStage: null, autoRotate: true };
+  return { expanded: true, selectedStage: null };
 }
 
 function savePresentation(threadRef: string, presentation: TeachingDynamicsPresentation) {
-  try { window.sessionStorage.setItem(presentationStorageKey(threadRef), JSON.stringify(presentation)); } catch { /* Keep the surface usable without storage. */ }
+  try { window.sessionStorage.setItem(presentationStorageKey(threadRef), JSON.stringify({ selectedStage: presentation.selectedStage })); } catch { /* Keep the surface usable without storage. */ }
 }
 
 export function ImSidecarAgentSurface({ services, target, onLocateMessage, onInsertDirectReply, onClose }: Props) {
@@ -88,11 +86,11 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
   const [dynamicsError, setDynamicsError] = useState('');
   const [dynamicsLoading, setDynamicsLoading] = useState(true);
   const [dynamicsUpdated, setDynamicsUpdated] = useState(false);
-  const [presentation, setPresentation] = useState<TeachingDynamicsPresentation>(() => loadPresentation(target.threadId, Boolean(initialBinding)));
+  const [presentation, setPresentation] = useState<TeachingDynamicsPresentation>(() => loadPresentation(target.threadId));
   const timelineRef = useRef<HTMLDivElement>(null);
+  const presentationExpandedRef = useRef(presentation.expanded);
   const imageDraftsRef = useRef(imageDrafts);
   const pendingImageSubmission = useRef<{ images: readonly RuntimeImageDraft[]; beforeTeacherEventId?: string } | null>(null);
-  const latestTeacherEventIdRef = useRef<string | null>(null);
   const direct = target.kind === 'direct';
   const activeSession = runtime.session;
   const analysisTurns = activeSession ? splitAnalysisProcessTurns(activeSession.events) : [];
@@ -107,7 +105,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
       const next = await services.teachingDynamics.list({ actorRef: services.actor.id, tenantRef: services.tenantRef, target });
       if (next.threadRef !== target.threadId) throw new Error('教学动态与当前会话不匹配，请刷新后重试。');
       setDynamics((current) => {
-        if (current && current.version !== next.version && !presentation.expanded) setDynamicsUpdated(true);
+        if (current && current.version !== next.version && !presentationExpandedRef.current) setDynamicsUpdated(true);
         return next;
       });
       setDynamicsError('');
@@ -116,7 +114,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     } finally {
       setDynamicsLoading(false);
     }
-  }, [presentation.expanded, services.actor.id, services.teachingDynamics, services.tenantRef, target]);
+  }, [services.actor.id, services.teachingDynamics, services.tenantRef, target]);
 
   useEffect(() => {
     let active = true;
@@ -137,7 +135,10 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     };
   }, [loadDynamics]);
 
-  useEffect(() => { savePresentation(target.threadId, presentation); }, [presentation, target.threadId]);
+  useEffect(() => {
+    presentationExpandedRef.current = presentation.expanded;
+    savePresentation(target.threadId, presentation);
+  }, [presentation, target.threadId]);
   useEffect(() => { imageDraftsRef.current = imageDrafts; }, [imageDrafts]);
   useEffect(() => {
     const submitted = pendingImageSubmission.current;
@@ -152,13 +153,6 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     setImageError('');
   }, [runtime.session]);
   useEffect(() => () => releaseRuntimeImageDrafts(imageDraftsRef.current), []);
-
-  useEffect(() => {
-    const latestTeacher = activeSession ? [...activeSession.events].reverse().find(({ kind }) => kind === 'teacher_message') : undefined;
-    if (!latestTeacher || latestTeacher.id === latestTeacherEventIdRef.current) return;
-    latestTeacherEventIdRef.current = latestTeacher.id;
-    setPresentation((current) => ({ ...current, expanded: false }));
-  }, [activeSession]);
 
   useEffect(() => {
     if (!onClose) return;
@@ -301,8 +295,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     setContextError('');
     setLearningResultReady(false);
     setRuntimeArtifactBaselineIds([]);
-    setPresentation({ expanded: true, selectedStage: dynamics?.currentStage ?? null, autoRotate: true });
-    latestTeacherEventIdRef.current = null;
+    setPresentation({ expanded: true, selectedStage: dynamics?.currentStage ?? null });
     releaseRuntimeImageDrafts(imageDrafts);
     setImageDrafts([]);
     setImageError('');
@@ -397,14 +390,22 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         </div>
       </header>
 
-      <div className={styles.agentBody} ref={timelineRef}>
+      <div
+        aria-label="TeachBuddy 对话"
+        className={styles.agentBody}
+        onWheel={(event) => {
+          if (event.deltaY <= 0) return;
+          setPresentation((current) => current.expanded ? { ...current, expanded: false } : current);
+        }}
+        ref={timelineRef}
+        role="region"
+      >
         {connectionProblem ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{connectionProblem}{runtime.health?.message ? `：${runtime.health.message}` : ''}</p><button type="button" onClick={runtime.reconnect}><RefreshCw aria-hidden="true" size={14} />重试</button></div> : null}
 
         <TeachingDynamics
           snapshot={dynamics}
           expanded={presentation.expanded}
           selectedStage={presentation.selectedStage}
-          autoRotate={presentation.autoRotate}
           loading={dynamicsLoading}
           error={dynamicsError || catalogError}
           updatedWhileCompact={dynamicsUpdated}
@@ -414,7 +415,6 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
             if (expanded) setDynamicsUpdated(false);
           }}
           onSelectedStageChange={(selectedStage) => setPresentation((current) => ({ ...current, selectedStage }))}
-          onAutoRotateChange={(autoRotate) => setPresentation((current) => ({ ...current, autoRotate }))}
           onAction={triggerTeachingAction}
           onRetry={() => { void loadDynamics(); runtime.reconnect(); }}
         />
