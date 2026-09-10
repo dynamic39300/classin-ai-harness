@@ -37,14 +37,14 @@ export function getImAgentSessionTrail(target: BindingTarget, storage: Pick<Stor
 }
 
 export function saveImAgentSessionBinding(target: BindingTarget, sessionRef: string, storage: Pick<Storage, 'getItem' | 'setItem'> = window.localStorage): void {
-  if (!identifier.test(sessionRef)) throw new Error('无法保存无效的 AI 消息小助手会话。');
+  if (!identifier.test(sessionRef)) throw new Error('无法保存无效的 AI 消息助手会话。');
   const bindings = read(storage);
   bindings[key(target)] = Object.freeze({ sessionRef, updatedAt: new Date().toISOString() });
   storage.setItem(STORAGE_KEY, JSON.stringify(bindings));
 }
 
 export function rotateImAgentSessionBinding(target: BindingTarget, sessionRef: string, storage: Pick<Storage, 'getItem' | 'setItem'> = window.localStorage): void {
-  if (!identifier.test(sessionRef)) throw new Error('无法保存无效的 AI 消息小助手会话。');
+  if (!identifier.test(sessionRef)) throw new Error('无法保存无效的 AI 消息助手会话。');
   const bindings = read(storage);
   const current = bindings[key(target)];
   const priorSessionRefs = [...new Set([...(current?.priorSessionRefs ?? []), ...(current?.sessionRef ? [current.sessionRef] : [])])]
@@ -55,7 +55,7 @@ export function rotateImAgentSessionBinding(target: BindingTarget, sessionRef: s
 }
 
 export function replaceMissingImAgentSessionBinding(target: BindingTarget, missingSessionRef: string, replacementSessionRef: string, storage: Pick<Storage, 'getItem' | 'setItem'> = window.localStorage): void {
-  if (!identifier.test(missingSessionRef) || !identifier.test(replacementSessionRef)) throw new Error('无法保存无效的 AI 消息小助手会话。');
+  if (!identifier.test(missingSessionRef) || !identifier.test(replacementSessionRef)) throw new Error('无法保存无效的 AI 消息助手会话。');
   const bindings = read(storage);
   const current = bindings[key(target)];
   const priorSessionRefs = [...new Set([...(current?.priorSessionRefs ?? []), ...(current?.sessionRef ? [current.sessionRef] : [])])]

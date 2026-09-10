@@ -4,7 +4,7 @@
   overflow: clip;
   border: 0;
   border-radius: 0;
-  background: color-mix(in srgb, var(--color-brand-soft) 72%, var(--color-surface));
+  background: var(--color-surface-muted);
   box-shadow: none;
   transition: background-color var(--message-shell-transition-duration, 320ms) var(--ease-out);
 }

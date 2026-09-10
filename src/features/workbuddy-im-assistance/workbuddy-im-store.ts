@@ -28,7 +28,7 @@ export type WorkBuddyDirectReplyDraft = Readonly<{
   body: string;
   goal: string;
   version: number;
-  truthLabel: '[模拟] AI 消息小助手私聊回复建议';
+  truthLabel: '[模拟] AI 消息助手私聊回复建议';
 }>;
 
 export type WorkBuddyImRunState =

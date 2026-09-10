@@ -123,7 +123,7 @@ export function WorkBuddyImProvider({ adapter, guidedExplanationAdapter, teacher
             body,
             goal: normalizedGoal,
             version: 1,
-            truthLabel: '[模拟] AI 消息小助手私聊回复建议',
+            truthLabel: '[模拟] AI 消息助手私聊回复建议',
           }),
         }),
         conversation: null,

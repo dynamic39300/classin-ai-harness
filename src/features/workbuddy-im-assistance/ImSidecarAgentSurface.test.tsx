@@ -56,11 +56,12 @@ describe('ImSidecarAgentSurface', () => {
     }
     const user = userEvent.setup();
     render(<MemoryRouter><Tree /></MemoryRouter>);
-    const sidecar = await screen.findByLabelText('AI 消息小助手私密协作窗口');
-    const guide = within(sidecar).getByRole('region', { name: 'AI 消息小助手建议' });
-    expect(within(guide).getByText('AI 消息小助手')).toBeVisible();
-    expect(within(guide).getByText('仅你可见')).toBeVisible();
-    expect(within(guide).getByText('选择教学环节，点一条建议，我帮您起草消息，确认后一键发送。')).toBeVisible();
+    const sidecar = await screen.findByLabelText('AI 消息助手私密协作窗口');
+    const guide = within(sidecar).getByRole('region', { name: 'AI 消息助手建议' });
+    expect(within(guide).getByText('AI 消息助手')).toBeVisible();
+    expect(within(guide).getByText(/^\d+ 项建议$/)).toBeVisible();
+    expect(within(guide).queryByText('仅你可见')).not.toBeInTheDocument();
+    expect(within(guide).getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
     expect(within(guide).getByRole('tablist', { name: '教学阶段' })).toBeVisible();
     expect(within(guide).getByText('动量守恒模型 · 在线课堂')).toBeVisible();
     expect(within(guide).queryByText(/高二物理 3 班 · 动量守恒模型/)).not.toBeInTheDocument();
@@ -69,8 +70,8 @@ describe('ImSidecarAgentSurface', () => {
     expect(within(sidecar).queryByText('同一教学 Agent')).not.toBeInTheDocument();
     expect(within(sidecar).queryByRole('combobox')).not.toBeInTheDocument();
     expect(within(sidecar).queryByRole('button', { name: /新建.*会话/ })).not.toBeInTheDocument();
-    expect(within(guide).getByRole('button', { name: '收起 AI 消息小助手建议' })).toHaveAttribute('aria-expanded', 'true');
-    const conversation = within(sidecar).getByRole('region', { name: 'AI 消息小助手对话' });
+    expect(within(guide).getByRole('button', { name: '收起 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'true');
+    const conversation = within(sidecar).getByRole('region', { name: 'AI 消息助手对话' });
     expect(sidecar.firstElementChild).toBe(guide);
     expect(guide.nextElementSibling).toBe(conversation);
     expect(conversation).not.toContainElement(guide);
@@ -78,25 +79,26 @@ describe('ImSidecarAgentSurface', () => {
     focusedStage.focus();
     expect(focusedStage).toHaveFocus();
     fireEvent.wheel(conversation, { deltaY: 240 });
-    const collapseDynamics = within(guide).getByRole('button', { name: '收起 AI 消息小助手建议' });
+    const collapseDynamics = within(guide).getByRole('button', { name: '收起 AI 消息助手建议' });
     expect(collapseDynamics).toHaveAttribute('aria-expanded', 'true');
     expect(collapseDynamics).toHaveTextContent('');
     await user.click(collapseDynamics);
-    const compactDynamics = within(guide).getByRole('button', { name: '展开 AI 消息小助手建议' });
+    const compactDynamics = within(guide).getByRole('button', { name: '展开 AI 消息助手建议' });
     expect(compactDynamics).toHaveAttribute('aria-expanded', 'false');
     expect(compactDynamics).toHaveFocus();
     expect(guide.querySelector('#teaching-dynamics-content')).toHaveAttribute('aria-hidden', 'true');
     expect(guide.querySelector('#teaching-dynamics-content')).toHaveAttribute('inert');
+    expect(within(guide).getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
     await user.click(compactDynamics);
-    expect(within(guide).getByRole('button', { name: '收起 AI 消息小助手建议' })).toHaveAttribute('aria-expanded', 'true');
-    const composer = within(sidecar).getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+    expect(within(guide).getByRole('button', { name: '收起 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'true');
+    const composer = within(sidecar).getByRole('textbox', { name: '向 AI 消息助手输入要求' });
     expect(within(sidecar).getByRole('button', { name: '添加图片' })).toBeVisible();
     await user.type(composer, '拟一条实验提醒');
-    await user.click(within(sidecar).getByRole('button', { name: '发送给 AI 消息小助手' }));
+    await user.click(within(sidecar).getByRole('button', { name: '发送给 AI 消息助手' }));
     expect(await within(sidecar).findByText('拟一条实验提醒')).toBeInTheDocument();
     expect(within(sidecar).queryByText(/TEACHBUDDY_CONTEXT_V1/)).not.toBeInTheDocument();
     expect(within(sidecar).getByText('同学们，请明天带上实验报告。')).toBeInTheDocument();
-    expect(within(guide).getByRole('button', { name: '收起 AI 消息小助手建议' })).toHaveAttribute('aria-expanded', 'true');
+    expect(within(guide).getByRole('button', { name: '收起 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'true');
     await user.click(within(sidecar).getByRole('button', { name: '作为群消息草稿审阅' }));
     expect(within(sidecar).queryByRole('link', { name: /在 TeachBuddy 中继续/ })).not.toBeInTheDocument();
     expect(append).not.toHaveBeenCalled();
@@ -146,10 +148,10 @@ describe('ImSidecarAgentSurface', () => {
 
     const user = userEvent.setup();
     render(<MemoryRouter><Tree /></MemoryRouter>);
-    const sidecar = await screen.findByLabelText('AI 消息小助手私密协作窗口');
+    const sidecar = await screen.findByLabelText('AI 消息助手私密协作窗口');
     const composer = sidecar.querySelector<HTMLElement>('[data-workspace-composer="true"]');
     expect(composer).not.toBeNull();
-    const conversation = within(sidecar).getByRole('region', { name: 'AI 消息小助手对话' });
+    const conversation = within(sidecar).getByRole('region', { name: 'AI 消息助手对话' });
     Object.defineProperty(conversation, 'scrollHeight', { configurable: true, value: 1_000 });
     Object.defineProperty(conversation, 'clientHeight', { configurable: true, value: 240 });
     Object.defineProperty(conversation, 'scrollTop', { configurable: true, value: 120, writable: true });
@@ -164,10 +166,10 @@ describe('ImSidecarAgentSurface', () => {
     expect(create).not.toHaveBeenCalled();
     expect(scrollTo).not.toHaveBeenCalled();
 
-    const textbox = within(composer!).getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+    const textbox = within(composer!).getByRole('textbox', { name: '向 AI 消息助手输入要求' });
     expect(textbox).toBeEnabled();
     await user.type(textbox, '换一种简短说法');
-    await user.click(within(composer!).getByRole('button', { name: '发送给 AI 消息小助手' }));
+    await user.click(within(composer!).getByRole('button', { name: '发送给 AI 消息助手' }));
     await waitFor(() => expect(send).toHaveBeenCalledTimes(1));
     expect(send.mock.calls[0]?.[1]).toBe('tb-session-keep');
     expect(create).not.toHaveBeenCalled();

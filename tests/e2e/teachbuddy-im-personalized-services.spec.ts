@@ -112,15 +112,15 @@ test('IM Sidecar accepts a pasted image and forwards it with governed context', 
   await mockRuntime(page, messageBodies);
   await page.setViewportSize({ width: 1440, height: 900 });
   await enterTeacherMessages(page, 'class-physics-3');
-  const sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
-  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
   await composer.evaluate((textarea) => {
     const transfer = new DataTransfer();
     transfer.items.add(new File([Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])], '课堂截图.png', { type: 'image/png' }));
     textarea.dispatchEvent(new ClipboardEvent('paste', { clipboardData: transfer, bubbles: true }));
   });
   await expect(sidecar.getByRole('list', { name: '已添加 1 张图片' })).toContainText('课堂截图.png');
-  await sidecar.getByRole('button', { name: '发送给 AI 消息小助手' }).click();
+  await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
   await expect.poll(() => messageBodies.length).toBe(1);
   expect(messageBodies[0]).toMatchObject({ images: [{ name: '课堂截图.png', mediaType: 'image/png', byteSize: 8, data: 'iVBORw0KGgo=' }] });
   expect(String(messageBodies[0]?.text)).toContain('TEACHBUDDY_CONTEXT_V1');
@@ -132,21 +132,21 @@ test('IM Sidecar resumes text in a clean session after the vision credential gat
   const calls = await mockRuntime(page, messageBodies, { failFirstVisionRequest: true });
   await page.setViewportSize({ width: 1440, height: 900 });
   await enterTeacherMessages(page, 'class-physics-3');
-  let sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
-  let composer = sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+  let sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  let composer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
   await composer.evaluate((textarea) => {
     const transfer = new DataTransfer();
     transfer.items.add(new File([Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])], '待识别.png', { type: 'image/png' }));
     textarea.dispatchEvent(new ClipboardEvent('paste', { clipboardData: transfer, bubbles: true }));
   });
-  await sidecar.getByRole('button', { name: '发送给 AI 消息小助手' }).click();
+  await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
   await expect(sidecar.getByText(/当前模型凭据未开通图片理解/).first()).toBeVisible();
 
   await page.reload();
-  sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
-  composer = sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+  sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  composer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
   await composer.fill('先继续处理纯文本内容');
-  await sidecar.getByRole('button', { name: '发送给 AI 消息小助手' }).click();
+  await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
 
   await expect.poll(() => messageBodies.length).toBe(2);
   expect(messageBodies[1]).toMatchObject({ images: [] });
@@ -158,7 +158,7 @@ test('IM Sidecar resumes text in a clean session after the vision credential gat
   await expect(sidecar.getByText(/课堂回顾建议/).first()).toBeVisible();
 
   await page.reload();
-  sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
+  sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
   await expect(sidecar.getByText(/当前模型凭据未开通图片理解/).first()).toBeVisible();
   await expect(sidecar.getByText('先继续处理纯文本内容', { exact: true })).toBeVisible();
   await expect(sidecar.getByText(/课堂回顾建议/).first()).toBeVisible();
@@ -169,10 +169,10 @@ test('IM Sidecar can stop a pending generation and continue in the same conversa
   await page.setViewportSize({ width: 1440, height: 900 });
   await enterTeacherMessages(page, 'class-physics-3');
 
-  const sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
-  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
   await composer.fill('先帮我整理一条课堂提醒');
-  await sidecar.getByRole('button', { name: '发送给 AI 消息小助手' }).click();
+  await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
 
   const stop = sidecar.getByRole('button', { name: '停止生成' });
   await expect(stop).toBeVisible();
@@ -181,7 +181,7 @@ test('IM Sidecar can stop a pending generation and continue in the same conversa
   await expect(composer).toBeEnabled();
 
   await composer.fill('改成一句更简短的提醒');
-  await sidecar.getByRole('button', { name: '发送给 AI 消息小助手' }).click();
+  await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
   await expect(sidecar.getByText(/课堂回顾建议/).first()).toBeVisible();
 
   expect(calls.filter((call) => call === 'POST /api/teachbuddy/sessions')).toHaveLength(1);
@@ -201,13 +201,13 @@ test('IM Sidecar transparently replaces a stale binding without exposing session
   const calls = await mockRuntime(page);
   await enterTeacherMessages(page, 'class-physics-3');
 
-  const sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
   await expect(sidecar.getByRole('button', { name: /新建.*会话/ })).toHaveCount(0);
   await expect(sidecar.getByRole('button', { name: '重试恢复' })).toHaveCount(0);
-  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
   await expect(composer).toBeEnabled();
   await composer.fill('继续整理当前班级的消息');
-  await sidecar.getByRole('button', { name: '发送给 AI 消息小助手' }).click();
+  await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
   await expect(sidecar.getByText('继续整理当前班级的消息', { exact: true })).toBeVisible();
   expect(calls.filter((call) => call === 'POST /api/teachbuddy/sessions')).toHaveLength(1);
   expect(calls).toContain('POST /api/teachbuddy/sessions/im-learning-session-1/messages');
@@ -237,12 +237,12 @@ test('a failed stale-binding replacement preserves earlier readable history', as
   const calls = await mockRuntime(page, [], { initialSessions: [priorSession], failFirstCreate: true });
   await enterTeacherMessages(page, 'class-physics-3');
 
-  const sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
   await expect(sidecar.getByText('之前整理的课堂提醒仍然保留。', { exact: true })).toBeVisible();
-  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
   await expect(composer).toBeEnabled();
   await composer.fill('沿用之前的内容，改得更简短');
-  await sidecar.getByRole('button', { name: '发送给 AI 消息小助手' }).click();
+  await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
   await expect(sidecar.getByText('沿用之前的内容，改得更简短', { exact: true })).toBeVisible();
   expect(calls.filter((call) => call === 'POST /api/teachbuddy/sessions')).toHaveLength(1);
   expect(calls).toContain('POST /api/teachbuddy/sessions/prior-session/messages');
@@ -266,11 +266,12 @@ test('teacher starts a governed recap from Teaching Dynamics without a configura
   await page.setViewportSize({ width: 1440, height: 900 });
   await enterTeacherMessages(page, 'class-physics-3');
 
-  const sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
-  await expect(sidecar.getByText('仅你可见', { exact: true })).toBeVisible();
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  await expect(sidecar.getByText(/^\d+ 项建议$/)).toBeVisible();
+  await expect(sidecar.getByText('仅你可见', { exact: true })).toHaveCount(0);
   await expect(sidecar.getByText('DeepSeek 已连接', { exact: true })).toHaveCount(0);
-  const guide = sidecar.getByRole('region', { name: 'AI 消息小助手建议' });
-  await expect(guide).toContainText('选择教学环节，点一条建议，我帮您起草消息，确认后一键发送。');
+  const guide = sidecar.getByRole('region', { name: 'AI 消息助手建议' });
+  await expect(guide).toContainText('选环节，点一条建议，AI写消息草稿，您确认后发送');
   await expect(guide.getByRole('tablist', { name: '教学阶段' })).toBeVisible();
   await expect(sidecar.getByRole('button', { name: /新建.*会话/ })).toHaveCount(0);
   await expect(sidecar.getByRole('combobox')).toHaveCount(0);
@@ -283,13 +284,13 @@ test('teacher starts a governed recap from Teaching Dynamics without a configura
   const visibleRequest = '请根据动量守恒练习第 5 题的现有作答和典型错因，制作一份学生容易理解的解析。';
   expect(String(messageBodies[0]?.text)).toContain('请执行“个性化课堂回顾”');
   expect(String(messageBodies[0]?.text)).toContain(visibleRequest);
-  await expect(sidecar.getByRole('list', { name: 'AI 消息小助手会话消息' }).getByText(visibleRequest, { exact: true })).toBeVisible();
-  await expect(sidecar.getByRole('list', { name: 'AI 消息小助手会话消息' })).not.toContainText('请执行“个性化课堂回顾”');
+  await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' }).getByText(visibleRequest, { exact: true })).toBeVisible();
+  await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' })).not.toContainText('请执行“个性化课堂回顾”');
   await expect(sidecar.getByText(/介质不变，所以波速不变/)).toBeVisible();
   await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
   await expect(sidecar.getByRole('table')).toContainText('巩固练习');
   await expect(sidecar).not.toContainText('| --- | --- |');
-  const analysis = sidecar.getByRole('region', { name: 'AI 消息小助手 分析过程' });
+  const analysis = sidecar.getByRole('region', { name: 'AI 消息助手 分析过程' });
   await expect(analysis.getByRole('button', { name: /已完成分析 · 2 个步骤/ })).toHaveAttribute('aria-expanded', 'false');
   await analysis.getByRole('button', { name: /已完成分析/ }).click();
   await expect(analysis.getByText('已核对当前会话上下文', { exact: true })).toHaveCount(0);
@@ -310,11 +311,11 @@ test('AI message helper stays expanded while scrolling and collapses only from i
   await page.setViewportSize({ width: 1440, height: 900 });
   await enterTeacherMessages(page, 'class-physics-3');
 
-  const sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
-  const conversation = sidecar.getByRole('region', { name: 'AI 消息小助手对话' });
-  const guide = sidecar.getByRole('region', { name: 'AI 消息小助手建议' });
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  const conversation = sidecar.getByRole('region', { name: 'AI 消息助手对话' });
+  const guide = sidecar.getByRole('region', { name: 'AI 消息助手建议' });
   const content = guide.locator('#teaching-dynamics-content');
-  const collapse = guide.getByRole('button', { name: '收起 AI 消息小助手建议' });
+  const collapse = guide.getByRole('button', { name: '收起 AI 消息助手建议' });
   await expect(collapse).toHaveAttribute('aria-expanded', 'true');
   const communication = page.getByRole('region', { name: '消息通信主工作台' });
   const [sidecarBox, guideBox, communicationBox] = await Promise.all([sidecar.boundingBox(), guide.boundingBox(), communication.boundingBox()]);
@@ -326,10 +327,10 @@ test('AI message helper stays expanded while scrolling and collapses only from i
   expect(guideBox?.x).toBeCloseTo(sidecarBox?.x ?? 0, 0);
   expect(guideBox?.width).toBeCloseTo(sidecarBox?.width ?? 0, 0);
   const surfaces = await sidecar.evaluate((element) => {
-    const guide = element.querySelector<HTMLElement>('[aria-label="AI 消息小助手建议"]');
+    const guide = element.querySelector<HTMLElement>('[aria-label="AI 消息助手建议"]');
     const sidecarStyle = getComputedStyle(element);
     const guideStyle = guide ? getComputedStyle(guide) : null;
-    const body = element.querySelector<HTMLElement>('[aria-label="AI 消息小助手对话"]');
+    const body = element.querySelector<HTMLElement>('[aria-label="AI 消息助手对话"]');
     const bodyStyle = body ? getComputedStyle(body) : null;
     return {
       sidecar: { borderWidth: sidecarStyle.borderWidth, boxShadow: sidecarStyle.boxShadow, margin: sidecarStyle.margin },
@@ -339,6 +340,7 @@ test('AI message helper stays expanded while scrolling and collapses only from i
   });
   expect(surfaces.sidecar).toEqual({ borderWidth: '0px', boxShadow: 'none', margin: '0px' });
   expect(surfaces.guide).toMatchObject({ position: 'relative', borderWidth: '0px', boxShadow: 'none' });
+  expect(surfaces.guide?.backgroundColor).toBe('rgb(244, 244, 244)');
   expect(surfaces.guide?.backgroundColor).not.toBe(surfaces.conversationBackground);
   const motion = await content.evaluate((element) => {
     const style = getComputedStyle(element);
@@ -364,8 +366,9 @@ test('AI message helper stays expanded while scrolling and collapses only from i
   await page.mouse.wheel(0, 240);
   await expect(collapse).toHaveAttribute('aria-expanded', 'true');
   await collapse.click();
-  const expand = guide.getByRole('button', { name: '展开 AI 消息小助手建议' });
+  const expand = guide.getByRole('button', { name: '展开 AI 消息助手建议' });
   await expect(expand).toHaveAttribute('aria-expanded', 'false');
+  await expect(guide.getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
   await expect(content).toHaveCSS('visibility', 'hidden');
   const transitionEvents = await content.evaluate((element) => JSON.parse(element.getAttribute('data-observed-transitions') ?? '[]') as { property: string; elapsedTime: number }[]);
   for (const property of ['grid-template-rows', 'opacity', 'transform']) {
@@ -380,7 +383,7 @@ test('AI message helper stays expanded while scrolling and collapses only from i
 test('teacher-to-teacher direct chat cannot discover student learning services', async ({ page }) => {
   await mockRuntime(page);
   await enterTeacherMessages(page, 'direct-teacher-zhang');
-  const dynamics = page.getByRole('region', { name: 'AI 消息小助手建议' });
+  const dynamics = page.getByRole('region', { name: 'AI 消息助手建议' });
   await expect(dynamics).toContainText('暂未识别到当前聊天的教学事项');
   await expect(dynamics.getByRole('button', { name: /生成|提醒|批改/ })).toHaveCount(0);
 });
@@ -391,7 +394,7 @@ test('DW-derived class context creates a private learning summary for its mapped
   await enterTeacherMessages(page, 'class-dw-expression-lab');
 
   await expect(page.getByRole('region', { name: '表达与思辨体验班会话' })).toContainText('真实数据 · 已脱敏');
-  const sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
   await sidecar.getByRole('tab', { name: /总结/ }).click();
   await sidecar.getByRole('button', { name: /生成总结：/ }).click();
   await expect(sidecar.getByRole('combobox')).toHaveCount(0);
@@ -411,12 +414,12 @@ test('rich Agent response stays contained in the compact Sidecar', async ({ page
   await page.setViewportSize({ width: 900, height: 720 });
   await enterTeacherMessages(page, 'class-physics-3');
 
-  const sidecar = page.getByRole('complementary', { name: 'AI 消息小助手私密协作窗口' });
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
   await sidecar.getByRole('tab', { name: /总结/ }).click();
   await sidecar.getByRole('button', { name: /制作解析：/ }).first().click();
   await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
   await expect(sidecar.getByRole('table')).toBeVisible();
-  await expect(sidecar.getByRole('region', { name: 'AI 消息小助手 分析过程' })).toBeVisible();
+  await expect(sidecar.getByRole('region', { name: 'AI 消息助手 分析过程' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   const box = await sidecar.boundingBox();
   expect(box).not.toBeNull();

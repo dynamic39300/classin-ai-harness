@@ -169,7 +169,7 @@ test('single-class immersive chats keep their composer fixed for both roles', as
     await page.getByRole('button', { name: entry.role }).click();
     await page.goto(entry.path);
     await expectMessageShellLocked(page, '高二物理 3 班会话', { expectThreadPanel: false });
-    await expect(page.getByLabel('AI 消息小助手私密协作窗口')).toHaveCount(entry.hasWorkBuddy ? 1 : 0);
+    await expect(page.getByLabel('AI 消息助手私密协作窗口')).toHaveCount(entry.hasWorkBuddy ? 1 : 0);
   }
 });
 
@@ -264,11 +264,11 @@ test('teacher always sees conversation management in class and direct chats', as
   await page.getByRole('button', { name: '私聊', exact: true }).click();
   const directConversation = page.getByRole('region', { name: '李明会话' });
   await expect(directConversation.getByRole('button', { name: '会话管理', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'AI 消息小助手', exact: true })).toHaveCount(0);
-  const sidecar = page.getByLabel('AI 消息小助手私密协作窗口');
+  await expect(page.getByRole('button', { name: 'AI 消息助手', exact: true })).toHaveCount(0);
+  const sidecar = page.getByLabel('AI 消息助手私密协作窗口');
   await expect(sidecar).toBeVisible();
   await expect(sidecar).toHaveAttribute('data-dismissible', 'false');
-  await expect(sidecar.getByRole('button', { name: '关闭 AI 消息小助手' })).toHaveCount(0);
+  await expect(sidecar.getByRole('button', { name: '关闭 AI 消息助手' })).toHaveCount(0);
   await expect(sidecar.getByText('告诉我你想如何回复当前私聊')).toBeVisible();
   await sidecar.getByRole('button', { name: '生成回复建议', exact: true }).click();
   await expect(sidecar.getByRole('textbox', { name: '私聊回复建议正文' })).toBeVisible();
@@ -334,7 +334,7 @@ test('message workspace enter and exit transitions stay perceptible without beco
 
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'exiting');
-  await expect(page.getByRole('region', { name: 'AI 消息小助手退出引导' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'AI 消息助手退出引导' })).toHaveCount(0);
   const transitionProjection = await Promise.all([
     shell.evaluate((element) => getComputedStyle(element).transitionDuration),
     page.locator('[data-message-shell-content]').evaluate((element) => ({
@@ -347,10 +347,10 @@ test('message workspace enter and exit transitions stay perceptible without beco
   expect(transitionProjection[1].animationName).not.toBe('none');
   await page.clock.runFor(340);
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'standard');
-  await expect(page.getByRole('region', { name: 'AI 消息小助手退出引导' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'AI 消息助手退出引导' })).toBeVisible();
 
   await page.getByRole('button', { name: '关闭退出引导' }).click();
-  await page.getByRole('button', { name: 'AI 消息小助手', exact: true }).click();
+  await page.getByRole('button', { name: 'AI 消息助手', exact: true }).click();
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'entering');
   await page.clock.runFor(340);
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'immersive');
@@ -393,12 +393,12 @@ test('teacher enters and exits the immersive message workspace without losing co
 
   const composer = page.getByRole('textbox', { name: '输入消息' });
   await composer.fill('这是一条尚未发送的消息草稿');
-  const sidecar = page.getByLabel('AI 消息小助手私密协作窗口');
+  const sidecar = page.getByLabel('AI 消息助手私密协作窗口');
   await expect(sidecar).toBeVisible();
-  await expect(page.getByRole('button', { name: 'AI 消息小助手', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'AI 消息助手', exact: true })).toHaveCount(0);
   await sidecar.getByRole('button', { name: '生成消息草稿' }).click();
   await expect(sidecar.getByText('已拆解为 4 个执行步骤')).toBeVisible({ timeout: 4_000 });
-  await sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' }).fill('这是一条尚未发送的 TeachBuddy 补充要求');
+  await sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' }).fill('这是一条尚未发送的 TeachBuddy 补充要求');
 
   const immersiveUrl = page.url();
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
@@ -411,10 +411,10 @@ test('teacher enters and exits the immersive message workspace without losing co
   await expect(page.getByText('已退出沉浸模式', { exact: true })).toBeVisible();
   await expect(page.getByText('会话和任务进度已保留。', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: '进入沉浸模式' })).toHaveCount(0);
-  const standardWorkBuddyTrigger = page.getByRole('button', { name: 'AI 消息小助手', exact: true });
+  const standardWorkBuddyTrigger = page.getByRole('button', { name: 'AI 消息助手', exact: true });
   await expect(standardWorkBuddyTrigger).toBeVisible();
   await expect(standardWorkBuddyTrigger).toHaveAttribute('aria-expanded', 'false');
-  const exitGuidance = page.getByRole('region', { name: 'AI 消息小助手退出引导' });
+  const exitGuidance = page.getByRole('region', { name: 'AI 消息助手退出引导' });
   const [guidanceBox, guidanceStyle] = await Promise.all([
     exitGuidance.boundingBox(),
     exitGuidance.evaluate((element) => {
@@ -439,21 +439,21 @@ test('teacher enters and exits the immersive message workspace without losing co
   expect(guidanceStyle.pointerEvents).toBe('auto');
   expect(guidanceStyle.position).toBe('fixed');
 
-  await exitGuidance.getByRole('button', { name: '重新打开AI 消息小助手' }).click();
+  await exitGuidance.getByRole('button', { name: '重新打开AI 消息助手' }).click();
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'immersive');
-  const restoredSidecar = page.getByLabel('AI 消息小助手私密协作窗口');
-  await expect(restoredSidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' })).toHaveValue('这是一条尚未发送的 TeachBuddy 补充要求');
-  await expect(page.getByRole('button', { name: 'AI 消息小助手', exact: true })).toHaveCount(0);
+  const restoredSidecar = page.getByLabel('AI 消息助手私密协作窗口');
+  await expect(restoredSidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' })).toHaveValue('这是一条尚未发送的 TeachBuddy 补充要求');
+  await expect(page.getByRole('button', { name: 'AI 消息助手', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: /高二物理 3 班/ }).first().focus();
   await page.keyboard.press('Escape');
   await expect(page.getByText('再按一次 Esc 退出沉浸模式', { exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'standard');
   await expect(composer).toHaveValue('这是一条尚未发送的消息草稿');
-  await expect(page.getByLabel('AI 消息小助手私密协作窗口')).toHaveCount(0);
+  await expect(page.getByLabel('AI 消息助手私密协作窗口')).toHaveCount(0);
   await expect(page.getByText('已退出沉浸模式', { exact: true })).toBeVisible();
-  await page.getByRole('region', { name: 'AI 消息小助手退出引导' }).getByRole('button', { name: '关闭退出引导' }).click();
-  await expect(page.getByRole('region', { name: 'AI 消息小助手退出引导' })).toHaveCount(0);
+  await page.getByRole('region', { name: 'AI 消息助手退出引导' }).getByRole('button', { name: '关闭退出引导' }).click();
+  await expect(page.getByRole('region', { name: 'AI 消息助手退出引导' })).toHaveCount(0);
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'standard');
 
   const accessibility = await new AxeBuilder({ page }).analyze();
@@ -469,7 +469,7 @@ test('WorkBuddy exit guidance stays long enough and pauses while the teacher eng
 
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
   await page.clock.runFor(340);
-  const guidance = page.getByRole('region', { name: 'AI 消息小助手退出引导' });
+  const guidance = page.getByRole('region', { name: 'AI 消息助手退出引导' });
   await expect(guidance).toBeVisible();
   await page.clock.runFor(5_000);
   await expect(guidance).toBeVisible();
@@ -483,7 +483,7 @@ test('WorkBuddy exit guidance stays long enough and pauses while the teacher eng
   await page.clock.runFor(10_000);
   await expect(guidance).toBeVisible();
 
-  await guidance.getByRole('button', { name: '重新打开AI 消息小助手' }).focus();
+  await guidance.getByRole('button', { name: '重新打开AI 消息助手' }).focus();
   await page.mouse.move(0, 0);
   await page.clock.runFor(10_000);
   await expect(guidance).toBeVisible();
@@ -500,12 +500,12 @@ test('teacher can stop showing the WorkBuddy exit guidance until a full page rel
   await page.getByRole('link', { name: /消息/ }).click();
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
 
-  const guidance = page.getByRole('region', { name: 'AI 消息小助手退出引导' });
+  const guidance = page.getByRole('region', { name: 'AI 消息助手退出引导' });
   const preference = guidance.getByRole('checkbox', { name: '不再提示' });
   await expect(guidance).toBeVisible();
   await expect(preference).not.toBeChecked();
   const accessibility = await new AxeBuilder({ page })
-    .include('[aria-label="AI 消息小助手退出引导"]')
+    .include('[aria-label="AI 消息助手退出引导"]')
     .analyze();
   expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
 
@@ -520,12 +520,12 @@ test('teacher can stop showing the WorkBuddy exit guidance until a full page rel
   ))).toBeNull();
   await preference.check();
 
-  await guidance.getByRole('button', { name: '重新打开AI 消息小助手' }).click();
+  await guidance.getByRole('button', { name: '重新打开AI 消息助手' }).click();
   const shell = page.locator('[data-shell-mode="linear-workbench"]');
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'immersive');
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'standard');
-  await expect(page.getByRole('region', { name: 'AI 消息小助手退出引导' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'AI 消息助手退出引导' })).toHaveCount(0);
 
   await page.reload();
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'immersive');
@@ -534,7 +534,7 @@ test('teacher can stop showing the WorkBuddy exit guidance until a full page rel
   ))).toBeNull();
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'standard');
-  await expect(page.getByRole('region', { name: 'AI 消息小助手退出引导' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'AI 消息助手退出引导' })).toBeVisible();
   await expect(page.getByRole('checkbox', { name: '不再提示' })).not.toBeChecked();
 });
 
@@ -546,7 +546,7 @@ test('exit guidance never overlaps a still-mounted WorkBuddy sidecar', async ({ 
 
   const shell = page.locator('[data-shell-mode="linear-workbench"]');
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'immersive');
-  await expect(page.getByLabel('AI 消息小助手私密协作窗口')).toBeVisible();
+  await expect(page.getByLabel('AI 消息助手私密协作窗口')).toBeVisible();
   await page.evaluate(() => {
     const debugWindow = window as Window & {
       __workBuddyExitConflict?: boolean;
@@ -556,7 +556,7 @@ test('exit guidance never overlaps a still-mounted WorkBuddy sidecar', async ({ 
     const captureConflict = () => {
       const guidanceVisible = Array.from(document.querySelectorAll('[role="status"]'))
         .some((element) => element.textContent?.includes('已退出沉浸模式'));
-      const sidecarVisible = document.querySelector('[aria-label="AI 消息小助手私密协作窗口"]') !== null;
+      const sidecarVisible = document.querySelector('[aria-label="AI 消息助手私密协作窗口"]') !== null;
       if (guidanceVisible && sidecarVisible) debugWindow.__workBuddyExitConflict = true;
     };
     debugWindow.__workBuddyExitObserver = new MutationObserver(captureConflict);
@@ -583,7 +583,7 @@ test('exit guidance never overlaps a still-mounted WorkBuddy sidecar', async ({ 
   });
 
   expect(exitConflictObserved).toBe(false);
-  await expect(page.getByLabel('AI 消息小助手私密协作窗口')).toHaveCount(0);
+  await expect(page.getByLabel('AI 消息助手私密协作窗口')).toHaveCount(0);
   await expect(page.getByText('已退出沉浸模式', { exact: true })).toBeVisible();
 });
 
@@ -593,11 +593,11 @@ test('exit guidance is reserved for sessions that actually showed WorkBuddy', as
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
   await page.getByRole('button', { name: /系统通知/ }).click();
-  await expect(page.getByLabel('AI 消息小助手私密协作窗口')).toHaveCount(0);
+  await expect(page.getByLabel('AI 消息助手私密协作窗口')).toHaveCount(0);
 
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
   await expect(page.locator('[data-shell-mode="linear-workbench"]')).toHaveAttribute('data-message-shell-mode', 'standard');
-  await expect(page.getByRole('region', { name: 'AI 消息小助手退出引导' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'AI 消息助手退出引导' })).toHaveCount(0);
 });
 
 test('WorkBuddy exit guidance remains viewport-centered at compact width', async ({ page }) => {
@@ -607,7 +607,7 @@ test('WorkBuddy exit guidance remains viewport-centered at compact width', async
   await page.getByRole('link', { name: /消息/ }).click();
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
 
-  const guidance = page.getByRole('region', { name: 'AI 消息小助手退出引导' });
+  const guidance = page.getByRole('region', { name: 'AI 消息助手退出引导' });
   await expect(guidance).toBeVisible();
   const box = await guidance.boundingBox();
   expect(box).not.toBeNull();
@@ -730,10 +730,10 @@ test('teacher reviews a private WorkBuddy reminder and sends one grouped message
   await page.getByRole('link', { name: /消息/ }).click();
   await selectPhysics3Thread(page);
 
-  const sidecar = page.getByLabel('AI 消息小助手私密协作窗口');
+  const sidecar = page.getByLabel('AI 消息助手私密协作窗口');
   await expect(sidecar.getByText('仅你可见')).toHaveCount(0);
   await expect(sidecar.getByText(/我是您的教学搭档，有什么要帮忙？/)).toBeVisible();
-  const workBuddyComposer = sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+  const workBuddyComposer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
   await expect(workBuddyComposer).toBeVisible();
   await expect(workBuddyComposer).toHaveValue(/请找出当前班级群里还没截止的作业/);
   await sidecar.getByRole('button', { name: '生成消息草稿' }).click();
@@ -792,7 +792,7 @@ test('expanded WorkBuddy editor keeps the sidecar shell anchored while its conte
   await page.getByRole('link', { name: /消息/ }).click();
   await selectPhysics3Thread(page);
 
-  const sidecar = page.getByLabel('AI 消息小助手私密协作窗口');
+  const sidecar = page.getByLabel('AI 消息助手私密协作窗口');
   await sidecar.getByRole('button', { name: '生成消息草稿' }).click();
   await expect(sidecar.getByText('2 项作业', { exact: true })).toBeVisible({ timeout: 12_000 });
   await sidecar.getByRole('button', { name: '展开编辑群消息正文' }).click();
@@ -823,8 +823,8 @@ test('expanded WorkBuddy editor keeps the sidecar shell anchored while its conte
   expect(geometry.headerTop).toBeGreaterThanOrEqual(geometry.sidecarTop);
   expect(geometry.composerBottom).toBeLessThanOrEqual(geometry.sidecarBottom);
   expect(geometry.sidecarBottom - (geometry.composerBottom ?? 0)).toBeLessThanOrEqual(16);
-  await expect(sidecar.getByText('AI 消息小助手', { exact: true })).toBeVisible();
-  await expect(sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' })).toBeVisible();
+  await expect(sidecar.getByText('AI 消息助手', { exact: true })).toBeVisible();
+  await expect(sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' })).toBeVisible();
 });
 
 test('teacher turns the weekly teaching plan into a second simulated class notice', async ({ page }) => {
@@ -833,10 +833,10 @@ test('teacher turns the weekly teaching plan into a second simulated class notic
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
   await selectPhysics3Thread(page);
-  const sidecar = page.getByLabel('AI 消息小助手私密协作窗口');
+  const sidecar = page.getByLabel('AI 消息助手私密协作窗口');
   await expect(sidecar.getByRole('button', { name: /核对未截止作业/ })).toBeVisible();
   await sidecar.getByRole('button', { name: /根据本周教学计划生成课前准备通知/ }).click();
-  await expect(sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' })).toHaveValue(/你帮我看看本周的教学计划/);
+  await expect(sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' })).toHaveValue(/你帮我看看本周的教学计划/);
   await sidecar.getByRole('button', { name: '生成消息草稿' }).click();
 
   await expect(sidecar.getByLabel('读取本周教学计划 · 进行中')).toBeVisible({ timeout: 6_000 });
@@ -897,8 +897,8 @@ test('WorkBuddy composer grows with the task and scrolls after its visible heigh
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
-  const sidecar = page.getByLabel('AI 消息小助手私密协作窗口');
-  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息小助手输入要求' });
+  const sidecar = page.getByLabel('AI 消息助手私密协作窗口');
+  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
   await expect(composer).toHaveAttribute('maxlength', '4000');
 
   await composer.fill('提醒');
@@ -936,7 +936,7 @@ test('public chat and private WorkBuddy share one aligned composer contract', as
   const composers = page.locator('[data-workspace-composer="true"]');
   await expect(composers).toHaveCount(2);
   const publicComposer = composers.filter({ has: page.getByRole('textbox', { name: '输入消息' }) });
-  const privateComposer = composers.filter({ has: page.getByRole('textbox', { name: '向 AI 消息小助手输入要求' }) });
+  const privateComposer = composers.filter({ has: page.getByRole('textbox', { name: '向 AI 消息助手输入要求' }) });
   const publicInput = publicComposer.getByRole('textbox', { name: '输入消息' });
 
   await publicInput.fill('第一行');
@@ -971,7 +971,7 @@ test('teacher resizes the WorkBuddy auxiliary workspace with an accessible separ
   await expect(communicationSurface.getByRole('region', { name: '班级消息列表', exact: true })).toBeVisible();
   await expect(communicationSurface.getByRole('region', { name: '高二物理 3 班会话', exact: true })).toBeVisible();
 
-  const separator = page.getByRole('separator', { name: '调整AI 消息小助手宽度' });
+  const separator = page.getByRole('separator', { name: '调整AI 消息助手宽度' });
   await expect(separator).toBeVisible();
   await expect(separator).toHaveAttribute('aria-controls', 'workbuddy-im-sidecar');
   const separatorBox = await separator.boundingBox();
@@ -1003,9 +1003,9 @@ test('teacher resizes the WorkBuddy auxiliary workspace with an accessible separ
 
   await separator.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByLabel('AI 消息小助手私密协作窗口')).toBeVisible();
+  await expect(page.getByLabel('AI 消息助手私密协作窗口')).toBeVisible();
   await expect(separator).toBeFocused();
-  await expect(page.getByRole('button', { name: 'AI 消息小助手' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'AI 消息助手' })).toHaveCount(0);
 });
 
 test('compact immersive messaging keeps WorkBuddy as an overlay without a splitter', async ({ page }) => {
@@ -1014,11 +1014,11 @@ test('compact immersive messaging keeps WorkBuddy as an overlay without a splitt
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
   await selectPhysics3Thread(page);
-  const sidecar = page.getByLabel('AI 消息小助手私密协作窗口');
+  const sidecar = page.getByLabel('AI 消息助手私密协作窗口');
   await expect(sidecar).toBeVisible();
-  await expect(sidecar.getByRole('button', { name: '关闭 AI 消息小助手' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'AI 消息小助手' })).toHaveCount(0);
-  await expect(page.getByRole('separator', { name: '调整AI 消息小助手宽度' })).not.toBeVisible();
+  await expect(sidecar.getByRole('button', { name: '关闭 AI 消息助手' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'AI 消息助手' })).toHaveCount(0);
+  await expect(page.getByRole('separator', { name: '调整AI 消息助手宽度' })).not.toBeVisible();
   await expect(page.getByRole('region', { name: '消息通信主工作台' })).toBeVisible();
 });
 
@@ -1026,8 +1026,8 @@ test('student cannot discover the teacher WorkBuddy sidecar', async ({ page }) =
   await page.goto('/');
   await page.getByRole('button', { name: /学生视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
-  await expect(page.getByRole('button', { name: 'AI 消息小助手' })).toHaveCount(0);
-  await expect(page.getByLabel('AI 消息小助手私密协作窗口')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'AI 消息助手' })).toHaveCount(0);
+  await expect(page.getByLabel('AI 消息助手私密协作窗口')).toHaveCount(0);
 });
 
 test('teacher approves a guided explanation, opens it from IM and finds the same artifact in My Files @a11y', async ({ page }) => {
@@ -1039,7 +1039,7 @@ test('teacher approves a guided explanation, opens it from IM and finds the same
   await selectPhysics3Thread(page);
   const classConversation = page.getByRole('region', { name: '高二物理 3 班会话' });
   await expect(classConversation.getByText(/今天动量守恒练习单第 5 题我不会/)).toBeVisible();
-  const sidecar = page.getByLabel('AI 消息小助手私密协作窗口');
+  const sidecar = page.getByLabel('AI 消息助手私密协作窗口');
   await sidecar.locator('button').filter({ hasText: '单题讲解' }).click();
   await sidecar.getByRole('button', { name: '生成消息草稿' }).click();
   const review = sidecar.getByLabel('单题交互讲解待审核');
@@ -1163,7 +1163,7 @@ test('teacher and student use isolated direct threads with the same class Agent 
     if (await loadOlder.count()) await loadOlder.click();
     await expect(conversation.getByText(/我是本班已授权的物理学习助手/)).toBeVisible();
     await expect(conversation.getByText('动量方向的正负号应该先看什么？')).toBeVisible();
-    await expect(conversation.getByRole('button', { name: 'AI 消息小助手', exact: true })).toHaveCount(0);
+    await expect(conversation.getByRole('button', { name: 'AI 消息助手', exact: true })).toHaveCount(0);
     const composer = conversation.getByRole('textbox', { name: '输入消息' });
     await composer.fill('第 5 题的方向怎么判断？');
     await conversation.getByRole('button', { name: '发送', exact: true }).click();

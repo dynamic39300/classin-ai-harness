@@ -28,12 +28,13 @@ describe('TeachingDynamics', () => {
   it('fuses the AI message assistant introduction with four compact stage tabs and switches one content card in place', async () => {
     const user = userEvent.setup();
     render(<Harness />);
-    const module = screen.getByRole('region', { name: 'AI 消息小助手建议' });
-    expect(within(module).getByText('AI 消息小助手')).toBeVisible();
-    expect(within(module).getByText('仅你可见')).toBeVisible();
-    expect(within(module).getByText('选择教学环节，点一条建议，我帮您起草消息，确认后一键发送。')).toBeVisible();
+    const module = screen.getByRole('region', { name: 'AI 消息助手建议' });
+    expect(within(module).getByText('AI 消息助手')).toBeVisible();
+    expect(within(module).getByText('4 项建议')).toBeVisible();
+    expect(within(module).queryByText('仅你可见')).not.toBeInTheDocument();
+    expect(within(module).getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
     expect(within(module).queryByText('您好，我会根据当前教学进展，帮您把要发给学生的消息整理好。')).not.toBeInTheDocument();
-    const collapse = within(module).getByRole('button', { name: '收起 AI 消息小助手建议' });
+    const collapse = within(module).getByRole('button', { name: '收起 AI 消息助手建议' });
     expect(collapse).toHaveAttribute('aria-expanded', 'true');
     expect(collapse).toHaveTextContent('');
     expect(within(module).queryByText('教学动态')).not.toBeInTheDocument();
@@ -67,9 +68,10 @@ describe('TeachingDynamics', () => {
     await user.click(screen.getByRole('tab', { name: /课后/ }));
     await user.click(screen.getByRole('button', { name: /提醒学生：大数加减法/ }));
     expect(onAction).toHaveBeenCalledWith(expect.objectContaining({ teacherRequest: '提醒交作业' }));
-    await user.click(screen.getByRole('button', { name: '收起 AI 消息小助手建议' }));
-    expect(screen.getByRole('button', { name: '展开 AI 消息小助手建议' })).toHaveAttribute('aria-expanded', 'false');
+    await user.click(screen.getByRole('button', { name: '收起 AI 消息助手建议' }));
+    expect(screen.getByRole('button', { name: '展开 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'false');
     expect(screen.getByText('4 项建议')).toBeVisible();
+    expect(screen.getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
   });
 

@@ -107,11 +107,9 @@ export function TeachingDynamics({
           <div className={styles.assistantCopy}>
             <div className={styles.identityLine}>
               <strong>{TEACHBUDDY_IM_ASSISTANT_LABEL}</strong>
-              <span>仅你可见</span>
+              <span>{compactSummary}</span>
             </div>
-            <p>{expanded
-              ? '选择教学环节，点一条建议，我帮您起草消息，确认后一键发送。'
-              : compactSummary}</p>
+            <p>选环节，点一条建议，AI写消息草稿，您确认后发送</p>
           </div>
         </div>
         <div className={styles.moduleActions}>
