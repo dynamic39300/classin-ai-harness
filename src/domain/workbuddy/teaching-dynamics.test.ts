@@ -34,4 +34,20 @@ describe('teaching dynamics projection', () => {
     expect(projectTeachingPrompts(normalized).map(({ id }) => id)).toEqual(['late', 'review']);
     expect(teachingDynamicsCompactLabel(normalized)).toBe('教学动态｜2 项建议');
   });
+
+  it('keeps the compact total accurate when more than four suggestions exist', () => {
+    const items = Array.from({ length: 6 }, (_, index) => ({
+      id: `suggestion-${index}`,
+      stage: 'after' as const,
+      kind: 'attention' as const,
+      title: `建议 ${index + 1}`,
+      detail: '可发起沟通',
+      priority: index,
+      action: { label: '生成消息', teacherRequest: `生成消息 ${index + 1}` },
+    }));
+    const crowded = normalizeTeachingDynamics({ ...snapshot, stages: [{ id: 'after', items }] });
+
+    expect(projectTeachingPrompts(crowded)).toHaveLength(4);
+    expect(teachingDynamicsCompactLabel(crowded)).toBe('教学动态｜6 项建议');
+  });
 });

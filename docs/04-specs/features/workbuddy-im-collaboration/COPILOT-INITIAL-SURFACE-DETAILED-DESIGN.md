@@ -1,14 +1,16 @@
 ---
 title: TeachBuddy IM Copilot 初始面详细交互设计
-status: IMPLEMENTED_PENDING_USER_REVIEW
-version: v0.5
-date: 2026-09-09
+status: RETAINED_SCHEME_1_IMPLEMENTATION
+version: v0.6
+date: 2026-09-10
 milestone: IMCP-M2_DETAILED_DESIGN
 selected_direction: COMPACT_FOUR_PROMPT_ENTRY
 scope: 教师私有 Copilot 初始面的页面结构、元素职责、显隐规则、交互流程、状态、文案和验收；已进入可运行前端实现
 ---
 
 # TeachBuddy IM Copilot 初始面详细交互设计
+
+> 分支适用说明：本文只保留方案一`codex/copilot-prompt-grid-v1`的两列四块 Prompt 入口，不再作为方案二的页面事实源。方案二`codex/copilot-stage-nav-v2`及其最新“身份 + 引导 + 四阶段”合并结构以[教学阶段导航方案（二）](./COPILOT-STAGE-NAV-ALTERNATIVE-DESIGN.md)和 D-150 为准。两套方案用于并行预览，不应把本文的“页面不展示阶段树”解释为方案二要求。
 
 ## 1. 本文解决什么
 

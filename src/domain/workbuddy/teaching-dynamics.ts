@@ -72,7 +72,7 @@ export function projectTeachingPrompts(snapshot: TeachingDynamicsSnapshot, limit
 
 export function teachingDynamicsCompactLabel(snapshot: TeachingDynamicsSnapshot) {
   const count = snapshot.stages.flatMap(({ items }) => items).filter(isTeachingDynamicActionable).length;
-  if (count) return `教学动态｜${Math.min(count, 4)} 项建议`;
+  if (count) return `教学动态｜${count} 项建议`;
   const containsUnknown = snapshot.stages.some(({ items }) => items.some(({ kind }) => kind === 'unknown'));
   return containsUnknown ? '教学动态｜待核对' : '教学动态｜当前已核对';
 }

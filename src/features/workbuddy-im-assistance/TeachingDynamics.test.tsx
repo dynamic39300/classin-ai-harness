@@ -25,18 +25,31 @@ function Harness({ onAction = vi.fn() }: Readonly<{ onAction?: (action: { label:
 }
 
 describe('TeachingDynamics', () => {
-  it('uses the current phase as a tab and switches one content card in place', async () => {
+  it('fuses the TeachBuddy introduction with four stage tabs and switches one content card in place', async () => {
     const user = userEvent.setup();
     render(<Harness />);
-    const module = screen.getByRole('region', { name: '教学动态' });
+    const module = screen.getByRole('region', { name: 'TeachBuddy 消息建议' });
+    expect(within(module).getByText('TeachBuddy')).toBeVisible();
+    expect(within(module).getByText('仅你可见')).toBeVisible();
+    expect(within(module).getByText('您好，我会根据当前教学进展，帮您把要发给学生的消息整理好。')).toBeVisible();
+    expect(within(module).getByText('选个环节，点一条建议，我马上起草，您确认后发送。')).toBeVisible();
+    expect(within(module).getByRole('button', { name: '收起 TeachBuddy 消息建议' })).toHaveAttribute('aria-expanded', 'true');
+    expect(within(module).queryByText('教学动态')).not.toBeInTheDocument();
     expect(within(module).getByRole('tab', { name: /课中.*建议 1 条/ })).toHaveAttribute('aria-selected', 'true');
     expect(within(module).getByText('正在上课，3 人迟到')).toBeVisible();
     expect(within(module).queryByText('6 人尚未提交')).not.toBeInTheDocument();
 
+    await user.click(within(module).getByRole('tab', { name: /课前/ }));
+    expect(within(module).getByText('课前准备已完成')).toBeVisible();
+    expect(within(module).queryByText('正在上课，3 人迟到')).not.toBeInTheDocument();
+
     await user.click(within(module).getByRole('tab', { name: /课后.*建议 2 条/ }));
     expect(within(module).getByText('6 人尚未提交')).toBeVisible();
     expect(within(module).getByText('1 份待批改')).toBeVisible();
-    expect(within(module).queryByText('正在上课，3 人迟到')).not.toBeInTheDocument();
+
+    await user.click(within(module).getByRole('tab', { name: /总结/ }));
+    expect(within(module).getByText('课堂回顾')).toBeVisible();
+    expect(within(module).queryByText('6 人尚未提交')).not.toBeInTheDocument();
     expect(within(module).queryByRole('button', { name: /自动切换/ })).not.toBeInTheDocument();
     expect(within(module).queryByText('当前班级的课程、学生与任务')).not.toBeInTheDocument();
   });
@@ -48,8 +61,10 @@ describe('TeachingDynamics', () => {
     await user.click(screen.getByRole('tab', { name: /课后/ }));
     await user.click(screen.getByRole('button', { name: /提醒学生：三年级数学/ }));
     expect(onAction).toHaveBeenCalledWith(expect.objectContaining({ teacherRequest: '提醒交作业' }));
-    await user.click(screen.getByRole('button', { name: '教学动态' }));
-    expect(screen.getByRole('button', { name: '教学动态｜4 项建议' })).toHaveAttribute('aria-expanded', 'false');
+    await user.click(screen.getByRole('button', { name: '收起 TeachBuddy 消息建议' }));
+    expect(screen.getByRole('button', { name: '展开 TeachBuddy 消息建议' })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByText('4 项建议')).toBeVisible();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
   });
 
   it('keeps the current stage selected until the teacher chooses another tab', () => {

@@ -1,11 +1,11 @@
 ---
 title: TeachBuddy IM Sidecar 同源 Runtime 与业务上下文 Feature Spec
-status: IMPLEMENTED_PENDING_AUTOMATED_REGRESSION
+status: IMPLEMENTED_PENDING_USER_REVIEW
 triage: implementation-review
-version: v1.1
-date: 2026-09-08
+version: v1.2
+date: 2026-09-10
 owner: ClassIn AI Native Product Design
-decision: D-120
+decision: D-120, D-150
 tracker: TAPD-1145976096001080801
 ---
 
@@ -13,13 +13,13 @@ tracker: TAPD-1145976096001080801
 
 ## Problem Statement
 
-教师在 ClassIn 消息现场看到的 TeachBuddy 与“TeachBuddy → 我的任务”体验不一致：主工作台已经运行真实 DeepSeek Agent，IM 右侧仍通过固定关键词、人工计时和 Mock Adapter 生成结果。教师无法在当前班级群或 1v1 对话旁进行真实多轮协作，也无法把同一任务带到主工作台继续。
+教师在 ClassIn 消息现场看到的 TeachBuddy 与主 Agent Runtime 体验不一致：主工作台已经运行真实 DeepSeek Agent，IM 右侧仍通过固定关键词、人工计时和 Mock Adapter 生成结果。教师需要在当前班级群或 1v1 对话旁完成连续多轮协作，同时不应被迫理解或管理内部 Session。
 
 下一阶段还需要使用 DW Hunter 读取 ClassIn 数据，向 Agent 提供更真实的班级、课程、作业、课堂和消息上下文。如果本次迁移把固定数据、数据库表或查询细节直接写进页面和 Prompt，后续接入会复制业务事实、泄露数据来源细节，并破坏权限、时效和跨 Thread 隔离。
 
 ## Solution
 
-IM 右侧继续使用教师私密的 TeachBuddy 身份，并复用主工作台现有的 `teachbuddy` Agent Preset、DeepSeek Harness、Runtime Interface、事件模型和 `ideal-full` Product Scope。每个教师消息 Thread 稳定绑定一个 Runtime Session；教师可在 Sidecar 中连续对话，也可进入主工作台继续同一 Session。
+IM 右侧继续使用教师私密的 TeachBuddy 身份，并复用主工作台现有的 `teachbuddy` Agent Preset、DeepSeek Harness、Runtime Interface、事件模型和 `ideal-full` Product Scope。每个教师消息 Thread 稳定绑定一条逻辑对话，老师只在 Sidecar 中连续沟通；内部 Runtime Session 恢复轮换通过 Binding Trail 聚合为一条可上滑历史，stale 404 Binding 会透明创建替代 Session。页面不提供新建 Session、Session 历史或跳转完整工作台的会话管理入口。
 
 Sidecar 页面只消费一个 `ImSidecarAgent` Interface。该 Deep Module 通过现有 Runtime Interface 运行 Agent，并通过唯一新增的 Business Context Interface 获取最小必要上下文。固定 Demo、后续 DW Hunter 只读查询和未来正式 ClassIn API 都在该 Interface 后转换为带来源、权限、时效、版本与真值证据的 Context Snapshot。
 
@@ -33,11 +33,11 @@ Sidecar 页面只消费一个 `ImSidecarAgent` Interface。该 Deep Module 通�
 4. As a teacher, I want to see real connection, running, stopped, completed and failed states, so that I can distinguish actual execution from a canned demonstration.
 5. As a teacher, I want to stop a running request, so that I retain control over an unhelpful or unnecessary generation.
 6. As a teacher, I want a failed request to retain my input and offer the correct recovery action, so that I do not have to reconstruct my work.
-7. As a teacher, I want returning to the same message Thread to restore the same Agent Session, so that my private collaboration remains continuous.
-8. As a teacher, I want switching to another Thread to show a different Agent Session, so that one class or person never sees another conversation's context.
-9. As a teacher, I want refreshing the page to recover the Thread Session binding, so that a browser refresh does not discard my work.
-10. As a teacher, I want to open the same Session in the full TeachBuddy workspace, so that I can review long answers and multiple Artifacts with more space.
-11. As a teacher, I want returning from the full workspace to preserve the IM target and draft, so that changing Surface does not restart the task.
+7. As a teacher, I want returning to the same message Thread to restore the same logical conversation, so that my private collaboration remains continuous.
+8. As a teacher, I want switching to another Thread to show its isolated conversation, so that one class or person never sees another conversation's context.
+9. As a teacher, I want refreshing the page to recover the Thread conversation, so that a browser refresh does not discard my work.
+10. As a teacher, I want the current Sidecar timeline to be the conversation history, so that I can review prior collaboration by scrolling upward without changing surfaces.
+11. As a teacher, I want stopping a generation to keep the same logical conversation available, so that I can immediately give a different instruction without creating another Session.
 12. As a teacher, I want the Sidecar to use the current class, conversation and recent messages when relevant, so that the answer reflects my working context.
 13. As a teacher, I want to see a concise summary of which context sources were attached, so that I understand the basis of the answer without exposing student message history by default.
 14. As a teacher, I want to refresh stale context before a sensitive action, so that I do not send a draft based on outdated facts.
@@ -58,20 +58,28 @@ Sidecar 页面只消费一个 `ImSidecarAgent` Interface。该 Deep Module 通�
 29. As a teacher, I want Agent answers rendered as readable headings, lists, callouts and tables, so that Markdown syntax never becomes interface chrome.
 30. As a teacher validating a realistic scenario, I want the reserved DW demo Thread to use a real group title and real recent messages, so that the conversation and Agent task share the same evidence.
 31. As a privacy reviewer, I want exact customer message text confined to a local ignored snapshot and a narrow same-origin endpoint, so that realistic validation does not publish private data in Git.
+32. As a teacher, I want internal Runtime recovery to preserve one upward-scroll history, so that I never have to understand which execution instance produced each message.
+33. As a teacher, I want a stale saved binding to recover without a create-session decision, so that I can continue the current IM conversation directly.
+34. As a teacher, I want the exact natural-language prompt I clicked to appear as my message, so that internal capability and formatting instructions never obscure what I asked.
+35. As a teacher, I want a failed stop request to keep the Composer locked and let me retry stopping, so that a second request cannot silently overlap the still-running generation.
 
 ## Implementation Decisions
 
 - The IM Sidecar and My Tasks use the same TeachBuddy Agent identity, Agent Preset, DeepSeek Harness, Runtime Interface and event vocabulary.
+- The Sidecar presents identity, private boundary, message-writing guidance, four teaching stages and contextual actions as one top Surface. It does not render a separate identity Header or a second `教学动态` card.
 - The IM integration uses the existing `ideal-full` Product Scope. Thread identity is Session metadata and a binding key, not a new Runtime Scope.
-- A binding is unique to Actor, Tenant, Thread and Product Scope. The binding stores stable references only; it does not persist message bodies or a copy of business context.
-- The page consumes one `ImSidecarAgent` Interface with commands to open a target, submit a teacher request, stop, refresh context, start a new Session and continue in the full workspace.
-- `ImSidecarAgent` is a Deep Module. It owns Session creation and recovery, Context Snapshot capture, Context Envelope construction, Runtime event projection, stale-target protection, Artifact classification and recoverable failures.
+- A binding is unique to Actor, Tenant, Thread and Product Scope. The binding stores stable references only; its bounded Binding Trail records current and prior internal Runtime Session references for ordered event projection, but does not persist message bodies or a copy of business context.
+- The page consumes one `ImSidecarAgent` Interface with commands to open a target, submit a teacher request, stop and refresh context. Session creation and recovery remain private implementation details; the page does not expose create, list or cross-workspace continuation controls.
+- `ImSidecarAgent` is a Deep Module. It owns the Thread-to-logical-conversation binding, bounded Binding Trail, internal Runtime Session creation and recovery, Context Snapshot capture, Context Envelope construction, Runtime event projection, stale-target protection, Artifact classification and recoverable failures.
+- Runtime Session rotation appends the replacement reference to the Binding Trail and projects events from all retained references as one ordered teacher-visible timeline. A read returning 404 marks only that saved runtime reference stale; the module transparently creates and binds a replacement without exposing a create-session action.
+- Stopping cancels only the active generation. On success, the same logical conversation accepts the next teacher request; on failure, the Composer remains send-locked and the stop action remains retryable. The user-visible timeline is the only history surface.
+- Runtime events follow the bottom only when the teacher was already reading the latest message. Upward history reading retains its scroll position; a new teacher submission resumes following the latest response.
 - The existing Agent Runtime Adapter remains the Runtime seam. The only new data-source seam is the Business Context Interface.
 - A Business Context request declares Actor, Tenant, Thread Target and intended use. Its response contains business-semantic Context Items plus Context Source, permission scope, captured time, freshness, version and truth evidence.
 - Context Snapshots and Runtime inputs exclude credentials, connection information, SQL, internal instance or database names, table names, complete database results and private knowledge-base content.
 - A DW Hunter backed Adapter performs knowledge lookup and read-only data queries inside the Adapter boundary. It owns terminology resolution, source selection, permission checks, desensitization, minimum-field projection and mapping into the common Context Snapshot.
 - The application does not use DW Hunter for business writes. Formal changes continue through the owning ClassIn domain Interface.
-- The teacher-visible request and the internal Context Envelope are distinct fields. Every Surface displays only the teacher-authored text as a teacher message.
+- The teacher-visible request and the internal Context Envelope are distinct fields. Free text displays exactly what the teacher authored; a teaching-stage action displays exactly the card's natural-language Prompt. Capability, object, output-format and evidence instructions remain only in the internal Context Envelope.
 - The Sidecar projects accepted, running, tool, Artifact, stopped, failed and completed events from the actual Runtime. It never creates precise progress, delay or success events that the Runtime did not emit.
 - Ordinary answers stay private. A message result becomes a versioned Message Draft Artifact before it can enter a message workflow.
 - Class-group drafts use the existing Proposed Action, Approval, latest-fact validation, idempotency and Execution Receipt chain. Direct-message drafts use the existing insert-into-Composer command and still require the teacher to send.
@@ -85,12 +93,15 @@ Sidecar 页面只消费一个 `ImSidecarAgent` Interface。该 Deep Module 通�
 ## Testing Decisions
 
 - A good test observes teacher-visible behavior and public Interface results. It does not assert hook layout, component state variables, Prompt serialization, database schema or private Adapter methods.
-- The highest test seam is the `ImSidecarAgent` Interface. Integration tests replace that Interface and verify Thread isolation, teacher input projection, real event mapping, stop, retry, context refresh, Artifact review and continuation in the full workspace.
+- The highest test seam is the `ImSidecarAgent` Interface. Integration tests replace that Interface and verify Thread isolation, teacher input projection, real event mapping, stop, same-conversation continuation, context refresh and Artifact review.
 - Agent Runtime contract tests verify Session create/read/send/cancel behavior, scope isolation, idempotent commands and preservation of teacher-visible input.
+- Binding and Sidecar tests verify ordered trail aggregation across Runtime Session rotation, transparent stale 404 replacement, and absence of Session-management controls.
+- Runtime concurrency tests verify that stop can supersede an unresolved send, a late response cannot overwrite later state, and failed stop keeps sending locked while stop remains retryable.
+- Context Envelope tests verify that the exact card Prompt is projected to the teacher while structured capability, object and format instructions remain internal.
 - Business Context contract tests run the same suite against the fixed Adapter and a representative read-only stub, verifying minimum fields, evidence, permission failures, freshness and exclusion of operational details.
 - Message workflow tests verify that Agent completion alone cannot append a MessageThread entry, that edits create a new Artifact version, that approval binds the current version and Context Snapshot, and that a Receipt appends at most one message.
-- Browser tests cover class chat, direct message, Thread switching, refresh recovery, Sidecar-to-workspace continuation, offline recovery, compact Overlay, keyboard operation and status announcements.
-- Visual checks use the existing desktop and compact message-workspace baselines and verify that Header, Context, scrollable body and Composer remain reachable without horizontal overflow.
+- Browser tests cover class chat, direct message, Thread switching, refresh recovery, internal Session rotation with one continuous history, transparent stale 404 recovery, stop then continue, failed-stop locking, exact card Prompt projection, absence of Session-management controls, the 320ms guide collapse, compact Overlay, keyboard operation and status announcements.
+- Visual checks use the existing desktop and compact message-workspace baselines and verify that the merged top guide, scrollable conversation and Composer remain reachable without horizontal overflow.
 - Existing Runtime Surface, WorkBuddy IM assistance and message-workspace tests are prior art; tests are extended at their public boundaries instead of duplicating internal fixtures.
 
 ## Out of Scope
@@ -108,6 +119,6 @@ Sidecar 页面只消费一个 `ImSidecarAgent` Interface。该 Deep Module 通�
 - The user approved the same-Agent and context-seam direction on 2026-09-08.
 - DW Hunter was selected as the next-stage read-only context source. Its knowledge base is online authority and must not be copied into repository documentation or an unmanaged Agent memory.
 - The first implementation sequence is To Spec, then To Tickets, then Implementation. Ticket publication and implementation start only after the ticket breakdown is approved.
-- Decision D-120 is the architecture source of truth for this feature.
+- Decision D-120 remains the architecture source for the shared Agent Runtime and Business Context seams; D-150 supersedes its user-visible Session continuation controls with one Sidecar logical conversation.
 - Published to ClassIn TAPD as [1145976096001080801](https://www.tapd.cn/tapd_fe/45976096/story/detail/1145976096001080801) with the `ready-for-agent` label.
-- Implementation and live DeepSeek acceptance evidence are recorded in [DEEPSEEK-SIDECAR-IMPLEMENTATION-REVIEW.md](./DEEPSEEK-SIDECAR-IMPLEMENTATION-REVIEW.md). The production build and native Harness tests pass; the local Vitest and ESLint runners currently stall before producing test or lint results, so automated regression remains open.
+- Implementation and live DeepSeek acceptance evidence are recorded in [DEEPSEEK-SIDECAR-IMPLEMENTATION-REVIEW.md](./DEEPSEEK-SIDECAR-IMPLEMENTATION-REVIEW.md). The merged guide and continuous-conversation delta is recorded in [COPILOT-STAGE-NAV-IMPLEMENTATION-REVIEW.md](./COPILOT-STAGE-NAV-IMPLEMENTATION-REVIEW.md); TypeScript, scoped ESLint, focused Vitest, Chromium E2E and the production build pass.

@@ -6,5 +6,10 @@ export function teacherVisibleRuntimeText(value: string): string {
   if (!value.startsWith(`${RUNTIME_CONTEXT_START}\n`)) return value;
   const marker = `\n${RUNTIME_CONTEXT_END}\n${RUNTIME_TEACHER_REQUEST}\n`;
   const index = value.indexOf(marker);
-  return index < 0 ? value : value.slice(index + marker.length);
+  if (index < 0) return value;
+  try {
+    const context = JSON.parse(value.slice(RUNTIME_CONTEXT_START.length + 1, index)) as { visibleTeacherRequest?: unknown };
+    if (typeof context.visibleTeacherRequest === 'string' && context.visibleTeacherRequest.trim()) return context.visibleTeacherRequest.trim();
+  } catch { /* Preserve compatibility with existing envelopes if metadata is malformed. */ }
+  return value.slice(index + marker.length);
 }

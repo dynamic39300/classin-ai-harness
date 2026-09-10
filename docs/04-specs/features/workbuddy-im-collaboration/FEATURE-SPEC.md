@@ -1,9 +1,9 @@
 ---
 title: WorkBuddy IM 人机协作 Feature Spec
-status: TEACHING_DYNAMICS_V23_APPROVED_FOR_IMPLEMENTATION
+status: MERGED_TEACHBUDDY_GUIDE_V24_IMPLEMENTED
 triage: ready-for-agent
-version: v0.23
-date: 2026-09-09
+version: v0.24
+date: 2026-09-10
 ---
 
 # WorkBuddy IM 人机协作 Feature Spec
@@ -86,7 +86,7 @@ ClassIn weekly teaching plan facts (read)
 - Approval 必须引用当前 Action ID、草稿版本和教师身份；执行 Adapter 拒绝失配、过期或重复副作用。
 - ExecutionReceipt 必须记录目标群聊、消息 ID、教师身份、已发送正文、执行时间、幂等键和真值标签。
 - 当前数据与发送均为固定、脱敏、可重置的 `SIMULATED` 体验，不暗示生产数据或真实 IM API 已接入。
-- Sidecar Ready 状态固定展示两条模拟任务：作业催交和本周教学计划课前准备通知。选择任务只预填对应 Prompt，不自动读取事实或发送消息。
+- Sidecar Ready 状态在合并后的顶部协作面展示`课前 / 课中 / 课后 / 总结`四阶段及当前有效事项。点击事项一次即提交对应的教师可读 Prompt 并开始读取事实；生成结果仍须教师审阅，不能直接发送消息。
 - 教学计划通知只读取当前班级同一周的计划项；每个计划项包含课次时间、主题和学生准备事项，不推断学生个人状态。
 - 场景二、三必须引用同一 `ClassAgentDefinition` 与 `CapabilityManifest`；渠道不得复制或私自覆写 Agent 名称、课程范围和能力配置。
 - 公开群聊只有显式 `@` 当前已授权 Agent 才触发回复；回复以 Agent 身份进入同一群聊并对群成员可见，不需要教师审批，也不得伪装成 WorkBuddy 或教师消息。
@@ -151,10 +151,10 @@ IM Run 必须复用 `ConversationRunEvent`、`ConversationRunEventDetail` 与 `C
 
 ## 6. Interaction and Layout
 
-- 班级群 Header 为教师提供低噪的 `WorkBuddy` 按钮；按钮文案明确，而不是只用无语义图标。
+- 班级群 Header 为教师提供低噪的 `TeachBuddy`入口；按钮文案明确，而不是只用无语义图标。
 - 打开后，群聊与 Sidecar 并排；Sidecar 是私密工作区，不创建新的消息会话，也不进入群成员列表。
-- Sidecar 顶部持续显示“仅你可见”和当前班级上下文；模拟真值标签可见但不抢主操作。
-- 首屏提供参考任务按钮和可编辑指令输入。生成后优先呈现结构化作业分组，再呈现最终可编辑消息正文。
+- Sidecar 顶部只保留一个合并 Surface：`TeachBuddy · 仅你可见`、消息协作用途说明、四阶段导航和当前事项共同呈现；外层已明确聊天对象时不重复当前班级上下文。
+- 首屏事项一次点击进入自然语言对话，自由输入始终可用。生成后优先呈现当前 Agent 回复，再按能力进入对应的可编辑消息产物。
 - `发送到班级群` 是唯一主要动作；动作前明确展示目标群、王老师身份和群成员可见范围。
 - 标准 Shell 关闭 Sidecar 不删除已生成草稿；切换到其他班级时不得把草稿误投到新群，必须建立新的 ContextSnapshot。沉浸态 Sidecar 不提供关闭命令。
 - 紧凑宽度下 Sidecar 转为右侧 Overlay；群聊主区仍可访问。标准 Shell Overlay 支持关闭和焦点恢复，沉浸态 Overlay 持续显示并通过退出沉浸回到标准 Shell。
@@ -174,8 +174,8 @@ IM Run 必须复用 `ConversationRunEvent`、`ConversationRunEventDetail` 与 `C
 
 ### 6.2 Persistent WorkBuddy Composer and Live Run Feedback
 
-- WorkBuddy Sidecar 固定为 `Header / Context / Scrollable Run Body / Composer` 四区；Composer 不随 Timeline 滚走。
-- Ready 提交创建新 Run；Generating 提交追加 `teacher_message` 补充事件；Draft / Sent / Failure 提交创建新的模拟 Run。`sending` 状态禁止新输入，避免两个副作用并发。
+- TeachBuddy Sidecar 固定为`Scrollable Conversation / Composer`两区；合并的身份与教学建议 Surface 位于 Conversation 顶部并可平滑收紧，Composer 不随 Timeline 滚走。
+- 每次 Ready 提交都追加到当前 Thread 的逻辑对话；内部 Runtime 可为请求建立执行 Run，但页面不创建或切换 Session。生成期间允许停止当前请求，正式消息`sending`仍禁止新输入以避免两个副作用并发。
 - `WorkBuddyImRunProjection` 持有稳定 `startedAt`；UI Clock 只投影 `elapsedSeconds`，步骤剩余时间继续使用 `progress.stepEndsAt`，不得维护第二份业务进度。
 - Header、当前 Capability 与 Plan 当前步骤复用终局 `LoaderCircle`、运行态高亮和状态文案；Reduced Motion 关闭旋转、脉冲与扫光但不改变语义。
 
@@ -346,13 +346,13 @@ WorkBuddy 的沉浸态可见性由 `MessageWorkspace` 的 Shell Policy 派生，
 
 ### 6.17 DeepSeek Sidecar Runtime and Business Context Seam
 
-`ImSidecarAgentModule` 是 IM 页面唯一消费的 Agent Interface。它隐藏 Thread 与 Runtime Session 的绑定、ContextSnapshot 捕获、受控 Context Envelope、真实事件投影、Artifact 分类、停止与恢复。页面不得自行调用模型、拼接业务上下文或理解 Adapter 返回的数据库结构。
+`ImSidecarAgentModule` 是 IM 页面唯一消费的 Agent Interface。它隐藏 Thread 逻辑对话与内部 Runtime Session 的映射、ContextSnapshot 捕获、受控 Context Envelope、真实事件投影、Artifact 分类、停止与恢复。页面不得自行调用模型、拼接业务上下文或理解 Adapter 返回的数据库结构。
 
 - Runtime 继续复用现有 `AgentRuntimeAdapter`、`teachbuddy` Agent Preset 和 `ideal-full` Product Scope。Thread 只是 Session 的来源与恢复键，不创建新 Runtime Scope。
 - 唯一新增变化点是 `BusinessContextAdapter`。输入是当前 Actor、Tenant、Thread Target 和任务用途；输出是已校验、最小化、带来源、权限、时效、版本与真值证据的 ContextSnapshot。
 - 固定 Scenario Adapter、后续 DW Hunter 只读 Adapter 和未来 ClassIn API Adapter 遵循同一契约。DW Hunter 的知识检索、SQL、实例分派、脱敏和内部标识隐藏在 Adapter 内，不进入页面、Prompt Contract 或领域术语。
 - ContextSnapshot 保存业务语义事实与来源引用，不保存凭据、连接信息、SQL、完整数据库结果或知识库原文。运行时只投影当前任务需要的 Context Projection。
-- Sidecar 与主工作台共享 Session ID 与事件事实；教师从 Sidecar 进入主工作台时只更换 Surface。主工作台必须隐藏内部 Context Envelope，只显示教师原始要求。
+- Sidecar 与主工作台复用 Agent Preset、Runtime Interface 和事件词汇，但当前 IM 产品面只呈现 Thread 绑定的一条逻辑对话，不提供跨 Surface 的 Session 管理入口。内部 Runtime Session 轮换由 Binding Trail 记录并聚合事件；已保存 Binding 读取返回 404 时透明创建替代 Session。内部 Context Envelope 继续隐藏，只精确显示教师输入或卡片自然语言 Prompt。
 - 模型输出先分类为普通私密回答或 ArtifactDraft。任何 MessageThread 变化仍需由业务 Module 建立 ProposedAction，经过教师 Approval、领域校验与 Adapter ExecutionReceipt；Runtime completed 不能投影成已发送。
 - 测试以 `ImSidecarAgentModule` 的公开投影和命令为最高行为 Seam；Runtime 与 Business Context Adapter 分别进行契约测试，页面测试只替换该 Module，不模拟其内部状态拼装。
 
@@ -368,14 +368,14 @@ WorkBuddy 的沉浸态可见性由 `MessageWorkspace` 的 Shell Policy 派生，
 - `PersonalizedLearningArtifact` 使用统一外壳保存标题、接收对象、正文、结构化区块、证据摘要、交付建议、版本与 Context 引用；四项能力只扩展其内容区块，不在页面创建四套状态机。
 - 群聊中的班级提醒走现有 `MessageDraftArtifact → ProposedAction → Approval → ExecutionReceipt`；群聊中的个人回顾、错题再练和学情总结走目标学生 1v1 Composer 插入 Gate。私聊发起的四项能力默认插入当前 Composer。
 - `planDelivery` 依据能力敏感度、选择人数与当前渠道决定 `current-class-review` 或 `student-direct-composer`，页面不得根据按钮名称自行推断隐私策略。
-- DeepSeek 请求使用同一 Runtime Session；教师可见文本与内部上下文 Envelope 分离。输出解析失败、字段缺失或接收对象不匹配时进入可恢复失败，不生成可交付 Artifact。
+- DeepSeek 请求进入当前 Thread 的同一逻辑对话；教师可见文本与内部上下文 Envelope 分离。卡片自然语言 Prompt 原文进入教师时间线，能力、对象、格式和证据要求只进入内部 Envelope。Adapter 可以管理恢复所需的内部 Runtime Session，输出解析失败、字段缺失或接收对象不匹配时进入可恢复失败，不生成可交付 Artifact。
 - 真实 DW 数据接入仅替换 Adapter。当前数仓知识检索已核验 IM 分区时效、消息类型解析、快照成员关系和最小化规则；行级查询连接不可用时固定场景继续标记 `fixed-demo`，不得降级冒充真实数据。
 
 详细体验、Problem、User Stories、决策与测试见 `PERSONALIZED-LEARNING-SERVICES-EXPERIENCE-DESIGN.md` 与 `PERSONALIZED-LEARNING-SERVICES-FEATURE-SPEC.md`。
 
 ### 6.19 Teaching Dynamics Module
 
-`TeachingDynamicsModule` 是初始教学信号的唯一页面 Module。它消费 `TeachingDynamicsSnapshot`，负责稳定阶段顺序、事项排序、当前阶段、强调行、阶段摘要、准确剩余数量和紧凑摘要；页面不读取学习目录、时钟规则或业务表自行拼装教学结论。
+`TeachingDynamicsModule` 是 TeachBuddy 顶部身份、能力引导和初始教学信号的唯一页面 Module。它消费 `TeachingDynamicsSnapshot`，负责稳定阶段顺序、事项排序、当前阶段、强调行、阶段摘要、准确剩余数量和紧凑摘要；页面不读取学习目录、时钟规则或业务表自行拼装教学结论。
 
 #### Interface 与 Seam
 
@@ -415,23 +415,28 @@ interface TeachingDynamicsAdapter {
 - `TeachingDynamicsAdapter` 是固定场景、DW 派生投影与未来 ClassIn 在线数据之间的 Seam。Adapter 隐藏教师—班级—班级内课程—业务对象映射、时间窗口、正式提醒与冷却规则；输出已经去标识、可排序并带来源版本的业务投影。
 - `ImSidecarAgentServices` 同时注入 Runtime、Business Context、Teaching Dynamics 与 Message Draft Adapter。`ImSidecarAgentSurface` 只编排公开 Interface，不持有课程/作业规则或模拟人数。
 - 固定 Adapter 使用可重置时钟过滤有效事项；到达课堂结束或作业截止时间后不再返回对应提醒。闭环和未知事实保留独立 `kind`，不靠颜色或缺少动作推断。
-- AI 事项的 `teacherRequest` 是教师可读要求，点击后立即成为当前 Runtime Session 的教师消息。若 `learningSelection`存在，提交前通过 `captureLearningContext`重新校验同一作用域；无选择器中间态。
-- `TeachingDynamicsModule` 的整体展开、紧凑和当前展开阶段由 Feature 层按 Thread 保存。该本地呈现状态不进入 Snapshot、Run、Artifact 或 Message Domain；新业务快照替换时保持当前呈现状态，不触发强制展开。
-- 正常连接不形成常驻状态条。加载、离线、权限或读取失败只在受影响位置投影恢复信息；Header 使用`仅你可见`，外层已明确聊天对象时不重复显示当前上下文。
-- AI 补问、生成、修改、审阅和发送继续由既有 Runtime、Artifact 与 Message Draft Interface 承载。Teaching Dynamics 不监听或改写这些状态，只在新增教师消息后把自身压缩为一行以腾出对话空间。
-- UI 使用现有 Surface、排版、间距、颜色、Focus Ring、Motion 与 384px Sidecar 响应式 Token。阶段树使用语义标题和列表，装饰连接线不进入辅助技术树；摘要和更多按钮提供`aria-expanded`。
+- AI 事项的 `teacherRequest` 是教师可读要求，点击后以原文立即成为当前逻辑对话的教师消息。若 `learningSelection`存在，提交前通过 `captureLearningContext`重新校验同一作用域；结构化能力、对象、格式和证据要求写入内部 Context Envelope，不替换老师可见文本，也不存在选择器中间态。
+- `TeachingDynamicsModule` 同时投影`TeachBuddy · 仅你可见`、简短能力说明、阶段导航和事项，整个区域共用一组外框、背景和阴影；Sidecar 不再编排独立身份 Header，也不重复显示`教学动态`标题。
+- `TeachingDynamicsModule` 的当前选中阶段由 Feature 层按 Thread 保存；展开/紧凑只维持在当前已打开的 Sidecar 中，每次进入聊天重新默认展开。这些本地呈现状态不进入 Snapshot、Run、Artifact 或 Message Domain；新业务快照替换时保持当前呈现状态，不触发强制展开。
+- 正常连接不形成常驻状态条。加载、离线、权限或读取失败只在受影响位置投影恢复信息；外层已明确聊天对象时不重复显示当前上下文。
+- AI 补问、生成、修改、审阅和发送继续由既有 Runtime、Artifact 与 Message Draft Interface 承载。Teaching Dynamics 不监听或改写这些状态；累计向下滚动达到 48px 后才请求收紧，向上滚动与输入框内部滚动不触发。
+- 收起内容保留在 DOM 中，通过 320ms 高度、透明度和轻微位移过渡；Reduced Motion 下取消动画。Runtime 事件只有在老师原本位于时间线底部时才跟随滚动，新提交教师要求时恢复跟随。
+- 当前 Thread 只暴露一条连续逻辑对话。页面不提供新建 Session、Session 列表、独立历史页或完整工作台继续入口；内部 Runtime Session 轮换通过 Binding Trail 聚合为一条可上滑历史，stale 404 Binding 会透明创建替代 Session。停止当前生成后允许再次提交；停止失败则继续锁定发送并允许重试停止。
+- UI 使用现有 Surface、排版、间距、颜色、Focus Ring、Motion 与 384px Sidecar 响应式 Token。阶段导航使用语义 Tab，装饰连接线不进入辅助技术树；展开控件提供`aria-expanded`且与右侧边缘保留 Token 间距。
 
-详细页面语义见 [初始面详细交互设计](./COPILOT-INITIAL-SURFACE-DETAILED-DESIGN.md)，锁定决策见 D-141。
+方案二详细页面语义见 [教学阶段导航方案（二）](./COPILOT-STAGE-NAV-ALTERNATIVE-DESIGN.md)，锁定决策见 D-141、D-149 与 D-150。方案一的四块 Prompt 结构仍由其独立分支和原详细设计保留。
 
 ## 7. Acceptance Criteria
 
 - [ ] 学生端、只读和嵌入态看不到 WorkBuddy；教师可交互私聊与班级群聊均可使用同一 WorkBuddy Surface。
 - [ ] 教师在 `高二物理 3 班` 打开 Sidecar 后能看见`TeachBuddy · 仅你可见`；常规页面不重复上下文、模拟或连接成功等工程说明。
 - [ ] 触发参考任务后，草稿只包含尚未截止的已发布作业，并按作业分组列出未提交学生。
-- [ ] Ready 状态只展示一个展开的教学动态；当前阶段完整显示并强调最重要事项，其他阶段只显示一行摘要和准确的`另外 N 项`，同一事项不重复。
-- [ ] 点击教学事项一次即把教师可读要求提交到当前对话，不打开选择器、配置页或二级详情；自由输入走同一 Runtime。
-- [ ] 新教师消息出现后教学动态收成一行；点击摘要原位展开，展开或紧凑不改变事项数、业务状态或 AI 状态。
+- [ ] Ready 状态只展示一个合并后的 TeachBuddy 顶部协作面；同一区域内包含私有身份、能力说明、四阶段 Tab 和当前阶段事项，不存在第二个 Header 或重复`教学动态`标题。
+- [ ] 点击教学事项一次即把卡片自然语言要求原文提交并显示到当前对话，结构化能力/对象/格式要求只进入内部上下文；不打开选择器、配置页或二级详情，自由输入走同一 Runtime。
+- [ ] 累计向下滚动达到阈值后顶部协作面平滑收成身份和建议摘要；点击`展开`原位恢复，展开或紧凑不改变事项数、业务状态或 AI 状态。
 - [ ] 教学动态紧凑时替换业务快照只更新摘要和必要提示，不自动展开、不抢焦点、不移动对话滚动位置。
+- [ ] 正常态和读取失败态均不显示新建 Session；不显示 Session 历史或跳转完整工作台入口。内部 Session 轮换前后的事件通过 Binding Trail 聚合为一条可上滑历史，stale 404 Binding 自动建立替代 Session。
+- [ ] 运行中可在 Composer 内停止；停止后 Composer 恢复可用，下一条教师要求沿用当前 Thread 的同一逻辑对话。停止失败时 Composer 保持发送锁定并允许重试停止。
 - [ ] 教学计划任务依次展示班级定位、计划读取、准备事项提炼和通知生成四步 Run，并生成包含本周课次与准备事项的一条可编辑群通知。
 - [ ] 教学计划通知未经教师确认不进入群聊；确认后只新增一条教师身份消息，并显示模拟执行回执。
 - [ ] 教师可以删除一个学生或作业分组；正文、草稿版本和 ProposedAction 同步更新。

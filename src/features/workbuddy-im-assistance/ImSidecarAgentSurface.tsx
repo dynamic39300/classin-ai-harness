@@ -1,19 +1,17 @@
-import { AlertTriangle, CheckCircle2, ExternalLink, LoaderCircle, MessageSquarePlus, RefreshCw, Sparkles, Square, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, LoaderCircle, RefreshCw, Sparkles, Square } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import type { BusinessContextSnapshot, ImSidecarAgentServices, LearningContextCatalog, LearningContextSelection, MessageDraftArtifact, PersonalizedLearningArtifact, SendMessageReceipt } from '@contracts/workbuddy/business-context';
 import type { WorkBuddyImTarget } from '@contracts/workbuddy/im-conversation-run';
 import type { TeachingDynamicAction, TeachingDynamicsSnapshot, TeachingStageId } from '@contracts/workbuddy/teaching-dynamics';
 import { TEACHBUDDY_BRAND } from '@contracts/workbuddy/product-brand';
 import { WorkspaceComposer } from '@design-system/WorkspaceComposer';
-import { TeachBuddyAvatar } from '@design-system/TeachBuddyAvatar';
 import { AgentRichResponse } from '@design-system/AgentRichResponse';
 import { approveMessageSend, createMessageDraft, proposeMessageSend, reviseMessageDraft, validateMessageContext } from '@domain/workbuddy/im-message-draft';
 import { buildLearningTeacherRequest, createPersonalizedLearningArtifact, deliveryTarget, revisePersonalizedLearningArtifact, validateLearningSelectionAgainstCatalog } from '@domain/workbuddy/personalized-learning-service';
 import { createRuntimeContextEnvelope, teacherVisibleRuntimeText } from '@domain/workbuddy/runtime-context-envelope';
 import { splitAnalysisProcessTurns } from '@domain/workbuddy/analysis-process';
 import { AnalysisProcess, appendRuntimeImageDrafts, encodeRuntimeImageDrafts, needsFreshTextSession, releaseRuntimeImageDrafts, RUNTIME_IMAGE_ACCEPT, type RuntimeImageDraft, useAgentRuntime } from '@features/agent-runtime';
-import { getImAgentSessionBinding, removeImAgentSessionBinding, saveImAgentSessionBinding } from './im-agent-session-binding';
+import { getImAgentSessionTrail, removeImAgentSessionBinding, replaceMissingImAgentSessionBinding, rotateImAgentSessionBinding, saveImAgentSessionBinding } from './im-agent-session-binding';
 import { TeachingDynamics } from './TeachingDynamics';
 import styles from './WorkBuddyImSidecar.module.css';
 
@@ -59,6 +57,17 @@ function savePresentation(threadRef: string, presentation: TeachingDynamicsPrese
   try { window.sessionStorage.setItem(presentationStorageKey(threadRef), JSON.stringify({ selectedStage: presentation.selectedStage })); } catch { /* Keep the surface usable without storage. */ }
 }
 
+function nestedScrollerConsumesWheel(target: EventTarget | null, boundary: HTMLElement, deltaY: number) {
+  if (!(target instanceof HTMLElement)) return false;
+  for (let element: HTMLElement | null = target; element && element !== boundary; element = element.parentElement) {
+    const overflowY = window.getComputedStyle(element).overflowY;
+    if (!/(auto|scroll)/.test(overflowY) || element.scrollHeight <= element.clientHeight) continue;
+    if (deltaY > 0 && element.scrollTop + element.clientHeight < element.scrollHeight - 1) return true;
+    if (deltaY < 0 && element.scrollTop > 1) return true;
+  }
+  return false;
+}
+
 export function ImSidecarAgentSurface({ services, target, onLocateMessage, onInsertDirectReply, onClose }: Props) {
   const bindingTarget = useMemo(() => ({
     actorRef: services.actor.id,
@@ -66,8 +75,11 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     threadRef: target.threadId,
     scope: services.scope,
   }), [services.actor.id, services.scope, services.tenantRef, target.threadId]);
-  const initialBinding = useMemo(() => getImAgentSessionBinding(bindingTarget), [bindingTarget]);
+  const initialSessionTrail = useMemo(() => getImAgentSessionTrail(bindingTarget), [bindingTarget]);
+  const initialBinding = initialSessionTrail.at(-1) ?? null;
   const [sessionRef, setSessionRef] = useState(initialBinding);
+  const [sessionTrail, setSessionTrail] = useState<readonly string[]>(initialSessionTrail);
+  const [recoveringBinding, setRecoveringBinding] = useState(false);
   const runtime = useAgentRuntime(services.runtime, services.scope, sessionRef);
   const [composerDraft, setComposerDraft] = useState('');
   const [imageDrafts, setImageDrafts] = useState<readonly RuntimeImageDraft[]>([]);
@@ -89,15 +101,27 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
   const [presentation, setPresentation] = useState<TeachingDynamicsPresentation>(() => loadPresentation(target.threadId));
   const timelineRef = useRef<HTMLDivElement>(null);
   const presentationExpandedRef = useRef(presentation.expanded);
+  const downwardWheelDistanceRef = useRef(0);
+  const followLatestMessageRef = useRef(true);
+  const suppressFollowLatestUntilRef = useRef(0);
+  const recoveringMissingBindingRef = useRef(false);
   const imageDraftsRef = useRef(imageDrafts);
   const pendingImageSubmission = useRef<{ images: readonly RuntimeImageDraft[]; beforeTeacherEventId?: string } | null>(null);
   const direct = target.kind === 'direct';
   const activeSession = runtime.session;
-  const analysisTurns = activeSession ? splitAnalysisProcessTurns(activeSession.events) : [];
+  const logicalSessions = useMemo(() => {
+    const byId = new Map((runtime.history ?? []).map((entry) => [entry.id, entry]));
+    if (activeSession) byId.set(activeSession.id, activeSession);
+    const refs = sessionTrail.length ? sessionTrail : activeSession ? [activeSession.id] : [];
+    return refs.map((ref) => byId.get(ref)).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+  }, [activeSession, runtime.history, sessionTrail]);
   const pending = runtime.operation?.status === 'pending';
+  const sendingRequest = pending && runtime.operation?.command.kind === 'send';
+  const stopping = pending && runtime.operation?.command.kind === 'cancel';
   const running = runtime.session?.status === 'running';
+  const canStop = Boolean(sessionRef) && (running || runtime.locked || sendingRequest || stopping);
   const lastAgentEvent = runtime.session ? [...runtime.session.events].reverse().find((event) => event.actor === 'agent' && event.summary.trim()) : undefined;
-  const canSend = runtime.health?.status === 'ready' && !running && !pending && runtime.creation !== 'pending'
+  const canSend = runtime.health?.status === 'ready' && !running && !pending && !runtime.locked && !recoveringBinding && runtime.creation !== 'pending'
     && (!sessionRef || Boolean(runtime.session)) && !runtime.readError && delivery.status !== 'sending';
 
   const loadDynamics = useCallback(async () => {
@@ -139,6 +163,38 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     presentationExpandedRef.current = presentation.expanded;
     savePresentation(target.threadId, presentation);
   }, [presentation, target.threadId]);
+
+  useEffect(() => {
+    if (!sessionRef || runtime.readErrorStatus !== 404 || recoveringMissingBindingRef.current) return;
+    let disposed = false;
+    const missingSessionRef = sessionRef;
+    const priorSessionTrail = sessionTrail.filter((ref) => ref !== missingSessionRef);
+    recoveringMissingBindingRef.current = true;
+    setRecoveringBinding(true);
+    void services.runtime.create(services.scope).then((created) => {
+      if (disposed) return;
+      try { replaceMissingImAgentSessionBinding(bindingTarget, missingSessionRef, created.id); } catch {
+        setContextError('TeachBuddy 已恢复，但本机未能保存恢复信息。当前页面仍可继续使用。');
+      }
+      setSessionTrail([...new Set([...priorSessionTrail, created.id])]);
+      setSessionRef(created.id);
+    }).catch((error: unknown) => {
+      if (disposed) return;
+      const fallbackSessionRef = priorSessionTrail.at(-1) ?? null;
+      try {
+        if (fallbackSessionRef) replaceMissingImAgentSessionBinding(bindingTarget, missingSessionRef, fallbackSessionRef);
+        else removeImAgentSessionBinding(bindingTarget);
+      } catch { /* The readable in-memory history remains available for this page. */ }
+      setSessionTrail(priorSessionTrail);
+      setSessionRef(fallbackSessionRef);
+      setContextError(error instanceof Error ? error.message : 'TeachBuddy 暂时无法恢复，请稍后重试。');
+    }).finally(() => {
+      if (!disposed) setRecoveringBinding(false);
+      recoveringMissingBindingRef.current = false;
+    });
+    return () => { disposed = true; recoveringMissingBindingRef.current = false; };
+  }, [bindingTarget, runtime.readErrorStatus, services.runtime, services.scope, sessionRef, sessionTrail]);
+
   useEffect(() => { imageDraftsRef.current = imageDrafts; }, [imageDrafts]);
   useEffect(() => {
     const submitted = pendingImageSubmission.current;
@@ -167,8 +223,21 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
 
   useLayoutEffect(() => {
     const timeline = timelineRef.current;
-    if (timeline) timeline.scrollTo?.({ top: timeline.scrollHeight, behavior: 'auto' });
+    if (timeline && followLatestMessageRef.current) timeline.scrollTo?.({ top: timeline.scrollHeight, behavior: 'auto' });
   }, [delivery, messageDraft, runtime.session]);
+
+  function bindCreatedSession(id: string, previousRef: string | null) {
+    try {
+      if (previousRef) rotateImAgentSessionBinding(bindingTarget, id);
+      else saveImAgentSessionBinding(bindingTarget, id);
+    } catch {
+      setContextError('已开始处理，但本机未能保存恢复信息。当前页面仍可继续使用。');
+    }
+    setSessionTrail((current) => previousRef
+      ? [...new Set([...current, previousRef, id])]
+      : [id]);
+    setSessionRef(id);
+  }
 
   async function submit(teacherRequestOverride?: string) {
     const teacherRequest = teacherRequestOverride?.trim() || composerDraft.trim() || (imageDrafts.length ? '请结合我附上的图片完成这项教学工作。' : '');
@@ -198,21 +267,18 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
       return;
     }
     const recoveringTextSession = needsFreshTextSession(activeSession, imageDrafts.length);
+    const previousRef = recoveringTextSession ? sessionRef : null;
     let id = recoveringTextSession ? null : sessionRef;
     if (!id) {
       const created = await runtime.create();
       if (!created) return;
       id = created.id;
-      try {
-        saveImAgentSessionBinding(bindingTarget, id);
-      } catch {
-        setContextError('会话已创建，但本机未能保存恢复信息。当前页面仍可继续使用。');
-      }
-      setSessionRef(id);
+      bindCreatedSession(id, previousRef);
     }
     setMessageDraft(null);
     setLearningArtifact(null);
     setDelivery({ status: 'idle' });
+    followLatestMessageRef.current = true;
     if (imageDrafts.length) pendingImageSubmission.current = { images: imageDrafts, beforeTeacherEventId: recoveringTextSession ? undefined : activeSession ? [...activeSession.events].reverse().find(({ kind }) => kind === 'teacher_message')?.id : undefined };
     const completed = await runtime.execute(id, {
       kind: 'send',
@@ -246,20 +312,21 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
       return;
     }
     const recoveringTextSession = needsFreshTextSession(activeSession, imageDrafts.length);
+    const previousRef = recoveringTextSession ? sessionRef : null;
     let id = recoveringTextSession ? null : sessionRef;
     if (!id) {
       const created = await runtime.create();
       if (!created) return;
       id = created.id;
-      try { saveImAgentSessionBinding(bindingTarget, id); } catch { setContextError('会话已创建，但本机未能保存恢复信息。当前页面仍可继续使用。'); }
-      setSessionRef(id);
+      bindCreatedSession(id, previousRef);
     }
     setMessageDraft(null);
     setLearningArtifact(null);
     setDelivery({ status: 'idle' });
+    followLatestMessageRef.current = true;
     setRuntimeArtifactBaselineIds(runtime.session?.artifacts.map(({ id: artifactId }) => artifactId) ?? []);
     if (imageDrafts.length) pendingImageSubmission.current = { images: imageDrafts, beforeTeacherEventId: recoveringTextSession ? undefined : activeSession ? [...activeSession.events].reverse().find(({ kind }) => kind === 'teacher_message')?.id : undefined };
-    const completed = await runtime.execute(id, { kind: 'send', text: createRuntimeContextEnvelope(captured, buildLearningTeacherRequest(nextSelection, catalog, teacherRequest)), commandId: crypto.randomUUID(), ...(images.length ? { images } : {}) });
+    const completed = await runtime.execute(id, { kind: 'send', text: createRuntimeContextEnvelope(captured, buildLearningTeacherRequest(nextSelection, catalog, teacherRequest), teacherRequest), commandId: crypto.randomUUID(), ...(images.length ? { images } : {}) });
     setLearningResultReady(completed);
     if (completed) {
       setComposerDraft('');
@@ -281,23 +348,6 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     const image = imageDrafts.find(({ id }) => id === imageId);
     if (image) releaseRuntimeImageDrafts([image]);
     setImageDrafts((current) => current.filter(({ id }) => id !== imageId));
-    setImageError('');
-  }
-
-  function startNewSession() {
-    removeImAgentSessionBinding(bindingTarget);
-    setSessionRef(null);
-    setSnapshot(null);
-    setMessageDraft(null);
-    setLearningArtifact(null);
-    setSelection(null);
-    setDelivery({ status: 'idle' });
-    setContextError('');
-    setLearningResultReady(false);
-    setRuntimeArtifactBaselineIds([]);
-    setPresentation({ expanded: true, selectedStage: dynamics?.currentStage ?? null });
-    releaseRuntimeImageDrafts(imageDrafts);
-    setImageDrafts([]);
     setImageError('');
   }
 
@@ -381,27 +431,33 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     : '';
 
   return (
-    <aside className={styles.sidecar} aria-label={`${TEACHBUDDY_BRAND.shortName} 私密协作窗口`} data-dismissible={onClose ? 'true' : 'false'} data-surface="floating-assistant" id="workbuddy-im-sidecar">
-      <header className={styles.header}>
-        <div className={styles.identity}><TeachBuddyAvatar size="compact" /><strong>{TEACHBUDDY_BRAND.shortName}</strong><span className={styles.runtimeIdentity}>仅你可见</span></div>
-        <div className={styles.headerActions}>
-          <button type="button" aria-label="新建 TeachBuddy 会话" title="新建会话" disabled={running || pending} onClick={startNewSession}><MessageSquarePlus aria-hidden="true" size={17} /></button>
-          {onClose ? <button type="button" aria-label={`关闭 ${TEACHBUDDY_BRAND.shortName}`} onClick={onClose}><X aria-hidden="true" size={17} /></button> : null}
-        </div>
-      </header>
-
+    <aside className={styles.sidecar} aria-label={`${TEACHBUDDY_BRAND.shortName} 私密协作窗口`} data-dismissible={onClose ? 'true' : 'false'} data-guide-integrated="true" data-surface="floating-assistant" id="workbuddy-im-sidecar">
       <div
         aria-label="TeachBuddy 对话"
         className={styles.agentBody}
         onWheel={(event) => {
-          if (event.deltaY <= 0) return;
+          if (event.target instanceof HTMLElement && event.target.closest('textarea')) return;
+          if (nestedScrollerConsumesWheel(event.target, event.currentTarget, event.deltaY)) return;
+          if (!presentationExpandedRef.current) return;
+          if (event.deltaY <= 0) {
+            downwardWheelDistanceRef.current = 0;
+            return;
+          }
+          const multiplier = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? event.currentTarget.clientHeight : 1;
+          downwardWheelDistanceRef.current += event.deltaY * multiplier;
+          if (downwardWheelDistanceRef.current < 48) return;
+          downwardWheelDistanceRef.current = 0;
+          suppressFollowLatestUntilRef.current = performance.now() + 400;
           setPresentation((current) => current.expanded ? { ...current, expanded: false } : current);
+        }}
+        onScroll={(event) => {
+          if (performance.now() < suppressFollowLatestUntilRef.current) return;
+          const timeline = event.currentTarget;
+          followLatestMessageRef.current = timeline.scrollHeight - timeline.clientHeight - timeline.scrollTop < 48;
         }}
         ref={timelineRef}
         role="region"
       >
-        {connectionProblem ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{connectionProblem}{runtime.health?.message ? `：${runtime.health.message}` : ''}</p><button type="button" onClick={runtime.reconnect}><RefreshCw aria-hidden="true" size={14} />重试</button></div> : null}
-
         <TeachingDynamics
           snapshot={dynamics}
           expanded={presentation.expanded}
@@ -409,35 +465,43 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
           loading={dynamicsLoading}
           error={dynamicsError || catalogError}
           updatedWhileCompact={dynamicsUpdated}
-          disabled={!canSend || !catalog}
+          disabled={!canSend}
+          isActionDisabled={(action) => Boolean(action.learningSelection && !catalog)}
           onExpandedChange={(expanded) => {
+            downwardWheelDistanceRef.current = 0;
+            if (!expanded) suppressFollowLatestUntilRef.current = performance.now() + 400;
             setPresentation((current) => ({ ...current, expanded }));
             if (expanded) setDynamicsUpdated(false);
           }}
           onSelectedStageChange={(selectedStage) => setPresentation((current) => ({ ...current, selectedStage }))}
           onAction={triggerTeachingAction}
           onRetry={() => { void loadDynamics(); runtime.reconnect(); }}
+          onClose={onClose}
         />
 
-        {sessionRef && !runtime.session && !runtime.readError ? <p className={styles.runtimeProgress} role="status">正在恢复当前消息会话…</p> : null}
-        {activeSession?.events.length ? <ol className={styles.agentEvents} aria-label="TeachBuddy 会话消息">{analysisTurns.map((turn, turnIndex) => {
-          const turnTeacher = turn.events.find(({ kind }) => kind === 'teacher_message');
-          const turnStatus = turnIndex === analysisTurns.length - 1 ? activeSession.status
-            : turn.events.some(({ state }) => state === 'failed') ? 'failed'
-              : turn.events.some(({ state }) => state === 'stopped' || state === 'cancelled') ? 'stopped' : 'idle';
-          const turnSession = { id: activeSession.id, status: turnStatus, events: turn.events, updatedAt: activeSession.updatedAt } as const;
-          const messages = turn.events.filter((event) => event.actor === 'teacher' || (event.actor === 'agent' && event.kind === 'process') || event.kind === 'error');
-          return <Fragment key={turn.id}>{messages.map((event) => {
-            const visible = event.actor === 'teacher' ? teacherVisibleRuntimeText(event.summary) : event.summary;
-            return <Fragment key={event.id}><li data-actor={event.actor}><article><header><strong>{event.actor === 'teacher' ? '您' : event.actor === 'agent' ? 'TeachBuddy' : event.title}</strong></header>{event.actor === 'agent' ? <AgentRichResponse>{visible}</AgentRichResponse> : <p>{visible}</p>}</article></li>{event.id === turnTeacher?.id ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} mode="compact" context={null} /></li> : null}</Fragment>;
-          })}{!turnTeacher ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} mode="compact" context={null} /></li> : null}</Fragment>;
+        {connectionProblem ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{connectionProblem}{runtime.health?.message ? `：${runtime.health.message}` : ''}</p><button type="button" onClick={runtime.reconnect}><RefreshCw aria-hidden="true" size={14} />重试</button></div> : null}
+
+        {recoveringBinding || (sessionRef && !runtime.session && !runtime.readError) ? <p className={styles.runtimeProgress} role="status">正在恢复当前对话…</p> : null}
+        {logicalSessions.some(({ events }) => events.length) ? <ol className={styles.agentEvents} aria-label="TeachBuddy 会话消息">{logicalSessions.map((logicalSession) => {
+          const turns = splitAnalysisProcessTurns(logicalSession.events);
+          return turns.map((turn, turnIndex) => {
+            const turnTeacher = turn.events.find(({ kind }) => kind === 'teacher_message');
+            const turnStatus = turnIndex === turns.length - 1 ? logicalSession.status
+              : turn.events.some(({ state }) => state === 'failed') ? 'failed'
+                : turn.events.some(({ state }) => state === 'stopped' || state === 'cancelled') ? 'stopped' : 'idle';
+            const turnSession = { id: logicalSession.id, status: turnStatus, events: turn.events, updatedAt: logicalSession.updatedAt } as const;
+            const messages = turn.events.filter((event) => event.actor === 'teacher' || (event.actor === 'agent' && event.kind === 'process') || event.kind === 'error');
+            return <Fragment key={`${logicalSession.id}:${turn.id}`}>{messages.map((event) => {
+              const visible = event.actor === 'teacher' ? teacherVisibleRuntimeText(event.summary) : event.summary;
+              return <Fragment key={`${logicalSession.id}:${event.id}`}><li data-actor={event.actor}><article><header><strong>{event.actor === 'teacher' ? '您' : event.actor === 'agent' ? 'TeachBuddy' : event.title}</strong></header>{event.actor === 'agent' ? <AgentRichResponse>{visible}</AgentRichResponse> : <p>{visible}</p>}</article></li>{event.id === turnTeacher?.id ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} mode="compact" context={null} /></li> : null}</Fragment>;
+            })}{!turnTeacher ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} mode="compact" context={null} /></li> : null}</Fragment>;
+          });
         })}</ol> : null}
         {activeSession?.status === 'running' && activeSession.events.length === 0 ? <AnalysisProcess session={activeSession} mode="compact" context={null} /> : null}
 
         {lastAgentEvent && runtime.session?.status === 'idle' && !messageDraft && (!selection || learningResultReady) ? (
           <div className={styles.agentResultActions}>
             <button className={styles.secondaryButton} type="button" onClick={() => void reviewAsMessage()}>{selection ? '审阅沟通内容' : direct ? '作为回复草稿审阅' : '作为群消息草稿审阅'}</button>
-            <Link to={`/teacher/ai-agent/new?${new URLSearchParams({ session: runtime.session.id })}`}>在 TeachBuddy 中继续<ExternalLink aria-hidden="true" size={13} /></Link>
           </div>
         ) : null}
 
@@ -450,12 +514,13 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
           {delivery.status === 'sent' && delivery.receipt.messageId ? <button className={styles.secondaryButton} type="button" onClick={() => onLocateMessage(delivery.receipt.messageId!)}><CheckCircle2 aria-hidden="true" size={14} />在群聊中查看</button> : null}
         </section> : null}
 
-        {runtime.creation === 'pending' ? <p className={styles.runtimeProgress} role="status"><LoaderCircle className={styles.spinner} aria-hidden="true" size={16} />正在创建会话…</p> : null}
-        {pending && runtime.operation?.command.kind === 'send' ? <p className={styles.runtimeProgress} role="status"><LoaderCircle className={styles.spinner} aria-hidden="true" size={16} />TeachBuddy 正在理解你的要求…</p> : null}
+        {runtime.creation === 'pending' ? <p className={styles.runtimeProgress} role="status"><LoaderCircle className={styles.spinner} aria-hidden="true" size={16} />正在准备 TeachBuddy…</p> : null}
+        {sendingRequest ? <p className={styles.runtimeProgress} role="status"><LoaderCircle className={styles.spinner} aria-hidden="true" size={16} />TeachBuddy 正在理解你的要求…</p> : null}
+        {stopping ? <p className={styles.runtimeProgress} role="status"><LoaderCircle className={styles.spinner} aria-hidden="true" size={16} />正在停止当前生成…</p> : null}
         {runtime.session?.status === 'stopped' ? <p className={styles.runtimeNotice} role="status">{runtime.session.error || '生成已停止，你可以继续发送要求。'}</p> : null}
         {runtime.session?.status === 'failed' ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.session.error || '任务未完成，请重试或调整要求。'}</p></div> : null}
-        {runtime.readError ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.readError}</p><button type="button" onClick={runtime.reconnect}>重试恢复</button><button type="button" onClick={startNewSession}>新建会话</button></div> : null}
-        {runtime.operation?.status === 'failed' ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.operation.error}</p><button type="button" onClick={() => { if (!sessionRef || runtime.operation?.status !== 'failed') return; const command = runtime.operation.command; if (command.kind === 'send' && command.images?.length) pendingImageSubmission.current = { images: imageDrafts, beforeTeacherEventId: activeSession ? [...activeSession.events].reverse().find(({ kind }) => kind === 'teacher_message')?.id : undefined }; void runtime.execute(sessionRef, command).then((completed) => { if (selection) setLearningResultReady(completed); if (completed && command.kind === 'send') setComposerDraft(''); }); }}>重试原请求</button></div> : null}
+        {runtime.readError && runtime.readErrorStatus !== 404 ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.readError}</p><button type="button" onClick={runtime.reconnect}>重试恢复</button></div> : null}
+        {runtime.operation?.status === 'failed' ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.operation.error}</p><button type="button" onClick={() => { if (!sessionRef || runtime.operation?.status !== 'failed') return; const command = runtime.operation.command; if (command.kind === 'send' && command.images?.length) pendingImageSubmission.current = { images: imageDrafts, beforeTeacherEventId: activeSession ? [...activeSession.events].reverse().find(({ kind }) => kind === 'teacher_message')?.id : undefined }; void runtime.execute(sessionRef, command).then((completed) => { if (selection) setLearningResultReady(completed); if (completed && command.kind === 'send') setComposerDraft(''); }); }}>{runtime.operation.command.kind === 'cancel' ? '重试停止' : '重试原请求'}</button></div> : null}
         {runtime.createError ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.createError}</p></div> : null}
         {contextError ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{contextError}</p></div> : null}
       </div>
@@ -478,7 +543,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         submitLabel="发送给 TeachBuddy"
         canSubmit={canSend}
         tools={<button type="button" aria-label="打开教学协作" title="教学协作" onClick={() => { setPresentation((current) => ({ ...current, expanded: true })); setDynamicsUpdated(false); timelineRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' }); }}><Sparkles aria-hidden="true" size={17} /><span>教学协作</span></button>}
-        secondaryActions={running && sessionRef ? <button type="button" aria-label="停止生成" title="停止生成" disabled={pending} onClick={() => void runtime.execute(sessionRef, { kind: 'cancel' })}><Square aria-hidden="true" size={14} />停止</button> : undefined}
+        secondaryActions={canStop && sessionRef ? <button type="button" aria-label="停止生成" title="停止生成" disabled={stopping} onClick={() => void runtime.execute(sessionRef, { kind: 'cancel' })}><Square aria-hidden="true" size={14} />停止</button> : undefined}
         value={composerDraft}
       />
     </aside>

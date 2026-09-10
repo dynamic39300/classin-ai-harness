@@ -7,6 +7,7 @@ type Command =
   | { kind: 'cancel' }
   | { kind: 'approve'; artifactId: string; version: number; commandId: string };
 type Operation = { status: 'pending'; command: Command } | { status: 'failed'; command: Command; error: string; rejected: boolean };
+type ReadFailure = Readonly<{ message: string; status?: number }>;
 const message = (error: unknown) => error instanceof Error ? error.message : '操作未完成，请重试。';
 
 export function useAgentRuntime(adapter: AgentRuntimeAdapter, scope: RuntimeScope, activeId: string | null) {
@@ -14,20 +15,21 @@ export function useAgentRuntime(adapter: AgentRuntimeAdapter, scope: RuntimeScop
   const [history, setHistory] = useState<readonly RuntimeSession[] | null>(null);
   const [historyError, setHistoryError] = useState('');
   const [snapshots, setSnapshots] = useState<Record<string, RuntimeSession>>({});
-  const [readErrors, setReadErrors] = useState<Record<string, string>>({});
+  const [readErrors, setReadErrors] = useState<Record<string, ReadFailure | undefined>>({});
   const [operations, setOperations] = useState<Record<string, Operation | undefined>>({});
   const [creation, setCreation] = useState<'idle' | 'pending'>('idle');
   const [createError, setCreateError] = useState('');
   const [refresh, setRefresh] = useState(0);
   const mounted = useRef(false);
   const creating = useRef(false);
-  const locks = useRef(new Set<string>());
+  const locks = useRef(new Map<string, number>());
+  const cancellations = useRef(new Set<string>());
   const revisions = useRef(new Map<string, number>());
   const reconnect = useCallback(() => setRefresh((value) => value + 1), []);
   const publish = useCallback((session: RuntimeSession) => {
     if (!mounted.current) return;
     setSnapshots((current) => ({ ...current, [session.id]: session }));
-    setReadErrors((current) => ({ ...current, [session.id]: '' }));
+    setReadErrors((current) => ({ ...current, [session.id]: undefined }));
     setHistory((current) => [session, ...(current ?? []).filter((item) => item.id !== session.id)]);
   }, []);
 
@@ -96,7 +98,10 @@ export function useAgentRuntime(adapter: AgentRuntimeAdapter, scope: RuntimeScop
         publish(result);
         poll = result.status === 'running';
       } catch (error) {
-        if (!disposed && revision === (revisions.current.get(id) ?? 0)) setReadErrors((current) => ({ ...current, [id]: message(error) }));
+        if (!disposed && revision === (revisions.current.get(id) ?? 0)) setReadErrors((current) => ({ ...current, [id]: {
+          message: message(error),
+          ...(error instanceof RuntimeHttpError && error.status !== undefined ? { status: error.status } : {}),
+        } }));
       } finally {
         if (!disposed && poll) timer = setTimeout(() => void read(), 1500);
       }
@@ -107,9 +112,13 @@ export function useAgentRuntime(adapter: AgentRuntimeAdapter, scope: RuntimeScop
   }, [activeId, adapter, scope, publish, refresh]);
 
   async function execute(id: string, command: Command): Promise<boolean> {
-    if (locks.current.has(id)) return false;
-    locks.current.add(id);
-    revisions.current.set(id, (revisions.current.get(id) ?? 0) + 1);
+    const cancelling = command.kind === 'cancel';
+    let operationCompleted = false;
+    if (cancelling ? cancellations.current.has(id) : locks.current.has(id)) return false;
+    const operationRevision = (revisions.current.get(id) ?? 0) + 1;
+    revisions.current.set(id, operationRevision);
+    if (cancelling) cancellations.current.add(id);
+    else locks.current.set(id, operationRevision);
     setOperations((current) => ({ ...current, [id]: { status: 'pending', command } }));
     try {
       const result = command.kind === 'send'
@@ -118,17 +127,28 @@ export function useAgentRuntime(adapter: AgentRuntimeAdapter, scope: RuntimeScop
           ? await adapter.cancel(scope, id)
           : await adapter.approve(scope, id, command.artifactId, command.version, command.commandId);
       if (result.id !== id) throw new Error('会话不匹配，操作结果尚未确认。');
+      // A concurrent cancel supersedes an in-flight send. Its later response must
+      // not replace the stopped snapshot or clear the cancel operation state.
+      if ((revisions.current.get(id) ?? 0) !== operationRevision) return false;
       publish(result);
+      operationCompleted = true;
       if (mounted.current) setOperations((current) => ({ ...current, [id]: undefined }));
       return true;
     } catch (error) {
-      if (mounted.current) setOperations((current) => ({ ...current, [id]: { status: 'failed', command, error: message(error),
+      if (mounted.current && (revisions.current.get(id) ?? 0) === operationRevision) setOperations((current) => ({ ...current, [id]: { status: 'failed', command, error: message(error),
         rejected: error instanceof RuntimeHttpError && error.status !== undefined && error.status >= 400 && error.status < 500 && error.status !== 408,
       } }));
       return false;
     } finally {
-      locks.current.delete(id);
-      revisions.current.set(id, (revisions.current.get(id) ?? 0) + 1);
+      if (cancelling) {
+        cancellations.current.delete(id);
+        // A confirmed cancel releases the superseded send so the teacher can
+        // continue even if its HTTP response has not settled yet.
+        if (operationCompleted) locks.current.delete(id);
+      } else if ((revisions.current.get(id) ?? 0) === operationRevision && locks.current.get(id) === operationRevision) {
+        locks.current.delete(id);
+      }
+      if ((revisions.current.get(id) ?? 0) === operationRevision) revisions.current.set(id, operationRevision + 1);
       if (mounted.current) reconnect();
     }
   }
@@ -153,7 +173,9 @@ export function useAgentRuntime(adapter: AgentRuntimeAdapter, scope: RuntimeScop
   }
 
   return { health, history, historyError, session: activeId ? snapshots[activeId] : undefined,
-    readError: activeId ? readErrors[activeId] : '', operation: activeId ? operations[activeId] : undefined,
+    readError: activeId ? readErrors[activeId]?.message ?? '' : '', readErrorStatus: activeId ? readErrors[activeId]?.status : undefined,
+    operation: activeId ? operations[activeId] : undefined,
+    locked: activeId ? locks.current.has(activeId) : false,
     creation, createError, create, execute, reconnect,
     dismissRejected: (id: string) => setOperations((current) => current[id]?.status === 'failed' && current[id].rejected ? { ...current, [id]: undefined } : current),
   };

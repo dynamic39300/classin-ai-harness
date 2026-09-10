@@ -19,4 +19,11 @@ describe('runtime context envelope', () => {
     expect(teacherVisibleRuntimeText(envelope)).toBe('请拟一条提醒。');
     expect(teacherVisibleRuntimeText('普通教师消息')).toBe('普通教师消息');
   });
+
+  it('keeps the teacher-facing request separate from internal execution guidance', () => {
+    const envelope = createRuntimeContextEnvelope(snapshot, '请执行能力。\n接收对象：李明。\n请输出中文消息。', '请提醒李明按时交作业。');
+
+    expect(envelope).toContain('请执行能力。');
+    expect(teacherVisibleRuntimeText(envelope)).toBe('请提醒李明按时交作业。');
+  });
 });

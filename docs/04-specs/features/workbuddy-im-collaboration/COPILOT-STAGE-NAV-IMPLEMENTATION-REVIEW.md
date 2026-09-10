@@ -1,7 +1,7 @@
 ---
 title: TeachBuddy 教学阶段导航方案（二）实施验收
 status: AUTOMATION_PASS_PENDING_USER_REVIEW
-version: v0.1
+version: v0.2
 branch: codex/copilot-stage-nav-v2
 updated: 2026-09-10
 ---
@@ -10,25 +10,46 @@ updated: 2026-09-10
 
 ## 实施结果
 
-方案二已从方案一提交`9b8f985`建立独立分支。顶部教学动态改为圆点连线四阶段 Tab，下方使用单张阶段卡承载当前班级的课程、学生、任务事实和一键 Prompt。当前演示同时覆盖不同课程所处的课前、课中、课后与总结状态。
+方案二已把原来分离的`TeachBuddy · 仅你可见`Header 与`教学动态`模块合并为一个顶部协作面。老师第一眼看到身份和“帮您把要发给学生的消息整理好”的用途说明，随后直接使用`课前 / 课中 / 课后 / 总结`四阶段 Tab 和当前消息建议。整个区域只保留一组外框、背景和阴影，不再显示重复的`教学动态`标题。
 
-阶段自动轮播与播放/暂停按钮已经取消，首次进入默认显示真实当前阶段，随后只响应老师的手动 Tab 选择。Tab 支持方向键、Home 和 End。模块进入聊天时默认展开，老师主动收起或向下滚动 TeachBuddy 对话区域时收起，点击紧凑摘要后原位恢复。
+点击建议会一次提交卡片上对应的自然语言 Prompt，并把这段原文精确显示为老师消息。能力、业务对象、输出格式和必要证据等结构化要求只进入内部 Context Envelope，不用工程话术替换老师刚刚点击的要求。正式发到群聊或私聊前仍由老师审阅确认，因此引导文案没有承诺自动发送。
 
-四个圆形入口已直接显示`课前 / 课中 / 课后 / 总结`，不再显示步骤编号和圈外重复标签。内容卡也移除了重复的阶段标题与说明行，直接从课程、学生和任务事实开始。
+右上角新建 Session、读取失败态中的新建 Session，以及`在 TeachBuddy 中继续`入口均已移除。当前 IM 对象只呈现一条连续的逻辑对话；内部 Runtime Session 因恢复发生轮换时，Binding Trail 会聚合各实例事件，老师仍通过向上滚动查看一条连续历史。已保存的 Binding 指向不存在的 Runtime Session 并返回 404 时，Sidecar 会透明创建替代实例并更新绑定，不出现新建入口。生成中可使用输入框旁的`停止生成`；停止成功后输入框恢复并继续沿用同一逻辑对话，停止失败则继续锁定输入并保留重试停止。
+
+阶段自动轮播与播放/暂停按钮保持取消。四个圆形入口直接显示阶段名，老师通过鼠标或键盘手动切换。
+
+## 收起与滚动
+
+- 首次进入默认展开，老师可点击与卡片右侧保持正常间距的`收起`控件；
+- 对话区域累计向下滚动 48px 后自动收起，单次轻微滚动、向上滚动和输入框内部滚动不会误触；
+- 内容保留在 DOM 中，以 320ms 高度、透明度和轻微位移完成过渡，Reduced Motion 下关闭动画；
+- 自动或手动收起时，若键盘焦点仍在阶段或建议中，会先移到展开按钮；收起内容同步进入`inert`并从辅助技术树隐藏；
+- 紧凑态常驻 TeachBuddy 身份和准确建议摘要，点击`展开`在原位恢复；
+- Runtime 更新只在老师原本位于底部时跟随新消息，向上查看历史时不会被自动拉回。
 
 ## 代码边界
 
-- `TeachingDynamics.tsx`只编排阶段投影、Tab、轮播和动作；
-- `TeachingDynamics.module.css`复用现有 ClassIn Token；
-- `ImSidecarAgentSurface.tsx`按聊天保存展开、选中阶段和轮播偏好；
-- `workbuddy-im-teaching-dynamics.ts`提供可重置的多课程、多阶段模拟数据；
-- AI 生成、审阅与消息发送继续复用既有 Runtime 与发送 Gate。
+- `TeachingDynamics.tsx`负责合并后的身份、引导、阶段 Tab、事项和展开/紧凑投影；
+- `TeachingDynamics.module.css`使用既有 ClassIn Token，负责统一外框、紧凑态和过渡；
+- `ImSidecarAgentSurface.tsx`编排当前聊天的呈现偏好、滚动阈值、Runtime、Business Context、停止和发送 Gate；
+- `im-agent-session-binding.ts`维护当前 Runtime Session 与有界 Binding Trail，供 Sidecar 聚合内部轮换前后的事件，并在 stale 404 时透明替换失效绑定；
+- `runtime-context-envelope.ts`与`runtime-context-format.ts`分离老师可见的自然语言 Prompt 和只供 Agent 使用的结构化任务上下文；
+- `TeachingDynamicsAdapter`继续提供可重置的多课程、多阶段模拟数据；
+- `useAgentRuntime`允许停止命令中断尚未返回的生成请求，并以操作版本阻止迟到响应覆盖停止后的新内容；停止失败不会解锁新的发送请求，老师可重试停止；
+- AI 生成、审阅与消息发送继续复用既有 Runtime、Artifact 与消息发送 Gate。
 
 ## 自动化与视觉验收
 
 - TypeScript：PASS；
 - scoped ESLint：PASS；
-- Teaching Dynamics / Adapter / Sidecar focused tests：PASS；
-- Chromium personalized-services flows：PASS；
+- Teaching Dynamics / Adapter / Context Envelope / Binding / Runtime / Sidecar focused tests：PASS，7 个测试文件共 20 项；
+- Chromium personalized-services flows：PASS，10 项；收起动效并发重复 10 次均通过；
 - `npm run build`：PASS，仅有仓库既有 bundle size warning；
-- Sidecar 实机检查：四段导航和单卡无横向溢出，手动切换、暂停和内容动作可达。
+- 一击 Prompt 回归验证一次点击只提交一次精确要求，老师时间线保留卡片自然语言原文，结构化能力/对象/格式要求只进入内部 Context Envelope；
+- 连续历史回归验证内部 Runtime Session 轮换后，Binding Trail 仍按顺序投影轮换前后的事件；stale 404 Binding 会透明建立替代 Session，页面不出现 Session 管理控件；
+- 停止回归验证即使生成请求仍未返回也可停止；停止失败时输入仍保持锁定并可重试停止，迟到响应不会覆盖新一轮内容；
+- 浏览器实机检查：合并入口、四阶段、收起控件和内容卡在当前 Sidecar 宽度内无横向溢出，页面不再出现新建 Session 入口。
+
+## 已知边界
+
+当前业务上下文仍以固定、脱敏、可重置的模拟投影为主；Binding Trail、404 恢复和跨内部实例的连续时间线已经完成，但生产实时 ClassIn 数据、生产权限和跨设备同步仍需后续 Adapter 与平台能力支持。

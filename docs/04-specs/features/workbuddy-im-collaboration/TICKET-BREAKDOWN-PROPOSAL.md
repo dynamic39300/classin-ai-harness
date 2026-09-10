@@ -1,8 +1,8 @@
 ---
 title: WorkBuddy IM 人机协作 Ticket Breakdown
-status: TEACHING_DYNAMICS_V20_COMPLETED
-version: v0.20
-date: 2026-09-09
+status: MERGED_TEACHBUDDY_GUIDE_V21_COMPLETED
+version: v0.21
+date: 2026-09-10
 ---
 
 # Ticket Breakdown
@@ -323,7 +323,7 @@ IM-001 产品与规格冻结
 
 - 需求：`IM-PRD-141`—`IM-PRD-145`、`IM-PRD-148`、`IM-PRD-150`—`IM-PRD-152`
 - Write Set：`TeachingDynamics` Feature Module、Sidecar 编排、CSS Module 与可访问性测试。
-- 交付：单一教学动态、首次展开、当前阶段强调、其他阶段摘要与更多、紧凑摘要、按 Thread 保存的本地呈现状态，以及`TeachBuddy · 仅你可见`Header。
+- 交付：单一教学动态、首次展开、当前阶段强调、其他阶段摘要与更多、紧凑摘要、按 Thread 保存的本地呈现状态，以及当时独立的`TeachBuddy · 仅你可见`Header；阶段呈现后由 D-149 改为四阶段 Tab，Header 后由 IM-036 合入同一 Surface。
 - 明确不改变：消息 Shell 尺寸、Sidecar 浮层/Overlay 规则、Composer Interface 和公共群聊。
 - 完成条件：384px 与宽屏无溢出；原位展开无返回；正常连接说明、固定四卡和必经选择器从 Ready 面移除；键盘与`aria-expanded`可用。
 - 当前状态：`COMPLETED`
@@ -353,4 +353,13 @@ IM-001 产品与规格冻结
 - 交付：需求—Interface—代码—测试证据映射，明确固定/DW 派生数据和生产 Adapter 剩余 Gate。
 - 明确不改变：M7–M10 后续能力顺序与上午体验提案原文。
 - 完成条件：所有票状态、验证命令、视觉证据、已知限制和下一步可定位；M4/M5 里程碑按真实实现结果更新。
+- 当前状态：`COMPLETED`
+
+## IM-036 Merged TeachBuddy Guide and Continuous Conversation v0.21
+
+- 需求：`IM-PRD-141`、`IM-PRD-143`—`IM-PRD-145`、`IM-PRD-150`—`IM-PRD-155`
+- Write Set：`TeachingDynamics`、`ImSidecarAgentSurface`、`useAgentRuntime`、Runtime Context Envelope/可见文本格式化、IM Agent Session Binding、Sidecar CSS、对应 Domain/组件/Runtime/集成/E2E 测试，以及方案二 Spec、Decision 与 Implementation Review。
+- 交付：身份、用途说明、四阶段导航和建议共用一个顶部 Surface；卡片自然语言 Prompt 精确投影为老师消息，结构化能力/对象/格式要求只进入内部上下文；移除新建/历史/跨工作台 Session 入口；Binding Trail 聚合内部 Runtime Session 轮换前后的事件，stale 404 Binding 透明替换；保留 Composer 停止并在同一逻辑对话继续，停止失败时保持输入锁定并允许重试；48px 下滚阈值、320ms 收起过渡、隐藏区焦点治理与历史阅读滚动保护。
+- 明确不改变：`TeachingDynamicsAdapter`业务投影、最终消息发送 Gate、方案一分支、公开班级 Agent、生产 Runtime 协议和实时 ClassIn 数据 Adapter。
+- 完成条件：同一可访问区域同时包含身份与四阶段；正常/失败态无新建 Session；一击只提交一次精确自然语言 Prompt，内部结构化要求不进入老师消息；Session 轮换后仍是一条可上滑历史，stale 404 自动恢复；生成请求未返回时也可停止，停止成功后同一逻辑对话续写，停止失败则保持锁定并可重试；轻微/向上/输入框滚动不收起，达到阈值后以 320ms 平滑收起，隐藏区不保留键盘焦点；TypeScript、scoped ESLint、focused Vitest、Chromium E2E、build 和实机视觉通过。
 - 当前状态：`COMPLETED`
