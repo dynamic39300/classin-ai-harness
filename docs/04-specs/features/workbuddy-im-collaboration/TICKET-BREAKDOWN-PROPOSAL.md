@@ -1,8 +1,8 @@
 ---
 title: WorkBuddy IM 人机协作 Ticket Breakdown
-status: MULTI_AGENT_DISCOVERY_V19_COMPLETED
-version: v0.19
-date: 2026-08-24
+status: TEACHING_DYNAMICS_V20_COMPLETED
+version: v0.20
+date: 2026-09-09
 ---
 
 # Ticket Breakdown
@@ -40,6 +40,11 @@ IM-001 产品与规格冻结
   → IM-028 Public Picker and Composer Primary Target v0.19
   → IM-029 Teacher/Student Direct Agent Discovery v0.19
   → IM-030 Multi-Agent Regression and Acceptance v0.19
+  → IM-031 Teaching Dynamics Domain and Adapter v0.20
+  → IM-032 Unified Teaching Dynamics Surface v0.20
+  → IM-033 One-click Conversation Integration v0.20
+  → IM-034 Teaching Dynamics Verification v0.20
+  → IM-035 Implementation Review v0.20
 ```
 
 ## IM-001 产品与规格冻结
@@ -303,4 +308,49 @@ IM-001 产品与规格冻结
 - 交付：四入口多 Agent 需求—实现—证据闭环及 WorkBuddy 回归。
 - 明确不改变：完整业务 Case Library、真实 Runtime、生产 Directory 和治理后台。
 - 完成条件：静态检查、范围内 Vitest、Playwright、axe 与目标视觉通过；所有模拟能力有真值标签。
+- 当前状态：`COMPLETED`
+
+## IM-031 Teaching Dynamics Domain and Adapter v0.20
+
+- 需求：`IM-PRD-141`—`IM-PRD-148`、`IM-PRD-153`
+- Write Set：`src/contracts/workbuddy/teaching-dynamics.ts`、`src/domain/workbuddy/teaching-dynamics.ts`、固定教学动态 Scenario/Adapter、契约与领域测试。
+- 交付：四阶段 Snapshot Interface、稳定排序与计数、强调行、紧凑摘要、时间窗口过滤和固定/DW 派生真值证据。
+- 明确不改变：Runtime Session、Artifact、Approval、Message Domain 和生产 ClassIn 数据接口。
+- 完成条件：阶段顺序、去重、闭环不计数、截止后退出、紧凑摘要和未知降级通过纯领域与 Adapter 测试。
+- 当前状态：`COMPLETED`
+
+## IM-032 Unified Teaching Dynamics Surface v0.20
+
+- 需求：`IM-PRD-141`—`IM-PRD-145`、`IM-PRD-148`、`IM-PRD-150`—`IM-PRD-152`
+- Write Set：`TeachingDynamics` Feature Module、Sidecar 编排、CSS Module 与可访问性测试。
+- 交付：单一教学动态、首次展开、当前阶段强调、其他阶段摘要与更多、紧凑摘要、按 Thread 保存的本地呈现状态，以及`TeachBuddy · 仅你可见`Header。
+- 明确不改变：消息 Shell 尺寸、Sidecar 浮层/Overlay 规则、Composer Interface 和公共群聊。
+- 完成条件：384px 与宽屏无溢出；原位展开无返回；正常连接说明、固定四卡和必经选择器从 Ready 面移除；键盘与`aria-expanded`可用。
+- 当前状态：`COMPLETED`
+
+## IM-033 One-click Conversation Integration v0.20
+
+- 需求：`IM-PRD-146`、`IM-PRD-147`、`IM-PRD-149`、`IM-PRD-151`、`IM-PRD-153`
+- Write Set：Sidecar Agent 编排、Teaching Dynamics action mapping、Business Context 捕获与现有 Runtime/Artifact 组合测试。
+- 交付：事项按钮一次点击捕获同一业务范围并提交教师可读消息；AI 补问、生成、修改、审阅和发送留在对话；新消息出现后动态收紧。
+- 明确不改变：最终发送 Gate、群转私聊策略、Runtime 协议和公开 Agent 行为。
+- 完成条件：提醒动作无选择器或二次提交；自然语言自由输入可用；业务事项不因 Run 状态改变；生成内容未经教师确认不写入 IM。
+- 当前状态：`COMPLETED`
+
+## IM-034 Teaching Dynamics Verification v0.20
+
+- 需求：`IM-PRD-141`—`IM-PRD-153`
+- Write Set：Domain/Adapter/Feature 测试、消息工作区 E2E、a11y 与目标视觉证据。
+- 交付：首次、展开、紧凑、业务更新、提醒退出、群聊/私聊、自由输入、一键协作和发送 Gate 回归。
+- 明确不改变：未进入本轮的生产数据、实时到课、公开 Agent Case Library 与跨设备持久化。
+- 完成条件：`typecheck`、`lint`、范围内 Vitest、Chromium E2E/a11y、1440×900 和 1024px 视觉检查通过；无溢出、遮挡、重复事项或工程文案。
+- 当前状态：`COMPLETED`
+
+## IM-035 Implementation Review v0.20
+
+- 需求：`IM-PRD-141`—`IM-PRD-153`
+- Write Set：PRD/Spec/Tickets、Decision Ledger、Milestone、Traceability、目录索引与独立 Implementation Review。
+- 交付：需求—Interface—代码—测试证据映射，明确固定/DW 派生数据和生产 Adapter 剩余 Gate。
+- 明确不改变：M7–M10 后续能力顺序与上午体验提案原文。
+- 完成条件：所有票状态、验证命令、视觉证据、已知限制和下一步可定位；M4/M5 里程碑按真实实现结果更新。
 - 当前状态：`COMPLETED`

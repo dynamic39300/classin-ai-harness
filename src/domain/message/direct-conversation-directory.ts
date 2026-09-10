@@ -7,6 +7,7 @@ import {
 } from '@domain/class-agent/class-agent';
 import {
   getLastMessageEntry,
+  getMessageEntryPreview,
   getMessageThreadSubtitle,
   getMessageThreadTitle,
   type MessageThread,
@@ -58,7 +59,7 @@ function matchesPerson(role: AppRole, thread: MessageThread, query: string): boo
   return normalize([
     getMessageThreadTitle(role, thread),
     getMessageThreadSubtitle(role, thread),
-    getLastMessageEntry(thread)?.body ?? '',
+    getMessageEntryPreview(getLastMessageEntry(thread)),
   ].join(' ')).includes(query);
 }
 

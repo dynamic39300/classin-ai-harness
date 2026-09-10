@@ -1,0 +1,92 @@
+{
+  "version": "im-copilot-contextual-v2",
+  "snapshotId": "im-copilot-source-2026-09-09-v1",
+  "sourceFilesVerifiedBeforeAndAfter": 56,
+  "originalSnapshotUnchanged": true,
+  "sourceToScenarioOffsetSeconds": 1038600,
+  "selectionRule": "same-teacher, >=2 homeworks, roster and group messages, descending homework count",
+  "sameTeacherHomeworkAndAnchorRelationsVerified": true,
+  "otherTeachingIdentitiesPreserved": 2,
+  "courseMappingEvidence": [
+    {
+      "classId": "copilot-class-a",
+      "courseId": "copilot-class-a-course-alpha",
+      "categoryReferenceVerified": true,
+      "catalogObjectFetched": false,
+      "catalogNameStatus": "unknown"
+    },
+    {
+      "classId": "copilot-class-b",
+      "courseId": "copilot-class-b-course-alpha",
+      "categoryReferenceVerified": true,
+      "catalogObjectFetched": false,
+      "catalogNameStatus": "unknown"
+    }
+  ],
+  "sourceClassCategoryCoverage": {
+    "classes": 29,
+    "classesWithMultipleActiveCategories": 0
+  },
+  "classes": [
+    {
+      "id": "copilot-class-a",
+      "membershipStatus": "unknown",
+      "collectionScope": "complete-selected-homework-associations",
+      "sourceCounts": {
+        "courseStudentNum": 2000,
+        "lessons": 14,
+        "teacherLessons": 7,
+        "homeworks": 7,
+        "activeWorkRows": 357,
+        "distinctHomeworkStudents": 51,
+        "lessonRosterRows": 51,
+        "attendanceRows": 45,
+        "messages": 2
+      }
+    },
+    {
+      "id": "copilot-class-b",
+      "membershipStatus": "unknown",
+      "collectionScope": "complete-selected-homework-associations",
+      "sourceCounts": {
+        "courseStudentNum": 2000,
+        "lessons": 16,
+        "teacherLessons": 8,
+        "homeworks": 2,
+        "activeWorkRows": 252,
+        "distinctHomeworkStudents": 127,
+        "lessonRosterRows": 126,
+        "attendanceRows": 114,
+        "messages": 2
+      }
+    }
+  ],
+  "inventoryCounts": {
+    "lessons": 30,
+    "homeworks": 9,
+    "studentWork": 609,
+    "activities": 248,
+    "units": 40,
+    "sourceMessageRewrites": 4,
+    "lessonRoster": 177,
+    "attendanceSnapshot": 159,
+    "courses": 2
+  },
+  "sourceHomeworksWithMatchedActivity": 9,
+  "scenarioCounts": {
+    "students": 178,
+    "syntheticEvents": 1180,
+    "sceneHomeworks": 5
+  },
+  "outputsSha256": {
+    "pack.json": "34b472bc15e0a7b2a81dab90197cc72911228b6e6c250440dc3e4fc2239e0266",
+    "source-inventory.json": "3ab7bc8701a0e985374b3635100dd4131dabbc71dd90ea78db351b3649caf0e5"
+  },
+  "privacy": {
+    "rawIdentifiersIncluded": false,
+    "rawNamesIncluded": false,
+    "rawMessageTextIncluded": false,
+    "privateIdentityMapCommitted": false,
+    "sourceAttachmentsCopied": false
+  }
+}

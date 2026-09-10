@@ -4,6 +4,7 @@ type Projection = {
   events: ConversationRunEvent[];
   status?: 'idle' | 'running' | 'stopped' | 'failed';
   error?: string;
+  failureCode?: 'vision-permission';
 };
 type RawEvent = { seq: number; time: number; type: string; data: Record<string, unknown> };
 type Step = {
@@ -13,6 +14,7 @@ type Step = {
 };
 
 const GENERATION_ERROR = '生成未能完成，请稍后重试。';
+const VISION_PERMISSION_ERROR = '当前模型凭据未开通图片理解，请联系服务管理员开通 DeepSeek 视觉模型后重试。';
 const TOOL_ERROR = '工具执行失败，请重试。';
 
 function record(value: unknown): Record<string, unknown> | undefined {
@@ -33,12 +35,36 @@ function textContent(content: unknown): string {
   }).join('');
 }
 
+function userContentSummary(content: unknown): string {
+  if (!Array.isArray(content)) return '';
+  const text = textContent(content);
+  const names = content.map(record).filter((block) => {
+    const attachment = record(block?.attachment);
+    return block?.type === 'image' && typeof attachment?.attachmentId === 'string';
+  }).map((block, index) => {
+    const attachment = record(block?.attachment);
+    return typeof attachment?.name === 'string' && attachment.name.trim() ? attachment.name.trim() : `图片 ${index + 1}`;
+  });
+  const imageLabel = names.length ? `已附 ${names.length} 张图片${names.length <= 2 ? `（${names.join('、')}）` : ''}` : '';
+  return [text, imageLabel].filter(Boolean).join('\n');
+}
+
 function rawEvent(entry: unknown): RawEvent | undefined {
   const event = record(record(entry)?.event);
   const data = record(event?.data);
   if (!event || !data || !index(event.seq) || !index(event.time)
     || event.time > 8.64e15 || typeof event.type !== 'string') return undefined;
   return { seq: event.seq, time: event.time, type: event.type, data };
+}
+
+function generationError(raw: RawEvent): { error: string; failureCode?: 'vision-permission' } {
+  const chunk = record(raw.data.chunk);
+  const reason = record(chunk?.reason) ?? record(raw.data.reason);
+  const failure = record(reason?.failure) ?? record(reason?.error);
+  const message = typeof failure?.message === 'string' ? failure.message : '';
+  return /not allowed to access model|does not support image input/iu.test(message) && /vision|image/iu.test(message)
+    ? { error: VISION_PERMISSION_ERROR, failureCode: 'vision-permission' }
+    : { error: GENERATION_ERROR };
 }
 
 /**
@@ -76,9 +102,16 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
 
   function fail(raw: RawEvent, turn: number) {
     projection.status = 'failed';
-    projection.error = GENERATION_ERROR;
+    const failure = generationError(raw);
+    if (failure.failureCode || !projection.failureCode) {
+      projection.error = failure.error;
+      if (failure.failureCode) projection.failureCode = failure.failureCode;
+      else delete projection.failureCode;
+    }
+    const error = projection.error ?? failure.error;
+    projection.error = error;
     put(`error:${turn}`, raw, {
-      actor: 'system', kind: 'error', state: 'failed', title: '生成失败', summary: GENERATION_ERROR,
+      actor: 'system', kind: 'error', state: 'failed', title: '生成失败', summary: error,
     }, turn);
   }
 
@@ -95,7 +128,7 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
     const { data } = raw;
     if (raw.type === 'user/message') {
       if (data.role !== 'user' || record(data.source)?.kind !== 'user') continue;
-      const summary = textContent(data.content);
+      const summary = userContentSummary(data.content);
       if (summary) put(`user:${typeof data.id === 'string' ? data.id : raw.seq}`, raw, {
         actor: 'teacher', kind: 'teacher_message', state: 'completed', title: '教师', summary,
       });
@@ -106,6 +139,7 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
     if (raw.type === 'turn/start') {
       projection.status = 'running';
       delete projection.error;
+      delete projection.failureCode;
       continue;
     }
     if (raw.type === 'turn/end') {
@@ -113,6 +147,7 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
       if (reason === 'completed') {
         projection.status = 'idle';
         delete projection.error;
+        delete projection.failureCode;
         settle(raw, turn, 'completed');
       } else if (reason === 'error') {
         fail(raw, turn);
@@ -120,6 +155,7 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
       } else if (reason === 'aborted' || reason === 'interrupted' || reason === 'blocked' || reason === 'max-tokens') {
         projection.status = 'stopped';
         delete projection.error;
+        delete projection.failureCode;
         settle(raw, turn, 'stopped');
       }
       continue;
@@ -130,6 +166,7 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
     if (raw.type === 'step/start') {
       projection.status = 'running';
       delete projection.error;
+      delete projection.failureCode;
       continue;
     }
     if (raw.type === 'assistant/chunk' || raw.type === 'assistant/message') {
@@ -157,6 +194,7 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
           rows.delete(`error:${turn}`);
           projection.status = 'running';
           delete projection.error;
+          delete projection.failureCode;
           const previous = rows.get(key);
           if (previous) rows.set(key, { ...previous, summary: '', state: 'running', updatedAt: new Date(raw.time).toISOString() });
         }

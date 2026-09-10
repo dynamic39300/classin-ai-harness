@@ -127,7 +127,7 @@ export function StudentOpenCourseDetailWorkspace({ courseId }: { courseId: strin
             className={styles.primaryButton}
             type="button"
             disabled={!canEnter}
-            onClick={() => navigate(withOpenCourseSource(`/student/open-courses/${course.id}/preflight`, source))}
+            onClick={() => navigate(withOpenCourseSource(`/student/open-courses/${course.id}/preflight`, source, searchParams))}
           ><Video aria-hidden="true" size={16} />{enter.label}</button>
         </footer>
       </div>

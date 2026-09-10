@@ -31,7 +31,7 @@ export function OpenCoursePreflightWorkspace({ role, courseId }: { role: AppRole
         params.set('course', courseId);
         return `/teacher/open-courses?${params.toString()}`;
       })()
-    : withOpenCourseSource(`/${root}/open-courses/${courseId}`, source);
+    : withOpenCourseSource(`/${root}/open-courses/${courseId}`, source, searchParams);
 
   if (!course || !canEnterOpenCoursePreflight(course)) {
     return (

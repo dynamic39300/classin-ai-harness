@@ -1,11 +1,16 @@
-import { ArrowLeft, Download, FileText, History, LoaderCircle, MessageSquarePlus, RefreshCw, Save, Square, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { ArrowLeft, Download, FileText, History, MessageSquarePlus, RefreshCw, Save, Square, X } from 'lucide-react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import type { AgentRuntimeAdapter, RuntimeArtifact, RuntimeScope } from '@contracts/workbuddy/agent-runtime';
 import { TeachBuddyAvatar } from '@design-system/TeachBuddyAvatar';
 import { WorkspaceComposer } from '@design-system/WorkspaceComposer';
 import { createHttpAgentRuntime } from './http-agent-runtime';
 import { useAgentRuntime } from './use-agent-runtime';
+import { teacherVisibleRuntimeText } from '@domain/workbuddy/runtime-context-envelope';
+import { splitAnalysisProcessTurns } from '@domain/workbuddy/analysis-process';
+import { AnalysisProcess } from './AnalysisProcess';
+import { appendRuntimeImageDrafts, encodeRuntimeImageDrafts, releaseRuntimeImageDrafts, RUNTIME_IMAGE_ACCEPT, type RuntimeImageDraft } from './runtime-image-attachments';
+import { needsFreshTextSession } from './runtime-session-recovery';
 import styles from './AgentRuntimeSurface.module.css';
 
 const httpRuntime = createHttpAgentRuntime();
@@ -25,18 +30,24 @@ function RuntimeWorkspace({ scope, newTaskPath, returnTarget, adapter = httpRunt
   const { session, operation } = runtime;
   const [historyOpen, setHistoryOpen] = useState(false);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [imageDrafts, setImageDrafts] = useState<Record<string, readonly RuntimeImageDraft[]>>({});
+  const [imageErrors, setImageErrors] = useState<Record<string, string>>({});
   const [review, setReview] = useState<{ sessionId: string; artifactId: string } | null>(null);
   const [downloadError, setDownloadError] = useState('');
   const timelineRef = useRef<HTMLDivElement>(null);
   const followTail = useRef(true);
   const navigationVersion = useRef(0);
+  const imageDraftsRef = useRef(imageDrafts);
+  const pendingImageSubmission = useRef<{ sessionId: string; images: readonly RuntimeImageDraft[]; beforeTeacherEventId?: string } | null>(null);
   const consumedDraftLocation = useRef('');
   const pending = operation?.status === 'pending';
   const running = session?.status === 'running';
   const draftKey = activeId ?? '';
   const draft = drafts[draftKey] ?? '';
+  const attachedImages = imageDrafts[draftKey] ?? [];
   const artifact = review?.sessionId === activeId ? session?.artifacts.find((item) => item.id === review.artifactId) : undefined;
   const lastTeacherMessage = session ? [...session.events].reverse().find((event) => event.kind === 'teacher_message') : undefined;
+  const analysisTurns = session ? splitAnalysisProcessTurns(session.events) : [];
   const canSend = runtime.health?.status === 'ready' && !running && !pending
     && runtime.creation !== 'pending' && (!activeId || Boolean(session)) && !runtime.readError
     && !(operation?.status === 'failed' && operation.command.kind === 'send');
@@ -54,6 +65,22 @@ function RuntimeWorkspace({ scope, newTaskPath, returnTarget, adapter = httpRunt
     const timeline = timelineRef.current;
     if (timeline && followTail.current) timeline.scrollTop = timeline.scrollHeight;
   }, [session]);
+  useEffect(() => { imageDraftsRef.current = imageDrafts; }, [imageDrafts]);
+  useEffect(() => {
+    const submission = pendingImageSubmission.current;
+    if (!submission || !session || session.id !== submission.sessionId || session.status === 'running') return;
+    const latestTeacher = [...session.events].reverse().find(({ kind }) => kind === 'teacher_message');
+    if (!latestTeacher || latestTeacher.id === submission.beforeTeacherEventId) return;
+    pendingImageSubmission.current = null;
+    if (session.status !== 'idle') return;
+    releaseRuntimeImageDrafts(submission.images);
+    const ids = new Set(submission.images.map(({ id }) => id));
+    setImageDrafts((current) => ({ ...current, [session.id]: (current[session.id] ?? []).filter(({ id }) => !ids.has(id)) }));
+    setImageErrors((current) => ({ ...current, [session.id]: '' }));
+  }, [session]);
+  useEffect(() => () => {
+    releaseRuntimeImageDrafts(Object.values(imageDraftsRef.current).flat());
+  }, []);
 
   function pathFor(id?: string) {
     const [pathname, search = ''] = newTaskPath.split('?');
@@ -65,19 +92,49 @@ function RuntimeWorkspace({ scope, newTaskPath, returnTarget, adapter = httpRunt
   }
 
   async function submit() {
-    if (!canSend || !draft.trim()) return;
+    if (!canSend || (!draft.trim() && attachedImages.length === 0)) return;
     const text = draft.trim();
+    let images;
+    try {
+      images = await encodeRuntimeImageDrafts(attachedImages);
+    } catch {
+      setImageErrors((current) => ({ ...current, [draftKey]: '图片读取失败，请移除后重新添加。' }));
+      return;
+    }
     const version = navigationVersion.current;
     const commandId = crypto.randomUUID();
-    let id = activeId;
+    const recoveringTextSession = needsFreshTextSession(session, attachedImages.length);
+    let id = recoveringTextSession ? null : activeId;
     if (!id) {
       const created = await runtime.create();
       if (!created) return;
       id = created.id;
+      setDrafts((current) => ({ ...current, [id!]: text }));
+      setImageDrafts((current) => ({ ...current, [id!]: attachedImages }));
+      setImageErrors((current) => ({ ...current, [id!]: current[draftKey] ?? '' }));
       if (navigationVersion.current === version) navigate(pathFor(id));
     }
-    setDrafts((current) => ({ ...current, [draftKey]: '', [id]: id === draftKey ? '' : current[id] ?? '' }));
-    await runtime.execute(id, { kind: 'send', text, commandId });
+    if (attachedImages.length) pendingImageSubmission.current = { sessionId: id, images: attachedImages, beforeTeacherEventId: recoveringTextSession ? undefined : lastTeacherMessage?.id };
+    const completed = await runtime.execute(id, { kind: 'send', text, commandId, ...(images.length ? { images } : {}) });
+    if (!completed) return;
+    setDrafts((current) => ({ ...current, [draftKey]: '', [id]: '' }));
+    if (!attachedImages.length) {
+      setImageDrafts((current) => ({ ...current, [draftKey]: [], [id]: [] }));
+      setImageErrors((current) => ({ ...current, [draftKey]: '', [id]: '' }));
+    }
+  }
+
+  function addImages(files: readonly File[]) {
+    const result = appendRuntimeImageDrafts(attachedImages, files);
+    setImageDrafts((current) => ({ ...current, [draftKey]: result.attachments }));
+    setImageErrors((current) => ({ ...current, [draftKey]: result.error }));
+  }
+
+  function removeImage(imageId: string) {
+    const image = attachedImages.find(({ id }) => id === imageId);
+    if (image) releaseRuntimeImageDrafts([image]);
+    setImageDrafts((current) => ({ ...current, [draftKey]: (current[draftKey] ?? []).filter(({ id }) => id !== imageId) }));
+    setImageErrors((current) => ({ ...current, [draftKey]: '' }));
   }
 
   async function createSession() {
@@ -128,24 +185,43 @@ function RuntimeWorkspace({ scope, newTaskPath, returnTarget, adapter = httpRunt
             const element = event.currentTarget;
             followTail.current = element.scrollHeight - element.scrollTop - element.clientHeight < 80;
           }}>
-            {!activeId || (session && session.events.length === 0) ? <div className={styles.welcome}><TeachBuddyAvatar size="welcome" /><h2>老师好，有什么能帮您的？</h2><p>教案、练习、测验或课程方案</p><p>当前仅依据您输入的内容，不会自动读取 ClassIn 教学数据。</p></div> : null}
+            {!activeId || (session && session.events.length === 0 && session.status !== 'running') ? <div className={styles.welcome}><TeachBuddyAvatar size="welcome" /><h2>老师好，有什么能帮您的？</h2><p>教案、练习、测验或课程方案</p><p>当前仅依据您输入的内容，不会自动读取 ClassIn 教学数据。</p></div> : null}
             {activeId && !session && !runtime.readError ? <p role="status">正在恢复会话…</p> : null}
-            {session ? <ol className={styles.events} aria-label="会话消息">{session.events.map((event) => <li key={event.id} data-actor={event.actor}>
-              <article><header><strong>{event.actor === 'teacher' ? '您' : event.actor === 'agent' ? 'TeachBuddy' : event.title}</strong>{event.actor === 'tool' || event.actor === 'skill' ? <span>{event.state === 'running' ? '执行中' : event.state === 'failed' ? '失败' : '处理记录'}</span> : null}</header><p>{event.summary || event.title}</p></article>
-            </li>)}</ol> : null}
+            {session ? <ol className={styles.events} aria-label="会话消息">{analysisTurns.map((turn, turnIndex) => {
+              const turnTeacher = turn.events.find(({ kind }) => kind === 'teacher_message');
+              const turnStatus = turnIndex === analysisTurns.length - 1 ? session.status
+                : turn.events.some(({ state }) => state === 'failed') ? 'failed'
+                  : turn.events.some(({ state }) => state === 'stopped' || state === 'cancelled') ? 'stopped' : 'idle';
+              const turnSession = { id: session.id, status: turnStatus, events: turn.events, updatedAt: session.updatedAt } as const;
+              const messages = turn.events.filter((event) => event.actor === 'teacher' || (event.actor === 'agent' && event.kind === 'process') || event.kind === 'error');
+              return <Fragment key={turn.id}>{messages.map((event) => <Fragment key={event.id}><li data-actor={event.actor}>
+                <article><header><strong>{event.actor === 'teacher' ? '您' : event.actor === 'agent' ? 'TeachBuddy' : event.title}</strong></header><p>{event.actor === 'teacher' ? teacherVisibleRuntimeText(event.summary) : event.summary || event.title}</p></article>
+              </li>{event.id === turnTeacher?.id ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} /></li> : null}</Fragment>)}
+              {!turnTeacher ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} /></li> : null}</Fragment>;
+            })}</ol> : null}
+            {session?.status === 'running' && session.events.length === 0 ? <AnalysisProcess session={session} /> : null}
             {session?.artifacts.length ? <section className={styles.outputs} aria-label="生成的产物"><h2>生成的产物</h2>{session.artifacts.map((item) => <button key={item.id} type="button" onClick={() => setReview({ sessionId: session.id, artifactId: item.id })}><FileText size={16} aria-hidden="true" /><span>{item.title}</span><small>v{item.version} · {item.status === 'saved' ? '已保存到本机' : '待审阅'}</small></button>)}</section> : null}
-            {running || pending || runtime.creation === 'pending' ? <p className={styles.progress} role="status"><LoaderCircle className={styles.spinner} size={16} aria-hidden="true" />{pending && operation.command.kind === 'approve' ? '正在保存产物…' : pending && operation.command.kind === 'cancel' ? '正在停止…' : runtime.creation === 'pending' ? '正在创建会话…' : 'TeachBuddy 正在处理…'}</p> : null}
+            {pending && operation.command.kind === 'approve' ? <p className={styles.operationStatus} role="status">正在保存产物…</p> : null}
+            {pending && operation.command.kind === 'cancel' ? <p className={styles.operationStatus} role="status">正在停止…</p> : null}
+            {pending && operation.command.kind === 'send' ? <p className={styles.operationStatus} role="status">正在提交要求，等待 TeachBuddy 确认…</p> : null}
+            {runtime.creation === 'pending' ? <p className={styles.operationStatus} role="status">正在创建会话…</p> : null}
             {session?.status === 'stopped' ? <p role="status">{session.error || '生成已停止，您可以继续发送要求。'}</p> : null}
-            {session?.status === 'failed' ? <div className={styles.error} role="alert"><p>{session.error || '任务未完成，请重试或调整要求。'}</p>{lastTeacherMessage?.state === 'completed' ? <button type="button" disabled={!canSend} onClick={() => void runtime.execute(session.id, { kind: 'send', text: lastTeacherMessage.summary, commandId: crypto.randomUUID() })}>重新发送上一条</button> : <button type="button" onClick={runtime.reconnect}>重新核对会话</button>}</div> : null}
+            {session?.status === 'failed' ? <div className={styles.error} role="alert"><p>{session.error || '任务未完成，请重试或调整要求。'}</p>{attachedImages.length ? <button type="button" disabled={!canSend} onClick={() => void submit()}>使用保留图片重试</button> : lastTeacherMessage?.state === 'completed' ? <button type="button" disabled={!canSend} onClick={() => void runtime.execute(session.id, { kind: 'send', text: lastTeacherMessage.summary, commandId: crypto.randomUUID() })}>重新发送上一条</button> : <button type="button" onClick={runtime.reconnect}>重新核对会话</button>}</div> : null}
             {runtime.readError ? <div className={styles.error} role="alert"><p>{runtime.readError}</p><button type="button" onClick={runtime.reconnect}>重试恢复会话</button></div> : null}
-            {operation?.status === 'failed' && activeId ? <div className={styles.error} role="alert"><p>{operation.error}</p>{operation.command.kind === 'send' ? <p className={styles.plainText}>待确认的消息：{operation.command.text}</p> : null}<button type="button" onClick={() => void runtime.execute(activeId, operation.command)}>重试原请求</button>{operation.rejected ? <button type="button" onClick={() => {
+            {operation?.status === 'failed' && activeId ? <div className={styles.error} role="alert"><p>{operation.error}</p>{operation.command.kind === 'send' ? <p className={styles.plainText}>待确认的消息：{operation.command.text || `已附 ${operation.command.images?.length ?? 0} 张图片`}</p> : null}<button type="button" onClick={() => {
+              const command = operation.command;
+              if (command.kind === 'send' && command.images?.length) pendingImageSubmission.current = { sessionId: activeId, images: imageDrafts[activeId] ?? [], beforeTeacherEventId: lastTeacherMessage?.id };
+              void runtime.execute(activeId, command).then((completed) => {
+                if (completed && command.kind === 'send') setDrafts((current) => ({ ...current, [activeId]: '' }));
+              });
+            }}>重试原请求</button>{operation.rejected ? <button type="button" onClick={() => {
               if (operation.command.kind === 'send') setDrafts((current) => ({ ...current, [activeId]: operation.command.kind === 'send' ? operation.command.text : '' }));
               runtime.dismissRejected(activeId);
               if (operation.command.kind === 'approve') setReview(null);
             }}>{operation.command.kind === 'send' ? '修改消息' : '返回重新审阅'}</button> : null}</div> : null}
-            {runtime.createError ? <div className={styles.error} role="alert"><p>{runtime.createError}</p><button type="button" onClick={() => void (draft.trim() && !activeId ? submit() : createSession())}>重试创建会话</button></div> : null}
+            {runtime.createError ? <div className={styles.error} role="alert"><p>{runtime.createError}</p><button type="button" onClick={() => void ((draft.trim() || attachedImages.length) && !activeId ? submit() : createSession())}>重试创建会话</button></div> : null}
           </div>
-          <div className={styles.composerDock}><WorkspaceComposer ariaLabel="向 TeachBuddy 输入要求" value={draft} onValueChange={(value) => setDrafts((current) => ({ ...current, [draftKey]: value }))} placeholder="告诉我您想完成的教学工作…" submitLabel="发送给 TeachBuddy" onSubmit={() => void submit()} canSubmit={canSend} maxLength={4000} hint="产物保存到本机，不会发布到 ClassIn" secondaryActions={running && activeId ? <button type="button" aria-label="停止生成" title="停止生成" disabled={pending} onClick={() => void runtime.execute(activeId, { kind: 'cancel' })}><Square size={14} aria-hidden="true" />停止</button> : undefined} /></div>
+          <div className={styles.composerDock}><WorkspaceComposer ariaLabel="向 TeachBuddy 输入要求" value={draft} onValueChange={(value) => setDrafts((current) => ({ ...current, [draftKey]: value }))} placeholder="告诉我您想完成的教学工作…" submitLabel="发送给 TeachBuddy" onSubmit={() => void submit()} canSubmit={canSend} disabled={pending || running} maxLength={4000} hint="可上传或粘贴图片 · 产物保存到本机，不会发布到 ClassIn" imageAccept={RUNTIME_IMAGE_ACCEPT} imageAttachments={attachedImages} imageError={imageErrors[draftKey]} onAddImages={addImages} onRemoveImage={removeImage} secondaryActions={running && activeId ? <button type="button" aria-label="停止生成" title="停止生成" disabled={pending} onClick={() => void runtime.execute(activeId, { kind: 'cancel' })}><Square size={14} aria-hidden="true" />停止</button> : undefined} /></div>
         </section>
         {artifact && session ? <aside className={styles.review} aria-label="审阅产物">
           <header><div><h2>{artifact.title}</h2><span>v{artifact.version} · {artifact.status === 'saved' ? '已保存到本机' : '待审阅'}</span></div><button type="button" aria-label="关闭产物" title="关闭产物" onClick={() => setReview(null)}><X size={16} aria-hidden="true" /></button></header>

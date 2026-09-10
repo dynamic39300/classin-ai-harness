@@ -42,6 +42,72 @@
   box-shadow: none;
 }
 
+.imageRail {
+  display: flex;
+  min-width: 0;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: var(--space-2xs) var(--space-2xs) 0;
+  overflow-x: auto;
+  list-style: none;
+}
+
+.imageRail li {
+  position: relative;
+  display: grid;
+  width: 4.5rem;
+  flex: 0 0 4.5rem;
+  gap: .1875rem;
+}
+
+.imageRail img,
+.imageFallback {
+  display: grid;
+  width: 4.5rem;
+  height: 3.5rem;
+  place-items: center;
+  border: var(--rule-thin) solid var(--color-line-subtle);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-subtle);
+  object-fit: cover;
+}
+
+.imageRail li > span:last-of-type {
+  overflow: hidden;
+  color: var(--color-ink-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.imageRail li > button {
+  position: absolute;
+  top: -.25rem;
+  right: -.25rem;
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border: var(--rule-thin) solid var(--color-line-subtle);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+}
+
+.fileInput {
+  display: none;
+}
+
+.imageError {
+  margin: 0;
+  padding: 0 var(--space-2xs) var(--space-2xs);
+  color: var(--color-danger);
+  font-size: var(--text-xs);
+  line-height: 1.35;
+}
+
 .targetSlot {
   display: flex;
   min-width: 0;
@@ -59,6 +125,11 @@
 }
 
 .composer:has(.targetSlot) .footer {
+  grid-column: 1 / -1;
+}
+
+.composer:has(.targetSlot) .imageRail,
+.composer:has(.targetSlot) .imageError {
   grid-column: 1 / -1;
 }
 

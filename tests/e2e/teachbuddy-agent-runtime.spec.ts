@@ -5,7 +5,7 @@ import type { ConversationRunEvent } from '../../src/contracts/workbuddy/convers
 
 // Protocol mock only: exercises the real App Shell and HTTP adapter, never a live
 // model, Harness tool execution, ClassIn writeback, or actual server persistence.
-const timestamp = '2026-09-04T10:00:00.000Z';
+const timestamp = new Date().toISOString();
 const defaultPath = '/teacher/ai-agent/new';
 const classPath = '/teacher/classes/physics-3/workbuddy/new';
 const firstMessage = '[协议模拟] 请为高二物理设计一份动量守恒教案。';
@@ -47,6 +47,17 @@ class ProtocolMock {
     return stored;
   }
 
+  seedVisionFailure(scope: RuntimeScope = 'ideal-full') {
+    const id = `protocol-${scope}-vision-failed`;
+    const snapshot: RuntimeSession = {
+      id, title: '图片理解失败的会话', status: 'failed', updatedAt: timestamp, events: [], artifacts: [],
+      error: '当前模型凭据未开通图片理解，请联系服务管理员开通 DeepSeek 视觉模型后重试。',
+      failureCode: 'vision-permission',
+    };
+    this.sessions.set(id, { scope, snapshot, turn: 0, partialReads: 0, finish: false });
+    return id;
+  }
+
   event(session: RuntimeSession, actor: ConversationRunEvent['actor'], kind: ConversationRunEvent['kind'], summary: string, state: ConversationRunEvent['state'] = 'completed'): ConversationRunEvent {
     const sequence = session.events.length + 1;
     return { id: `${session.id}-event-${sequence}`, runRef: session.id, sequence, occurredAt: timestamp, updatedAt: timestamp,
@@ -62,6 +73,7 @@ class ProtocolMock {
     const respond = (value: unknown, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(value) });
     if (this.offline) return route.abort('connectionrefused');
     if (call.path === '/api/teachbuddy/health' && call.method === 'GET') return respond(this.health);
+    if (call.path === '/api/teachbuddy/im-demo-context' && call.method === 'GET') return respond({ error: 'No private IM fixture in this runtime test.' }, 404);
     if (call.path === '/api/teachbuddy/files' && call.method === 'GET') {
       const groups = [...this.sessions.values()].filter((entry) => entry.scope === call.scope && entry.snapshot.artifacts.length).map((entry) => ({
         sessionId: entry.snapshot.id,
@@ -101,7 +113,7 @@ class ProtocolMock {
     }
     if (call.path === '/api/teachbuddy/sessions') {
       if (call.method === 'GET') return respond([...this.sessions.values()].filter((entry) => entry.scope === call.scope).map((entry) => entry.snapshot));
-      if (call.method === 'POST' && (call.scope === 'ideal-full' || call.scope === 'classin-mvp')) {
+      if (call.method === 'POST' && (call.scope === 'ideal-full' || call.scope === 'classin-mvp' || call.scope === 'standalone-teacher')) {
         const snapshot: RuntimeSession = { id: `protocol-${call.scope}-${this.sessions.size + 1}`, title: '协议模拟：动量守恒教案', status: 'idle', updatedAt: timestamp, events: [], artifacts: [] };
         this.sessions.set(snapshot.id, { scope: call.scope, snapshot, turn: 0, partialReads: 0, finish: false });
         return respond(snapshot, 201);
@@ -163,6 +175,8 @@ function surface(page: Page) { return page.getByRole('region', { name: 'TeachBud
 function composer(page: Page) { return surface(page).getByRole('textbox', { name: '向 TeachBuddy 输入要求' }); }
 function send(page: Page) { return surface(page).getByRole('button', { name: '发送给 TeachBuddy' }); }
 
+const pngHeader = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+
 async function openTeacher(page: Page, path = defaultPath) {
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
@@ -173,6 +187,44 @@ async function openTeacher(page: Page, path = defaultPath) {
   await expect(page).toHaveURL(new RegExp(`${path}$`));
   await expect(surface(page).getByRole('link', { name: '课程工作流' })).toHaveCount(0);
 }
+
+test('main TeachBuddy composer uploads and pastes images into the runtime request', async ({ page, protocol }) => {
+  await openTeacher(page);
+  const input = surface(page).locator('input[type="file"]');
+  await input.setInputFiles({ name: '课堂板书.png', mimeType: 'image/png', buffer: pngHeader });
+  await expect(surface(page).getByRole('list', { name: '已添加 1 张图片' })).toContainText('课堂板书.png');
+  await surface(page).getByRole('button', { name: '移除图片 课堂板书.png' }).click();
+
+  await composer(page).evaluate((textarea) => {
+    const transfer = new DataTransfer();
+    transfer.items.add(new File([Uint8Array.from([0xff, 0xd8, 0xff])], '粘贴题目.jpg', { type: 'image/jpeg' }));
+    textarea.dispatchEvent(new ClipboardEvent('paste', { clipboardData: transfer, bubbles: true }));
+  });
+  await expect(surface(page).getByRole('list', { name: '已添加 1 张图片' })).toContainText('粘贴题目.jpg');
+  await send(page).click();
+  await expect.poll(() => protocol.writes('/messages').length).toBe(1);
+  expect(protocol.write('/messages').body).toMatchObject({
+    scope: 'ideal-full', text: '', images: [{ name: '粘贴题目.jpg', mediaType: 'image/jpeg', byteSize: 3, data: '/9j/' }],
+  });
+  protocol.current().finish = true;
+  await expect(surface(page).getByRole('list', { name: '已添加 1 张图片' })).toHaveCount(0, { timeout: 10_000 });
+});
+
+test('main TeachBuddy resumes text in a clean session after the vision credential gate', async ({ page, protocol }) => {
+  const failedId = protocol.seedVisionFailure();
+  await openTeacher(page);
+  await page.goto(`${defaultPath}?session=${failedId}`);
+  await expect(surface(page).getByText(/当前模型凭据未开通图片理解/).first()).toBeVisible();
+  await composer(page).fill('先继续处理纯文本内容');
+  await send(page).click();
+  await expect.poll(() => protocol.writes('/messages').length).toBe(1);
+  expect(protocol.writes('/sessions')).toHaveLength(1);
+  const createdId = protocol.write('/messages').path.split('/')[4];
+  expect(createdId).toBeTruthy();
+  expect(createdId).not.toBe(failedId);
+  expect(protocol.write('/messages').body).toMatchObject({ text: '先继续处理纯文本内容', images: [] });
+  await expect(page).toHaveURL(new RegExp(`session=${createdId}$`));
+});
 
 async function submitFirst(page: Page, protocol: ProtocolMock, scope: RuntimeScope = 'ideal-full') {
   await expect(surface(page).getByText('TeachBuddy 已连接', { exact: true })).toBeVisible();
@@ -188,7 +240,7 @@ async function submitFirst(page: Page, protocol: ProtocolMock, scope: RuntimeSco
   await expect(composer(page)).toHaveValue('');
   await expect(surface(page).getByText(firstMessage, { exact: true })).toHaveCount(1);
   await expect(surface(page).getByText(`${partialMessage}（第 1 轮）`, { exact: true })).toBeVisible();
-  await expect(surface(page).getByText('执行中', { exact: true })).toBeVisible();
+  await expect(surface(page).getByText('进行中', { exact: true })).toHaveCount(2);
   await expect(send(page)).toBeDisabled();
   return id;
 }
@@ -248,9 +300,20 @@ test.describe('TeachBuddy browser integration (protocol mock, not live model)', 
       await evidence(page, testInfo, `empty-${viewport.width}x${viewport.height}`);
       await assertGeometry(page);
       const id = await submitFirst(page, protocol);
+      const messageColumn = surface(page).getByRole('list', { name: '会话消息' });
+      const analysis = surface(page).getByRole('region', { name: 'TeachBuddy 分析过程' });
+      await expect(analysis.getByRole('button', { name: /正在分析 · 3 个步骤/ })).toHaveAttribute('aria-expanded', 'true');
+      await expect(analysis.getByText('生成教学文稿（协议模拟）', { exact: true })).toBeVisible();
+      const [messageBox, progressBox] = await Promise.all([messageColumn.boundingBox(), analysis.boundingBox()]);
+      expect(messageBox).not.toBeNull();
+      expect(progressBox).not.toBeNull();
+      expect(Math.abs((messageBox?.x ?? 0) - (progressBox?.x ?? 0))).toBeLessThanOrEqual(1);
+      expect(Math.abs((messageBox?.width ?? 0) - (progressBox?.width ?? 0))).toBeLessThanOrEqual(1);
       await evidence(page, testInfo, `partial-${viewport.width}x${viewport.height}`);
       await assertGeometry(page);
       await finishTurn(page, protocol, firstAnswer);
+      await expect(analysis.getByRole('button', { name: /已完成分析 · 3 个步骤/ })).toHaveAttribute('aria-expanded', 'false');
+      await analysis.getByRole('button', { name: /已完成分析/ }).click();
       await expect(surface(page).getByText('[协议模拟] 教学文稿工具已生成待审阅产物。', { exact: true })).toBeVisible();
       await composer(page).fill(secondMessage);
       await expect(send(page)).toBeEnabled();
@@ -260,6 +323,9 @@ test.describe('TeachBuddy browser integration (protocol mock, not live model)', 
       expect(protocol.write('/messages', 1)).toMatchObject({ path: `/api/teachbuddy/sessions/${id}/messages`, body: { scope: 'ideal-full', text: secondMessage, commandId: expect.any(String) } });
       expect(protocol.write('/messages', 1).body?.commandId).not.toBe(protocol.write('/messages').body?.commandId);
       await finishTurn(page, protocol, secondAnswer);
+      const turnProcesses = surface(page).getByRole('region', { name: 'TeachBuddy 分析过程' });
+      await expect(turnProcesses).toHaveCount(2);
+      await expect(turnProcesses.last().getByRole('button', { name: /已完成分析 · 2 个步骤 · 0s/ })).toBeVisible();
 
       const readsBefore = protocol.calls.filter((call) => call.method === 'GET' && call.path.endsWith(`/${id}`)).length;
       await page.reload();
@@ -386,6 +452,19 @@ test.describe('TeachBuddy browser integration (protocol mock, not live model)', 
     await expect(history.getByRole('link')).toHaveAttribute('href', `${classPath}?session=${id}`);
     expect(protocol.calls.filter((call) => call.path.includes(`/${id}`)).every((call) => call.scope === 'classin-mvp')).toBe(true);
     expect(protocol.writes('/cancel')).toHaveLength(0);
+  });
+
+  test('standalone TeachBuddy uses the shared analysis process with its isolated scope', async ({ page, protocol }) => {
+    await page.goto('/teachbuddy/register');
+    await page.getByLabel('教师称呼').fill('分析验收老师');
+    await page.getByLabel('邮箱').fill('analysis.acceptance@example.com');
+    await page.getByLabel('密码').fill('teaching88');
+    await page.getByRole('button', { name: '注册并免费开始' }).click();
+    await expect(page).toHaveURL(/\/teachbuddy\/app\/new$/);
+    await expect(page.getByTestId('standalone-workbuddy-shell')).toBeVisible();
+    await submitFirst(page, protocol, 'standalone-teacher');
+    await expect(surface(page).getByRole('region', { name: 'TeachBuddy 分析过程' })).toBeVisible();
+    expect(protocol.write('/sessions').body).toEqual({ scope: 'standalone-teacher' });
   });
 
   for (const destination of [

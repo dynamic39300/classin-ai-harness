@@ -1,6 +1,8 @@
 import {
   ArrowLeft,
+  AtSign,
   Bell,
+  BellRing,
   Camera,
   CheckCheck,
   Contact,
@@ -8,18 +10,23 @@ import {
   Files,
   Image,
   Link2,
+  Languages,
+  Library,
   Megaphone,
   MessageCircle,
+  MessageSquareReply,
   MessagesSquare,
   Mic,
   MoreHorizontal,
   Paperclip,
   Pin,
+  Play,
   Presentation,
   Search,
   ScanLine,
   Smile,
   Sparkles,
+  WifiOff,
   UserRoundPlus,
   UsersRound,
   Undo2,
@@ -35,6 +42,7 @@ import {
   useMemo,
   useRef,
   useState,
+  Fragment,
   type KeyboardEvent,
   type SetStateAction,
 } from 'react';
@@ -52,15 +60,34 @@ import {
   filterMessageThreads,
   formatMessageListTime,
   getLastMessageEntry,
+  getMessageEntryPreview,
   getMessageThreadSubtitle,
   getMessageThreadTitle,
   MESSAGE_CATEGORY_LABELS,
   type MessageCategory,
   type MessageThread,
 } from '@domain/message/message';
+import {
+  addMessageResourceDraft,
+  createReplyReference,
+  getMessageResourceFormat,
+  MESSAGE_RESOURCE_SELECTION_LIMIT,
+  MESSAGE_REACTION_OPTIONS,
+  type MessageResourceKind,
+  type MessageResourceRef,
+  type MessageSearchResult,
+} from '@domain/message/im2-basic';
+import { projectMessageGroupProfile } from '@domain/message/message-group-profile';
+import {
+  MESSAGE_IMAGE_POLICY,
+  reconcileMessageMentions,
+  type MessageMediaAttachment,
+  type MessageMediaDraft,
+  type MessageMentionRef,
+} from '@domain/message/message-media';
 import type { GuidedExplanationContentReference } from '@domain/workbuddy/guided-explanation';
 import type { DirectConversationScope } from '@domain/message/direct-conversation-directory';
-import { MESSAGE_CONTACTS, MESSAGE_NOW } from '@mocks/scenarios/messages';
+import { MESSAGE_NOW } from '@mocks/scenarios/messages';
 import { WorkspaceComposer } from '@design-system/WorkspaceComposer';
 import { TeachBuddyAvatar } from '@design-system/TeachBuddyAvatar';
 import { GuidedExplanationPreviewDialog, WorkBuddyImSidecar, useOptionalWorkBuddyIm, type WorkBuddyImTarget } from '@features/workbuddy-im-assistance';
@@ -72,8 +99,33 @@ import {
   type AgentPickerPerson,
 } from '@features/class-agent-conversation';
 import { MessageWorkspaceResizableLayout } from './MessageWorkspaceResizableLayout';
-import { useMessageWorkspaceStore } from './message-workspace-store';
+import { useMessageWorkspaceStore, type MessageTranslationState } from './message-workspace-store';
 import styles from './MessageWorkspace.module.css';
+import { createMessageMediaInput } from '@features/message-media/message-media-adapter';
+import { MessageEmojiPicker, type MessageEmojiAsset } from './MessageEmojiPicker';
+import { MessageMediaViewer } from './MessageMediaViewer';
+import { MessageScreenCaptureDialog } from './MessageScreenCaptureDialog';
+import type { MessageCaptureFrame, MessageScreenSelection } from '@contracts/message/message-media';
+import {
+  canOpenContactCardThread,
+  createMessageContactCard,
+  type MessageContactCard,
+} from '@domain/message/message-object-card';
+import {
+  correctNewMessageBoundary,
+  getUnreadMentionCount,
+  projectActiveImportantReminder,
+  projectClassAnnouncement,
+  projectMentionAttentionItems,
+  type MessageMentionAttentionItem,
+} from '@domain/message/message-attention';
+import type { ClassRecord } from '@domain/class/class';
+import type { MessageImportantReminder } from '@domain/message/message-attention';
+import { MessageDirectoryDialog } from '@features/message-directory/MessageDirectoryDialog';
+import { ContactCardPickerDialog, ContactCardProfileDialog } from '@features/message-object-card/ContactCardDialogs';
+import { getMessageDeliveryLabel, getMessageDeliveryRecoveryAction } from '@domain/message/message-lifecycle';
+import type { MessageConnectionSnapshot } from '@domain/message/message-lifecycle';
+import type { MessageHistoryLoadState } from './message-workspace-store';
 
 const CATEGORY_ICONS: Record<MessageCategory, LucideIcon> = {
   direct: MessageCircle,
@@ -84,10 +136,15 @@ const CATEGORY_ICONS: Record<MessageCategory, LucideIcon> = {
 
 const CATEGORY_ORDER: MessageCategory[] = ['direct', 'class', 'system', 'official'];
 const CLASS_AGENT_PENDING_FEEDBACK = '消息已发送，班级 Agent 正在处理你的问题。';
+const DESKTOP_NOTIFICATION_LABELS = {
+  unsupported: '当前环境不支持桌面通知',
+  prompt: '尚未启用',
+  granted: '已启用',
+  denied: '已被浏览器拒绝',
+  failed: '状态读取失败',
+} as const;
 const ATTACHMENT_ACTIONS: ReadonlyArray<{ Icon: LucideIcon; label: string }> = [
-  { Icon: Image, label: '照片' },
   { Icon: Camera, label: '拍摄' },
-  { Icon: Contact, label: '名片' },
   { Icon: FileText, label: '文件' },
   { Icon: Mic, label: '语音' },
 ];
@@ -126,6 +183,19 @@ type AgentTargetUndo = Readonly<{
   expiresAt: number;
 }>;
 
+type UtilitySurface = 'history' | 'resources' | 'mentions' | 'notifications' | 'group-profile';
+
+type HistorySearchState =
+  | { status: 'idle'; results: readonly MessageSearchResult[] }
+  | { status: 'loading'; results: readonly MessageSearchResult[] }
+  | { status: 'ready'; results: readonly MessageSearchResult[] }
+  | { status: 'error'; results: readonly MessageSearchResult[]; message: string };
+
+type ResourceSearchState =
+  | { status: 'loading'; results: readonly MessageResourceRef[] }
+  | { status: 'ready'; results: readonly MessageResourceRef[] }
+  | { status: 'error'; results: readonly MessageResourceRef[]; message: string };
+
 const CLASS_MENTION_PEOPLE: Record<AppRole, readonly AgentPickerPerson[]> = {
   teacher: [
     { id: 'student-li-ming', name: '李明', description: '学生 · 高二物理 3 班' },
@@ -136,6 +206,23 @@ const CLASS_MENTION_PEOPLE: Record<AppRole, readonly AgentPickerPerson[]> = {
     { id: 'student-li-hua', name: '李华', description: '同学 · 高二物理 3 班' },
   ],
 };
+const EVERYONE_MENTION: AgentPickerPerson = Object.freeze({ id: 'everyone', name: '所有人', description: '通知当前班级全部成员' });
+
+const formatResourceUpdatedAt = (updatedAt: string) => new Intl.DateTimeFormat('zh-CN', {
+  month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false,
+}).format(new Date(updatedAt));
+
+type MediaViewerState = Readonly<{
+  attachments: readonly MessageMediaAttachment[];
+  initialIndex: number;
+  returnFocusTarget: HTMLButtonElement;
+}>;
+
+let nextMessageSurfaceId = 1;
+
+function createMessageSurfaceId(prefix: string): string {
+  return `${prefix}-${nextMessageSurfaceId++}`;
+}
 
 function getActiveMentionQuery(value: string, caret = value.length): string | null {
   const match = value.slice(0, caret).match(/(?:^|\s)@([^\s@]*)$/u);
@@ -178,31 +265,69 @@ function createWorkBuddyTarget(role: AppRole, thread: MessageThread): WorkBuddyI
     classLabel: getMessageThreadTitle(role, thread),
     threadId: thread.id,
     memberCount: thread.memberCount,
-    recentMessages: thread.entries.slice(-6).map(({ authorRole, authorName, body }) => Object.freeze({ authorRole, authorName, body })),
+    recentMessages: thread.entries.slice(-6).map((entry) => Object.freeze({ authorRole: entry.authorRole, authorName: entry.authorName, body: getMessageEntryPreview(entry) })),
   };
 }
 
 export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fixedClassId, readOnly = false, embedded = false }: MessageWorkspaceProps) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { state, actions } = useMessageWorkspaceStore();
+  const { state, actions, mediaAdapter, directoryAdapter, temporaryClassroomAdapter, lifecyclePort } = useMessageWorkspaceStore();
   const workBuddyIm = useOptionalWorkBuddyIm();
   const classAgentConversation = useOptionalClassAgentConversation();
-  const { threads, mutedThreadIds } = useMemo(() => state.status === 'ready'
+  const {
+    threads,
+    mutedThreadIds,
+    translationByMessageId,
+    classRecords,
+    importantReminders,
+    dismissedReminderIds,
+    readMentionItemIds,
+    readBoundaryByRoleThread,
+    desktopNotificationPermission,
+    connection,
+    historyByThreadId,
+  } = useMemo(() => state.status === 'ready'
     ? state
-    : { threads: [] as ReadonlyArray<MessageThread>, mutedThreadIds: new Set<string>() }, [state]);
+    : {
+      threads: [] as ReadonlyArray<MessageThread>,
+      mutedThreadIds: new Set<string>(),
+      translationByMessageId: {} as Readonly<Record<string, MessageTranslationState>>,
+      classRecords: [] as ReadonlyArray<ClassRecord>,
+      importantReminders: [] as ReadonlyArray<MessageImportantReminder>,
+      dismissedReminderIds: new Set<string>(),
+      readMentionItemIds: new Set<string>(),
+      readBoundaryByRoleThread: {} as Readonly<Record<string, string | null>>,
+      desktopNotificationPermission: 'unsupported' as const,
+      connection: Object.freeze({ status: 'online', message: '消息服务已连接', truthLabel: 'SIMULATED' }) as MessageConnectionSnapshot,
+      historyByThreadId: {} as Readonly<Record<string, MessageHistoryLoadState>>,
+    }, [state]);
   const fixedThread = fixedClassId
     ? threads.find((thread) => thread.category === 'class' && thread.classId === fixedClassId && thread.visibleTo.includes(role)) ?? null
     : null;
   const [query, setQuery] = useState('');
   const [directScope, setDirectScope] = useState<DirectConversationScope>('all');
   const [composerByThread, setComposerByThread] = useState<Readonly<Record<string, string>>>({});
+  const [replyByThread, setReplyByThread] = useState<Readonly<Record<string, ReturnType<typeof createReplyReference>>>>({});
+  const [resourcesByThread, setResourcesByThread] = useState<Readonly<Record<string, readonly MessageResourceRef[]>>>({});
+  const [mediaByThread, setMediaByThread] = useState<Readonly<Record<string, readonly MessageMediaDraft[]>>>({});
+  const [mediaErrorByThread, setMediaErrorByThread] = useState<Readonly<Record<string, string | undefined>>>({});
+  const [mentionsByThread, setMentionsByThread] = useState<Readonly<Record<string, readonly MessageMentionRef[]>>>({});
+  const [objectCardsByThread, setObjectCardsByThread] = useState<Readonly<Record<string, readonly MessageContactCard[]>>>({});
+  const [customEmoji, setCustomEmoji] = useState<readonly MessageMediaDraft[]>([]);
+  const [recentEmojiIds, setRecentEmojiIds] = useState<readonly string[]>([]);
+  const [favoriteEmojiIds, setFavoriteEmojiIds] = useState<readonly string[]>([]);
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [captureFrame, setCaptureFrame] = useState<MessageCaptureFrame | null>(null);
+  const [captureBusy, setCaptureBusy] = useState(false);
+  const [mediaViewer, setMediaViewer] = useState<MediaViewerState | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [contactOpen, setContactOpen] = useState(false);
+  const [contactCardPickerOpen, setContactCardPickerOpen] = useState(false);
+  const [contactCardProfile, setContactCardProfile] = useState<MessageContactCard | null>(null);
   const [attachmentOpen, setAttachmentOpen] = useState(false);
   const [listMenuOpen, setListMenuOpen] = useState(false);
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
-  const [contactQuery, setContactQuery] = useState('');
   const [agentPicker, setAgentPicker] = useState<AgentPickerState | null>(null);
   const [agentPickerActiveIndex, setAgentPickerActiveIndex] = useState(0);
   const [primaryAgentTarget, setPrimaryAgentTarget] = useState<PrimaryAgentTarget | null>(null);
@@ -211,16 +336,30 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
   const [openExplanation, setOpenExplanation] = useState<GuidedExplanationContentReference | null>(null);
   const [historyLoadingThreadId, setHistoryLoadingThreadId] = useState<string | null>(null);
   const [hasUnreadArrival, setHasUnreadArrival] = useState(false);
+  const [utilitySurface, setUtilitySurface] = useState<UtilitySurface | null>(null);
+  const [historyQuery, setHistoryQuery] = useState('');
+  const [historySender, setHistorySender] = useState('');
+  const [historyFrom, setHistoryFrom] = useState('');
+  const [historyTo, setHistoryTo] = useState('');
+  const [historySearch, setHistorySearch] = useState<HistorySearchState>({ status: 'idle', results: [] });
+  const [resourceQuery, setResourceQuery] = useState('');
+  const [resourceKind, setResourceKind] = useState<MessageResourceKind | 'all'>('all');
+  const [resourceSearch, setResourceSearch] = useState<ResourceSearchState>({ status: 'loading', results: [] });
+  const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
+  const [mentionView, setMentionView] = useState<'unread' | 'all'>('unread');
+  const [pendingMentionLocation, setPendingMentionLocation] = useState<Readonly<{ threadId: string; messageId: string }> | null>(null);
+  const [notificationFeedback, setNotificationFeedback] = useState<string | null>(null);
   const contactTriggerRef = useRef<HTMLButtonElement | null>(null);
   const listMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
   const contextMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
   const listMenuRef = useRef<HTMLDivElement | null>(null);
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
-  const contactDialogRef = useRef<HTMLDialogElement | null>(null);
   const explanationTriggerRef = useRef<HTMLButtonElement | null>(null);
   const immersiveForcedThreadRef = useRef<string | null>(null);
   const agentPickerTriggerRef = useRef<HTMLButtonElement | null>(null);
   const timelineRef = useRef<HTMLDivElement | null>(null);
+  const screenshotTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const attachmentTriggerRef = useRef<HTMLButtonElement | null>(null);
   const timelineScrollByThread = useRef(new Map<string, number>());
   const historyHeightAnchorRef = useRef<{ threadId: string; scrollHeight: number } | null>(null);
   const latestEntryIdByThread = useRef(new Map<string, string>());
@@ -256,7 +395,28 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     ? threads.find(({ id, category: threadCategory, visibleTo }) => id === targetThreadId && threadCategory === category && visibleTo.includes(role)) ?? null
     : filterMessageThreads(role, threads, category, '')[0] ?? null;
   const selectedId = selectedThread?.id ?? null;
+  const selectedAccess = selectedThread
+    ? lifecyclePort.getThreadAccess(role, selectedThread.id)
+    : Object.freeze({ mode: 'unavailable' as const, reason: '当前会话不可用。', truthLabel: 'SIMULATED' as const });
+  const selectedReadOnly = readOnly || selectedAccess.mode !== 'write';
   const composer = selectedId ? composerByThread[selectedId] ?? '' : '';
+  const replyReference = selectedId ? replyByThread[selectedId] ?? null : null;
+  const selectedResources = selectedId ? resourcesByThread[selectedId] ?? [] : [];
+  const selectedMedia = selectedId ? mediaByThread[selectedId] ?? [] : [];
+  const selectedMentions = selectedId ? mentionsByThread[selectedId] ?? [] : [];
+  const selectedObjectCards = selectedId ? objectCardsByThread[selectedId] ?? [] : [];
+  const selectedHistory = selectedId ? historyByThreadId[selectedId] : undefined;
+  const visibleThreadIds = useMemo(() => new Set(threads.filter(({ visibleTo }) => visibleTo.includes(role)).map(({ id }) => id)), [role, threads]);
+  const mediaError = selectedId ? mediaErrorByThread[selectedId] : undefined;
+  const mentionAttentionItems = useMemo(
+    () => projectMentionAttentionItems(role, threads, readMentionItemIds)
+      .filter((item) => !fixedClassId || item.classId === fixedClassId),
+    [fixedClassId, readMentionItemIds, role, threads],
+  );
+  const unreadMentionCount = getUnreadMentionCount(mentionAttentionItems);
+  const visibleMentionAttentionItems = mentionView === 'unread'
+    ? mentionAttentionItems.filter(({ read }) => !read)
+    : mentionAttentionItems;
   const setComposerForThread = (threadId: string, value: SetStateAction<string>) => {
     setComposerByThread((current) => {
       const currentValue = current[threadId] ?? '';
@@ -267,6 +427,16 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
   const setComposer = (value: SetStateAction<string>) => {
     if (!selectedId) return;
     setComposerForThread(selectedId, value);
+  };
+  const setMediaForThread = (threadId: string, value: SetStateAction<readonly MessageMediaDraft[]>) => {
+    setMediaByThread((current) => {
+      const currentValue = current[threadId] ?? [];
+      const nextValue = typeof value === 'function' ? value(currentValue) : value;
+      return Object.freeze({ ...current, [threadId]: nextValue });
+    });
+  };
+  const setMediaErrorForThread = (threadId: string, value: string | undefined) => {
+    setMediaErrorByThread((current) => Object.freeze({ ...current, [threadId]: value }));
   };
   const latestSelectedEntry = selectedThread?.entries[selectedThread.entries.length - 1] ?? null;
   const isHomeArrival = searchParams.get('source') === 'home';
@@ -339,11 +509,13 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
 
   const loadOlderSelectedMessages = useCallback(() => {
     const timeline = timelineRef.current;
-    if (!timeline || !selectedThread?.olderEntries?.length || historyLoadingThreadId === selectedThread.id) return;
+    if (!timeline || !selectedThread || !selectedHistory?.cursor || selectedHistory.status === 'loading') return;
     historyHeightAnchorRef.current = { threadId: selectedThread.id, scrollHeight: timeline.scrollHeight };
     setHistoryLoadingThreadId(selectedThread.id);
-    actions.loadOlderMessages(selectedThread.id);
-  }, [actions, historyLoadingThreadId, selectedThread]);
+    void actions.loadOlderMessages(role, selectedThread.id).finally(() => {
+      setHistoryLoadingThreadId(null);
+    });
+  }, [actions, role, selectedHistory, selectedThread]);
 
   const handleSelectedTimelineScroll = useCallback(() => {
     const timeline = timelineRef.current;
@@ -351,8 +523,8 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     timelineScrollByThread.current.set(selectedThread.id, timeline.scrollTop);
     const nearBottom = timeline.scrollHeight - timeline.scrollTop - timeline.clientHeight <= 48;
     if (nearBottom) setHasUnreadArrival(false);
-    if (timeline.scrollTop <= 24 && selectedThread.olderEntries?.length) loadOlderSelectedMessages();
-  }, [loadOlderSelectedMessages, selectedThread]);
+    if (timeline.scrollTop <= 24 && selectedHistory?.cursor) loadOlderSelectedMessages();
+  }, [loadOlderSelectedMessages, selectedHistory?.cursor, selectedThread]);
 
   const jumpToLatestSelectedMessage = useCallback(() => {
     const timeline = timelineRef.current;
@@ -362,13 +534,156 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     setHasUnreadArrival(false);
   }, [selectedThread]);
 
+  const locateTimelineMessage = (messageId: string) => {
+    if (!selectedThread) return;
+    const loaded = selectedThread.entries.some(({ id }) => id === messageId);
+    const inHistory = selectedThread.olderEntries?.some(({ id }) => id === messageId) ?? false;
+    if (!loaded && !inHistory) {
+      setFeedback('原消息暂未加载，引用摘要仍可用于理解上下文。');
+      return;
+    }
+    if (!loaded && inHistory) {
+      void actions.loadOlderMessages(role, selectedThread.id);
+    }
+    setUtilitySurface(null);
+    setHighlightedMessageId(messageId);
+    window.setTimeout(() => {
+      const message = Array.from(document.querySelectorAll<HTMLElement>('[data-message-id]'))
+        .find((element) => element.dataset.messageId === messageId);
+      message?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+      message?.focus({ preventScroll: true });
+      window.setTimeout(() => setHighlightedMessageId((current) => current === messageId ? null : current), 1_800);
+    }, loaded ? 0 : 40);
+  };
+
+  const closeUtilitySurface = () => {
+    const closedSurface = utilitySurface;
+    const explicitReturnTarget = closedSurface === 'group-profile' ? contextMenuTriggerRef.current : null;
+    setUtilitySurface(null);
+    explicitReturnTarget?.focus();
+    window.requestAnimationFrame(() => {
+      const label = closedSurface === 'history'
+        ? '搜索聊天记录'
+        : closedSurface === 'resources'
+          ? '查找会话资源'
+          : closedSurface === 'mentions'
+            ? '查看@我的'
+            : closedSurface === 'group-profile'
+              ? null
+              : '桌面通知设置';
+      if (label) document.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`)?.focus();
+      else explicitReturnTarget?.focus();
+    });
+  };
+
+  const openMentionAttentionItem = (item: MessageMentionAttentionItem) => {
+    actions.readMentionItem(item.id);
+    if (item.unavailable) {
+      setFeedback('这条提及消息已撤回，已保留最小提醒记录。');
+      return;
+    }
+    setUtilitySurface(null);
+    setPendingMentionLocation({ threadId: item.threadId, messageId: item.messageId });
+    if (!fixedClassId && selectedId !== item.threadId) {
+      setSearchParams({ category: 'class', thread: item.threadId });
+    }
+  };
+
+  useEffect(() => {
+    if (!pendingMentionLocation || selectedId !== pendingMentionLocation.threadId || !selectedThread) return;
+    const loaded = selectedThread.entries.some(({ id }) => id === pendingMentionLocation.messageId);
+    const inHistory = selectedThread.olderEntries?.some(({ id }) => id === pendingMentionLocation.messageId) ?? false;
+    if (!loaded && inHistory) void actions.loadOlderMessages(role, selectedThread.id);
+    if (!loaded && !inHistory) {
+      const unavailableTimer = window.setTimeout(() => {
+        setFeedback('原消息当前不可用，提醒记录仍保留。');
+        setPendingMentionLocation(null);
+      }, 0);
+      return () => window.clearTimeout(unavailableTimer);
+    }
+    const timer = window.setTimeout(() => {
+      setHighlightedMessageId(pendingMentionLocation.messageId);
+      const message = document.querySelector<HTMLElement>(`[data-message-id="${pendingMentionLocation.messageId}"]`);
+      message?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+      message?.focus({ preventScroll: true });
+      setPendingMentionLocation(null);
+      window.setTimeout(() => setHighlightedMessageId((current) => current === pendingMentionLocation.messageId ? null : current), 1_800);
+    }, loaded ? 0 : 50);
+    return () => window.clearTimeout(timer);
+  }, [actions, pendingMentionLocation, role, selectedId, selectedThread]);
+
+  const runHistorySearch = async () => {
+    if (!selectedThread) return;
+    setHistorySearch((current) => ({ status: 'loading', results: current.results }));
+    try {
+      const results = await actions.searchMessages(selectedThread, {
+        query: historyQuery,
+        senderName: historySender || undefined,
+        from: historyFrom || undefined,
+        to: historyTo || undefined,
+      });
+      setHistorySearch({ status: 'ready', results });
+    } catch {
+      setHistorySearch({ status: 'error', results: [], message: '聊天记录暂时无法搜索，请重试。' });
+    }
+  };
+
+  const openHistorySurface = () => {
+    setUtilitySurface('history');
+    setHistorySearch({ status: 'idle', results: [] });
+  };
+
+  const runResourceSearch = async (query = resourceQuery, kind = resourceKind) => {
+    if (!selectedThread) return;
+    setResourceSearch((current) => ({ status: 'loading', results: current.results }));
+    try {
+      const results = await actions.searchResources({
+        threadId: selectedThread.id,
+        classId: selectedThread.classId,
+        query,
+        kind,
+      });
+      setResourceSearch({ status: 'ready', results });
+    } catch {
+      setResourceSearch({ status: 'error', results: [], message: '资源暂时无法加载，请重试。' });
+    }
+  };
+
+  const openResourceSurface = () => {
+    setUtilitySurface('resources');
+    void runResourceSearch('', 'all');
+  };
+
+  const selectResource = (resource: MessageResourceRef) => {
+    if (!selectedId) return;
+    const existing = resourcesByThread[selectedId] ?? [];
+    const result = addMessageResourceDraft(existing, resource);
+    if (result.status === 'limit-reached') {
+      setFeedback(`一次最多引用 ${MESSAGE_RESOURCE_SELECTION_LIMIT} 个文件，请先移除后再添加。`);
+      return;
+    }
+    if (result.status === 'duplicate') {
+      setResourcesByThread((current) => ({
+        ...current,
+        [selectedId]: (current[selectedId] ?? []).filter(({ id }) => id !== resource.id),
+      }));
+      setFeedback(`已从当前消息中移除“${resource.name}”。`);
+      return;
+    }
+    setResourcesByThread((current) => {
+      const currentResult = addMessageResourceDraft(current[selectedId] ?? [], resource);
+      return currentResult.status === 'added' ? { ...current, [selectedId]: currentResult.resources } : current;
+    });
+    setFeedback(`已引用“${resource.name}”，发送前可在输入区移除。`);
+  };
+
   const immersiveWorkBuddyThread = immersive
     && workBuddyIm !== null
     && role === 'teacher'
     && selectedThread !== null
     && (selectedThread.category === 'class' || selectedThread.category === 'direct')
     && (selectedThread.category !== 'class' || selectedThread.classId !== undefined)
-    && !readOnly
+    && !selectedReadOnly
     && !embedded
     ? selectedThread
     : null;
@@ -377,10 +692,12 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     if (!workBuddyIm) return;
     if (immersiveWorkBuddyThread) {
       immersiveForcedThreadRef.current = immersiveWorkBuddyThread.id;
+      const nextTarget = createWorkBuddyTarget(role, immersiveWorkBuddyThread);
       const alreadyOpenForTarget = workBuddyIm.state.isOpen
-        && workBuddyIm.state.target?.threadId === immersiveWorkBuddyThread.id;
+        && workBuddyIm.state.target?.threadId === nextTarget.threadId
+        && workBuddyIm.state.target.classLabel === nextTarget.classLabel;
       if (!alreadyOpenForTarget) {
-        workBuddyIm.actions.open(createWorkBuddyTarget(role, immersiveWorkBuddyThread));
+        workBuddyIm.actions.open(nextTarget);
       }
       return;
     }
@@ -390,28 +707,6 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     }
     immersiveForcedThreadRef.current = null;
   }, [immersive, immersiveWorkBuddyThread, role, workBuddyIm]);
-  const contacts = (() => {
-    const visibleContacts = MESSAGE_CONTACTS.filter(({ visibleTo }) => visibleTo.includes(role));
-    const directBindings = threads
-      .filter((thread) => thread.visibleTo.includes(role) && thread.classAgentBinding?.channel === 'private-direct')
-      .map((thread) => thread.classAgentBinding)
-      .filter((binding): binding is ClassAgentThreadBinding => binding !== undefined);
-    const projection = classAgentConversation?.projectAgents({
-      role,
-      classId: selectedThread?.classId ?? 'physics-3',
-      channel: 'private-direct',
-      mode: 'direct-agent',
-      query: contactQuery,
-      bindings: directBindings,
-    });
-    const visibleAgentIds = new Set(projection?.candidates.map(({ agent }) => agent.id) ?? []);
-    const normalized = contactQuery.trim().toLocaleLowerCase();
-    return visibleContacts.filter((contact) => {
-      if (contact.agentId) return visibleAgentIds.has(contact.agentId);
-      return !normalized || `${contact.name} ${contact.relationship}`.toLocaleLowerCase().includes(normalized);
-    });
-  })();
-
   useLayoutEffect(() => {
     if (listMenuOpen) listMenuRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
   }, [listMenuOpen]);
@@ -419,13 +714,6 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
   useLayoutEffect(() => {
     if (contextMenuOpen) contextMenuRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
   }, [contextMenuOpen]);
-
-  useLayoutEffect(() => {
-    const dialog = contactDialogRef.current;
-    if (!contactOpen || !dialog || dialog.open) return;
-    if (typeof dialog.showModal === 'function') dialog.showModal();
-    else dialog.setAttribute('open', '');
-  }, [contactOpen]);
 
   if (state.status === 'loading') {
     if (fixedClassId) {
@@ -469,6 +757,8 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     setListMenuOpen(false);
     setContextMenuOpen(false);
     setAttachmentOpen(false);
+    setEmojiOpen(false);
+    setUtilitySurface(null);
     setHasUnreadArrival(false);
     actions.readThread(role, thread.id);
     setSearchParams({ category: thread.category, thread: thread.id }, { replace: true });
@@ -485,6 +775,8 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     setListMenuOpen(false);
     setContextMenuOpen(false);
     setAttachmentOpen(false);
+    setEmojiOpen(false);
+    setUtilitySurface(null);
     if (nextThread) actions.readThread(role, nextThread.id);
     setSearchParams(nextThread
       ? { category: nextCategory, thread: nextThread.id }
@@ -501,11 +793,136 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     closeListMenu();
   };
 
-  const sendMessage = () => {
-    if (readOnly || !selectedThread || !composer.trim()) return;
+  const addMessageImages = async (files: readonly File[], source: 'picker' | 'clipboard') => {
+    if (!selectedThread || selectedThread.classAgentBinding?.channel === 'private-direct') {
+      setFeedback('此 Agent 会话暂不支持图片，请在普通私聊或班级群聊中发送。');
+      return;
+    }
+    const threadId = selectedThread.id;
+    const result = await mediaAdapter.ingestImages(
+      files.map((file) => createMessageMediaInput(file, source === 'clipboard' ? 'clipboard' : 'upload')),
+      mediaByThread[threadId] ?? [],
+    );
+    if (result.drafts.length) setMediaForThread(threadId, (current) => [...current, ...result.drafts]);
+    setMediaErrorForThread(threadId, result.rejected[0]);
+  };
+
+  const removeMessageImage = (draftId: string) => {
+    if (!selectedId) return;
+    const draft = (mediaByThread[selectedId] ?? []).find(({ id }) => id === draftId);
+    if (draft) mediaAdapter.releaseDrafts([draft]);
+    setMediaForThread(selectedId, (current) => current.filter(({ id }) => id !== draftId));
+    setMediaErrorForThread(selectedId, undefined);
+  };
+
+  const addDraftToSelectedThread = (draft: MessageMediaDraft): boolean => {
+    if (!selectedId || selectedThread?.classAgentBinding?.channel === 'private-direct') {
+      setFeedback('此 Agent 会话暂不支持图片，请在普通私聊或班级群聊中发送。');
+      return false;
+    }
+    const current = mediaByThread[selectedId] ?? [];
+    if (current.length >= MESSAGE_IMAGE_POLICY.maxCount) {
+      setMediaErrorForThread(selectedId, `最多添加 ${MESSAGE_IMAGE_POLICY.maxCount} 张图片。`);
+      return false;
+    }
+    if (current.reduce((total, item) => total + item.byteSize, 0) + draft.byteSize > MESSAGE_IMAGE_POLICY.maxTotalBytes) {
+      setMediaErrorForThread(selectedId, '图片总大小不能超过 20 MB。');
+      return false;
+    }
+    setMediaForThread(selectedId, [...current, draft]);
+    setMediaErrorForThread(selectedId, undefined);
+    return true;
+  };
+
+  const addCustomEmoji = async (files: readonly File[]) => {
+    const result = await mediaAdapter.ingestImages(files.map((file) => createMessageMediaInput(file, 'emoji')), []);
+    if (result.drafts.length) setCustomEmoji((current) => [...current, ...result.drafts]);
+    if (selectedId) setMediaErrorForThread(selectedId, result.rejected[0]);
+  };
+
+  const selectEmojiAsset = (asset: MessageEmojiAsset) => {
+    setRecentEmojiIds((current) => [asset.id, ...current.filter((id) => id !== asset.id)].slice(0, 18));
+    if (asset.glyph) {
+      setComposer((current) => `${current}${asset.glyph}`);
+      return;
+    }
+    if (!asset.contentRef || !asset.mimeType) return;
+    const added = addDraftToSelectedThread(Object.freeze({
+      id: createMessageSurfaceId(`sticker-${asset.id}`),
+      kind: 'image',
+      name: `${asset.label}.svg`,
+      mimeType: asset.mimeType,
+      byteSize: 0,
+      contentRef: asset.contentRef,
+      source: 'emoji',
+    }));
+    if (added) setEmojiOpen(false);
+  };
+
+  const selectCustomEmoji = (draft: MessageMediaDraft) => {
+    const added = addDraftToSelectedThread(Object.freeze({ ...draft, id: createMessageSurfaceId('custom-emoji'), source: 'emoji' }));
+    if (added) setEmojiOpen(false);
+  };
+
+  const toggleFavoriteEmoji = (assetId: string) => {
+    setFavoriteEmojiIds((current) => current.includes(assetId)
+      ? current.filter((id) => id !== assetId)
+      : [...current, assetId]);
+  };
+
+  const startScreenCapture = async () => {
+    if (!selectedThread || !mediaAdapter.capabilities.captureScreen) {
+      setAttachmentOpen(false);
+      setFeedback('当前浏览器不支持屏幕截图，请使用上传图片。');
+      return;
+    }
+    screenshotTriggerRef.current = document.activeElement instanceof HTMLButtonElement ? document.activeElement : null;
+    setAttachmentOpen(false);
+    setMediaErrorForThread(selectedThread.id, undefined);
+    try {
+      setCaptureFrame(await mediaAdapter.captureScreen());
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : '截图未完成，请重试。');
+      window.requestAnimationFrame(() => attachmentTriggerRef.current?.focus());
+    }
+  };
+
+  const closeScreenCapture = () => {
+    if (captureFrame) mediaAdapter.releaseCapture(captureFrame);
+    setCaptureFrame(null);
+    setCaptureBusy(false);
+    window.requestAnimationFrame(() => attachmentTriggerRef.current?.focus());
+  };
+
+  const confirmScreenCapture = async (selection: MessageScreenSelection) => {
+    if (!captureFrame) return;
+    setCaptureBusy(true);
+    try {
+      const draft = await mediaAdapter.cropCapture(captureFrame, selection);
+      if (addDraftToSelectedThread(draft)) closeScreenCapture();
+      else setCaptureBusy(false);
+    } catch (error) {
+      if (selectedId) setMediaErrorForThread(selectedId, error instanceof Error ? error.message : '截图裁剪失败，请重试。');
+      setCaptureBusy(false);
+    }
+  };
+
+  const closeMediaViewer = () => {
+    const returnFocusTarget = mediaViewer?.returnFocusTarget;
+    setMediaViewer(null);
+    window.requestAnimationFrame(() => returnFocusTarget?.focus());
+  };
+
+  const sendMessage = async () => {
+    if (selectedReadOnly || !selectedThread || (!composer.trim() && selectedResources.length === 0 && selectedMedia.length === 0 && selectedObjectCards.length === 0)) return;
     const authorName = role === 'teacher' ? '王老师' : '李明';
-    const body = composer.trim();
+    const body = composer.trim() || selectedResources.map(({ name }) => `分享资源：${name}`).join('\n');
     const selectedTarget = primaryAgentTarget?.threadId === selectedThread.id ? primaryAgentTarget : null;
+    if ((selectedTarget || selectedThread.classAgentBinding?.channel === 'private-direct') && (selectedMedia.length || selectedObjectCards.length)) {
+      if (selectedMedia.length) setMediaErrorForThread(selectedThread.id, '当前 Agent 不支持图片理解；移除图片后可继续对话。');
+      if (selectedObjectCards.length) setFeedback('当前 Agent 会话不接收联系人名片；移除名片后可继续对话。');
+      return;
+    }
     if (selectedTarget?.status === 'stale') {
       setFeedback('该 Agent 的班级授权已更新；正文已保留，请重新选择或移除 Agent。');
       return;
@@ -554,15 +971,32 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
       return;
     }
     const displayBody = selectedTarget ? `@${selectedTarget.agent.name} ${body}` : body;
-    actions.appendMessage({
+    const attachments = selectedMedia.length ? await mediaAdapter.commit(selectedMedia) : [];
+    const submission = {
       role,
       authorName,
       threadId: selectedThread.id,
       body: displayBody,
       sentAt: '2026-08-08T14:15:00+08:00',
-    });
+      replyTo: replyReference ?? undefined,
+      resources: selectedResources,
+      attachments,
+      mentions: selectedMentions,
+      objectCards: selectedObjectCards,
+    };
+    if (agentResult?.status === 'accepted') actions.appendMessage(submission);
+    else void actions.submitMessage(submission);
+    mediaAdapter.releaseDrafts(selectedMedia);
     setComposer('');
+    setReplyByThread((current) => ({ ...current, [selectedThread.id]: null }));
+    setResourcesByThread((current) => ({ ...current, [selectedThread.id]: [] }));
+    setMediaForThread(selectedThread.id, []);
+    setMediaErrorForThread(selectedThread.id, undefined);
+    setMentionsByThread((current) => ({ ...current, [selectedThread.id]: [] }));
+    setObjectCardsByThread((current) => ({ ...current, [selectedThread.id]: [] }));
     setAgentPicker(null);
+    setEmojiOpen(false);
+    setAttachmentOpen(false);
     setPrimaryAgentTarget(null);
     setAgentTargetUndo(null);
     window.requestAnimationFrame(() => {
@@ -575,35 +1009,23 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
       : '消息已在本地 Demo 中发送。');
   };
 
-  const sendEmoji = () => {
-    if (readOnly || !selectedThread) return;
-    const authorName = role === 'teacher' ? '王老师' : '李明';
-    actions.appendMessage({
-      role,
-      authorName,
-      threadId: selectedThread.id,
-      body: '🙂',
-      sentAt: MESSAGE_NOW.toISOString(),
-      kind: 'emoji',
-    });
-    setFeedback('表情已在本地 Demo 中发送。');
-  };
-
   const togglePin = (targetId: string) => {
-    if (readOnly || !selectedThread) return;
+    if (selectedReadOnly || !selectedThread) return;
     const wasPinned = selectedThread.pinnedMessageId === targetId;
     actions.togglePin(selectedThread.id, targetId);
     setFeedback(wasPinned ? '已取消置顶消息。' : '消息已置顶，仅在本地 Demo 中生效。');
   };
 
   const recallMessage = (targetId: string) => {
-    if (readOnly || !selectedThread) return;
+    if (selectedReadOnly || !selectedThread) return;
+    const attachments = selectedThread.entries.find(({ id }) => id === targetId)?.attachments ?? [];
     actions.recallMessage(role, selectedThread.id, targetId, MESSAGE_NOW.toISOString());
+    mediaAdapter.releaseAttachments(attachments);
     setFeedback('消息已在本地 Demo 中撤回。');
   };
 
   const toggleMute = () => {
-    if (readOnly || !selectedThread) return;
+    if (selectedReadOnly || !selectedThread) return;
     const wasMuted = mutedThreadIds.has(selectedThread.id);
     actions.toggleMute(selectedThread.id);
     setFeedback(wasMuted ? '已解除全体禁言。' : '已开启全体禁言，仅在本地 Demo 中生效。');
@@ -611,7 +1033,7 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
   };
 
   const toggleDirectMute = () => {
-    if (readOnly || !selectedThread || selectedThread.category !== 'direct') return;
+    if (selectedReadOnly || !selectedThread || selectedThread.category !== 'direct') return;
     const wasMuted = mutedThreadIds.has(selectedThread.id);
     actions.toggleMute(selectedThread.id);
     setFeedback(wasMuted ? '已关闭消息免打扰。' : '已开启消息免打扰，仅在本地 Demo 中生效。');
@@ -624,11 +1046,28 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
   };
 
   const closeContacts = () => {
-    contactDialogRef.current?.close();
     setContactOpen(false);
-    setContactQuery('');
     setPendingContactThreadId(null);
     window.requestAnimationFrame(() => contactTriggerRef.current?.focus());
+  };
+
+  const closeContactCardPicker = () => {
+    setContactCardPickerOpen(false);
+    window.requestAnimationFrame(() => attachmentTriggerRef.current?.focus());
+  };
+
+  const confirmContactCards = (people: readonly import('@domain/message/message-directory').DirectoryPerson[]) => {
+    if (!selectedId) return;
+    const snapshot = directoryAdapter.getSnapshot();
+    const units = new Map(snapshot.organizationUnits.map((unit) => [unit.id, unit.name]));
+    const cards = people.map((person) => createMessageContactCard(person, units.get(person.organizationUnitId) ?? person.relationship));
+    setObjectCardsByThread((current) => ({ ...current, [selectedId]: cards }));
+    setFeedback(cards.length ? `已添加 ${cards.length} 张联系人名片。` : '未选择联系人。');
+    closeContactCardPicker();
+  };
+
+  const removeContactCard = (threadId: string, cardId: string) => {
+    setObjectCardsByThread((current) => ({ ...current, [threadId]: (current[threadId] ?? []).filter(({ id }) => id !== cardId) }));
   };
 
   const openContactThread = (targetThreadId: string) => {
@@ -648,20 +1087,25 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     closeContacts();
   };
 
-  const trapContactDialogFocus = (event: KeyboardEvent<HTMLDialogElement>) => {
-    if (event.key !== 'Tab') return;
-    const focusable = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button, input, [tabindex]:not([tabindex="-1"])'))
-      .filter((element) => !element.hasAttribute('disabled'));
-    const first = focusable[0];
-    const last = focusable.at(-1);
-    if (!first || !last) return;
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
+  const openDirectoryClass = (classId: string, threadId: string | undefined, destination: 'detail' | 'chat') => {
+    closeContacts();
+    if (destination === 'chat' && threadId) {
+      setQuery('');
+      setSearchParams({ category: 'class', thread: threadId });
+      return;
     }
+    navigate(`/${role === 'teacher' ? 'teacher' : 'student'}/classes/${encodeURIComponent(classId)}?source=messages`);
+  };
+
+  const openDirectoryCourse = (openCourseId: string) => {
+    closeContacts();
+    navigate(`/${role === 'teacher' ? 'teacher' : 'student'}/open-courses/${encodeURIComponent(openCourseId)}?source=messages`);
+  };
+
+  const openDirectoryJoin = (classCode?: string) => {
+    closeContacts();
+    const search = classCode ? `?target=class&value=${encodeURIComponent(classCode)}` : '';
+    navigate(`/${role === 'teacher' ? 'teacher' : 'student'}/join${search}`);
   };
 
   const isWorkBuddyAvailable = (thread: MessageThread) => (
@@ -669,7 +1113,7 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     && role === 'teacher'
     && (thread.category === 'class' || thread.category === 'direct')
     && (thread.category !== 'class' || thread.classId !== undefined)
-    && !readOnly
+    && !selectedReadOnly
     && !embedded
     && thread.classAgentBinding?.channel !== 'private-direct'
   );
@@ -715,10 +1159,15 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     });
   };
 
-  const insertWorkBuddyDirectReply = (thread: MessageThread, body: string) => {
+  const insertWorkBuddyDirectReply = (thread: MessageThread, body: string, targetThreadRef?: string) => {
     const normalizedBody = body.trim();
     if (!workBuddyIm || !normalizedBody) return;
-    setComposerForThread(thread.id, normalizedBody);
+    const destination = targetThreadRef
+      ? threads.find(({ id, category: destinationCategory, visibleTo }) => id === targetThreadRef && destinationCategory === 'direct' && visibleTo.includes(role))
+      : thread;
+    if (!destination) { setFeedback('目标学生私聊暂时不可用，内容仍保留在 TeachBuddy 中。'); return; }
+    setComposerForThread(destination.id, normalizedBody);
+    if (destination.id !== thread.id) setSearchParams({ category: 'direct', thread: destination.id });
     setFeedback('回复建议已插入输入框，请确认后发送。');
     if (!immersive) workBuddyIm.actions.close();
     window.requestAnimationFrame(() => {
@@ -728,30 +1177,66 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
 
   const renderChat = (thread: MessageThread, { detachAssistant = false }: RenderChatOptions = {}) => {
     const pinned = thread.entries.find(({ id }) => id === thread.pinnedMessageId);
+    const announcement = projectClassAnnouncement(role, thread, classRecords);
+    const importantReminder = projectActiveImportantReminder(
+      thread.id,
+      importantReminders,
+      dismissedReminderIds,
+      MESSAGE_NOW,
+    );
+    const readBoundaryMessageId = correctNewMessageBoundary(
+      thread,
+      readBoundaryByRoleThread[`${role}:${thread.id}`] ?? null,
+    );
     const isMuted = mutedThreadIds.has(thread.id);
-    const composerBlocked = readOnly || (isMuted && role === 'student-family');
+    const threadAccess = lifecyclePort.getThreadAccess(role, thread.id);
+    const threadReadOnly = readOnly || threadAccess.mode !== 'write';
+    const threadHistory = historyByThreadId[thread.id];
+    const composerBlocked = threadReadOnly || (isMuted && role === 'student-family');
+    const ordinaryMediaAvailable = thread.classAgentBinding?.channel !== 'private-direct';
     const workBuddyAvailable = isWorkBuddyAvailable(thread);
     const workBuddyOpen = isWorkBuddyOpen(thread);
     const teacherManagementAvailable = role === 'teacher' && (thread.category === 'class' || thread.category === 'direct');
     const conversationMenuAvailable = thread.category === 'class' || teacherManagementAvailable;
     const conversationMenuLabel = teacherManagementAvailable ? '会话管理' : '班级会话操作';
+    const groupProfile = projectMessageGroupProfile(
+      role,
+      thread,
+      classRecords,
+      directoryAdapter.getSnapshot().classes,
+      isMuted,
+      threadReadOnly ? threadAccess.reason ?? '当前会话仅供查看' : undefined,
+    );
     const subtitle = thread.category === 'class' ? null : getMessageThreadSubtitle(role, thread);
+    const historySenders = Array.from(new Set(
+      [...(thread.olderEntries ?? []), ...thread.entries]
+        .filter(({ kind }) => kind !== 'system')
+        .map(({ authorName }) => authorName),
+    ));
     const classAgent = thread.classAgentBinding && classAgentConversation
       ? classAgentConversation.getAgent(thread.classAgentBinding.agentId)
       : null;
     const publicAgentBindings = thread.classAgentBindings
       ?? (thread.classAgentBinding?.channel === 'public-class' ? [thread.classAgentBinding] : []);
     const isPublicClassAgent = publicAgentBindings.length > 0 && classAgentConversation !== null;
-    const publicAgentProjection = isPublicClassAgent && classAgentConversation
-      ? classAgentConversation.projectAgents({
+    const publicAgentProjection = thread.category === 'class'
+      ? classAgentConversation?.projectAgents({
         role,
         classId: thread.classId ?? publicAgentBindings[0]?.classId ?? '',
         channel: 'public-class',
         mode: agentPicker?.mode ?? 'agent-only',
         query: agentPicker?.query ?? '',
         bindings: publicAgentBindings,
+      }) ?? Object.freeze({
+        mode: agentPicker?.mode ?? 'mixed-mention',
+        query: agentPicker?.query ?? '',
+        candidates: [],
+        totalAuthorized: 0,
       })
       : null;
+    const mentionPeople = thread.category === 'class'
+      ? [EVERYONE_MENTION, ...CLASS_MENTION_PEOPLE[role]]
+      : CLASS_MENTION_PEOPLE[role];
     const classAgentStatus = classAgentConversation?.getThreadStatus(thread.id) ?? { status: 'idle' as const };
     const statusAgent = classAgentStatus.status === 'idle'
       ? null
@@ -827,20 +1312,32 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     const selectMentionPerson = (person: AgentPickerPerson) => {
       const caret = agentPicker?.caret ?? composer.length;
       setComposer((current) => replaceActiveMentionQuery(current, caret, person.name));
+      setMentionsByThread((current) => {
+        const mentions = current[thread.id] ?? [];
+        if (mentions.some(({ id }) => id === person.id)) return current;
+        const mention: MessageMentionRef = person.id === 'everyone'
+          ? Object.freeze({ id: 'everyone', kind: 'everyone', label: person.name })
+          : Object.freeze({ id: person.id, kind: 'person', label: person.name, actorId: person.id });
+        return Object.freeze({ ...current, [thread.id]: [...mentions, mention] });
+      });
       setAgentPicker(null);
       focusComposer();
     };
     const updateComposer = (value: string, caret: number) => {
       setComposer(value);
+      setMentionsByThread((current) => ({
+        ...current,
+        [thread.id]: reconcileMessageMentions(value, current[thread.id] ?? []),
+      }));
       setAgentTargetUndo(null);
       setPendingContactThreadId(null);
-      if (!isPublicClassAgent) return;
+      if (!publicAgentProjection) return;
       const mentionQuery = getActiveMentionQuery(value, caret);
       if (mentionQuery !== null) openAgentPicker('mixed-mention', mentionQuery, caret);
       else if (agentPicker?.mode === 'mixed-mention') setAgentPicker(null);
     };
     const pickerOptions = publicAgentProjection
-      ? projectAgentPickerOptions(publicAgentProjection, CLASS_MENTION_PEOPLE[role])
+      ? projectAgentPickerOptions(publicAgentProjection, mentionPeople)
       : [];
     const choosePickerOption = (option: AgentPickerOption | undefined) => {
       if (!option) return;
@@ -904,6 +1401,45 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
             {subtitle ? <p>{subtitle}</p> : null}
           </div>
           <div className={styles.contextActions}>
+            {thread.category === 'class' && fixedClassId ? (
+              <button
+                type="button"
+                aria-expanded={utilitySurface === 'mentions'}
+                aria-label="查看@我的"
+                title="@我的"
+                onClick={() => setUtilitySurface((current) => current === 'mentions' ? null : 'mentions')}
+              >
+                <AtSign aria-hidden="true" size={16} />
+                {unreadMentionCount > 0 ? <span className={styles.actionCount}>{formatUnreadCount(unreadMentionCount)}</span> : null}
+              </button>
+            ) : null}
+            <button
+              type="button"
+              aria-expanded={utilitySurface === 'history'}
+              aria-label="搜索聊天记录"
+              title="搜索聊天记录"
+              onClick={() => utilitySurface === 'history' ? closeUtilitySurface() : openHistorySurface()}
+            >
+              <Search aria-hidden="true" size={16} />
+            </button>
+            <button
+              type="button"
+              aria-expanded={utilitySurface === 'resources'}
+              aria-label="查找会话资源"
+              title="查找会话资源"
+              onClick={() => utilitySurface === 'resources' ? closeUtilitySurface() : openResourceSurface()}
+            >
+              <Library aria-hidden="true" size={16} />
+            </button>
+            <button
+              type="button"
+              aria-expanded={utilitySurface === 'notifications'}
+              aria-label="桌面通知设置"
+              title="桌面通知设置"
+              onClick={() => setUtilitySurface((current) => current === 'notifications' ? null : 'notifications')}
+            >
+              <Bell aria-hidden="true" size={16} />
+            </button>
             {workBuddyAvailable && !immersive ? (
               <button
                 className={styles.workBuddyButton}
@@ -933,13 +1469,16 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
                   <div ref={contextMenuRef} className={styles.commandMenu} role="menu" aria-label={conversationMenuLabel} onKeyDown={(event) => { if (event.key === 'Escape') closeContextMenu(); }}>
                     {thread.category === 'class' ? (
                       <>
-                        <button type="button" role="menuitem" onClick={() => { setFeedback('群文件入口已保留，本 Demo 不上传或下载真实文件。'); closeContextMenu(); }}>
+                        {thread.classId ? <button type="button" role="menuitem" onClick={() => navigate(`/${role === 'teacher' ? 'teacher' : 'student'}/classes/${thread.classId}${announcement ? `/announcements/${announcement.id}?from=messages` : ''}`)}>
+                          <Megaphone aria-hidden="true" size={15} />{announcement ? (announcement.canManage ? '管理公告' : '查看公告') : '公告管理'}
+                        </button> : null}
+                        <button type="button" role="menuitem" onClick={() => { setContextMenuOpen(false); setUtilitySurface('resources'); void runResourceSearch('', 'all'); }}>
                           <Files aria-hidden="true" size={15} />群文件
                         </button>
-                        <button type="button" role="menuitem" onClick={() => { setFeedback('成员列表入口已保留，将在班级详情中统一管理。'); closeContextMenu(); }}>
-                          <UsersRound aria-hidden="true" size={15} />成员
+                        <button type="button" role="menuitem" onClick={() => { setContextMenuOpen(false); setUtilitySurface('group-profile'); }}>
+                          <UsersRound aria-hidden="true" size={15} />群资料
                         </button>
-                        {role === 'teacher' && !readOnly ? (
+                        {role === 'teacher' && !threadReadOnly ? (
                           <button type="button" role="menuitem" onClick={toggleMute}>
                             {isMuted ? <Volume2 aria-hidden="true" size={15} /> : <VolumeX aria-hidden="true" size={15} />}
                             {isMuted ? '解除禁言' : '全体禁言'}
@@ -951,7 +1490,7 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
                         <button type="button" role="menuitem" onClick={() => { setFeedback('联系人资料入口已保留，本 Demo 不读取真实通讯录。'); closeContextMenu(); }}>
                           <Contact aria-hidden="true" size={15} />联系人资料
                         </button>
-                        {!readOnly ? <button type="button" role="menuitem" onClick={toggleDirectMute}>
+                        {!threadReadOnly ? <button type="button" role="menuitem" onClick={toggleDirectMute}>
                           {isMuted ? <Volume2 aria-hidden="true" size={15} /> : <VolumeX aria-hidden="true" size={15} />}
                           {isMuted ? '关闭消息免打扰' : '消息免打扰'}
                         </button>
@@ -965,10 +1504,133 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
           </div>
         </header>
 
+        {utilitySurface === 'history' ? (
+          <aside className={styles.utilitySurface} aria-label="搜索聊天记录">
+            <header><div><strong>搜索聊天记录</strong><small>仅搜索当前会话</small></div><button type="button" onClick={closeUtilitySurface} aria-label="关闭聊天记录搜索"><X aria-hidden="true" size={17} /></button></header>
+            <form className={styles.utilityFilters} onSubmit={(event) => { event.preventDefault(); void runHistorySearch(); }}>
+              <label><span>关键词</span><input autoFocus value={historyQuery} onChange={(event) => setHistoryQuery(event.target.value)} placeholder="输入消息关键词" /></label>
+              <label><span>发送人</span><select value={historySender} onChange={(event) => setHistorySender(event.target.value)}><option value="">全部发送人</option>{historySenders.map((sender) => <option value={sender} key={sender}>{sender}</option>)}</select></label>
+              <div className={styles.dateFilters}><label><span>开始日期</span><input type="date" value={historyFrom} onChange={(event) => setHistoryFrom(event.target.value)} /></label><label><span>结束日期</span><input type="date" value={historyTo} onChange={(event) => setHistoryTo(event.target.value)} /></label></div>
+              <button className={styles.utilityPrimaryAction} type="submit">搜索</button>
+            </form>
+            <div className={styles.utilityResults} aria-live="polite">
+              {historySearch.status === 'idle' ? <div className={styles.utilityEmpty}><Search aria-hidden="true" size={20} /><span>输入条件后搜索当前会话</span></div> : null}
+              {historySearch.status === 'loading' ? <div className={styles.utilityEmpty} role="status">正在搜索聊天记录…</div> : null}
+              {historySearch.status === 'error' ? <div className={styles.utilityError} role="alert"><span>{historySearch.message}</span><button type="button" onClick={() => void runHistorySearch()}>重试</button></div> : null}
+              {historySearch.status === 'ready' && historySearch.results.length === 0 ? <div className={styles.utilityEmpty}>没有匹配的聊天记录</div> : null}
+              {historySearch.status === 'ready' && historySearch.results.length > 0 ? <><p className={styles.resultCount}>找到 {historySearch.results.length} 条消息</p>{historySearch.results.map((result) => <button className={styles.searchResult} type="button" key={result.messageId} onClick={() => locateTimelineMessage(result.messageId)}><span><strong>{result.authorName}</strong><time>{formatMessageListTime(result.sentAt, MESSAGE_NOW)}</time></span><p>{result.bodyPreview}</p></button>)}</> : null}
+            </div>
+          </aside>
+        ) : null}
+
+        {utilitySurface === 'resources' ? (
+          <aside className={styles.utilitySurface} aria-label={thread.category === 'class' ? '群文件' : '会话文件'} onKeyDown={(event) => { if (event.key === 'Escape') closeUtilitySurface(); }}>
+            <header><div><strong>{thread.category === 'class' ? '群文件' : '会话文件'}</strong><small>{getMessageThreadTitle(role, thread)} · 当前范围 · SIMULATED</small></div><button type="button" onClick={closeUtilitySurface} aria-label="关闭会话资源"><X aria-hidden="true" size={17} /></button></header>
+            <form className={styles.utilityFilters} onSubmit={(event) => { event.preventDefault(); void runResourceSearch(); }}>
+              <label><span>资源名称</span><input autoFocus value={resourceQuery} onChange={(event) => setResourceQuery(event.target.value)} placeholder="搜索文件或课件" /></label>
+              <label><span>类型</span><select value={resourceKind} onChange={(event) => { const kind = event.target.value as MessageResourceKind | 'all'; setResourceKind(kind); void runResourceSearch(resourceQuery, kind); }}><option value="all">全部类型</option><option value="document">文档</option><option value="image">图片</option><option value="courseware">课件</option><option value="link">链接</option></select></label>
+              <button className={styles.utilityPrimaryAction} type="submit">搜索</button>
+            </form>
+            <div className={styles.utilityResults} aria-live="polite">
+              {resourceSearch.status === 'loading' ? <div className={styles.utilityEmpty} role="status">正在加载会话资源…</div> : null}
+              {resourceSearch.status === 'error' ? <div className={styles.utilityError} role="alert"><span>{resourceSearch.message}</span><button type="button" onClick={() => void runResourceSearch()}>重试</button></div> : null}
+              {resourceSearch.status === 'ready' && resourceSearch.results.length === 0 ? <div className={styles.utilityEmpty}>没有匹配的资源</div> : null}
+              {resourceSearch.status === 'ready' && resourceSearch.results.length > 0 ? <p className={styles.resultCount}>当前范围 {resourceSearch.results.length} 个文件 · 已选 {selectedResources.length}/{MESSAGE_RESOURCE_SELECTION_LIMIT}</p> : null}
+              {resourceSearch.status === 'ready' ? resourceSearch.results.map((resource) => {
+                const selected = selectedResources.some(({ id }) => id === resource.id);
+                return <article className={styles.resourceResult} data-selected={selected} key={resource.id}><span className={styles.resourceIcon}>{resource.kind === 'image' ? <Image aria-hidden="true" size={17} /> : resource.kind === 'courseware' ? <Presentation aria-hidden="true" size={17} /> : <FileText aria-hidden="true" size={17} />}</span><div><strong>{resource.name}</strong><small>{resource.source === 'conversation' ? '当前会话' : '班级共享空间'} · {getMessageResourceFormat(resource)} · {resource.sizeLabel}</small><small>更新于 {formatResourceUpdatedAt(resource.updatedAt)} · {resource.truthLabel}</small></div><button type="button" aria-pressed={selected} onClick={() => selectResource(resource)}>{selected ? '已引用' : '引用'}</button></article>;
+              }) : null}
+            </div>
+          </aside>
+        ) : null}
+
+        {utilitySurface === 'group-profile' ? (
+          <aside className={styles.utilitySurface} aria-label="群资料" onKeyDown={(event) => { if (event.key === 'Escape') closeUtilitySurface(); }}>
+            <header><div><strong>群资料</strong><small>{groupProfile?.className ?? '当前班级'} · {groupProfile?.truthLabel ?? 'SIMULATED'}</small></div><button autoFocus type="button" onClick={closeUtilitySurface} aria-label="关闭群资料"><X aria-hidden="true" size={17} /></button></header>
+            {groupProfile ? (
+              <div className={styles.groupProfileBody}>
+                <section className={styles.groupProfileSummary} aria-label="班级基本资料">
+                  <span className={styles.groupProfileAvatar}>{groupProfile.className.slice(0, 1)}</span>
+                  <div><h3>{groupProfile.className}</h3><p>班级号 {groupProfile.classCode}</p></div>
+                  <dl>
+                    <div><dt>班主任</dt><dd>{groupProfile.ownerName}</dd></div>
+                    <div><dt>成员</dt><dd>{groupProfile.memberCount} 人</dd></div>
+                    <div><dt>我的身份</dt><dd>{groupProfile.currentRoleLabel}</dd></div>
+                    <div><dt>消息状态</dt><dd>{groupProfile.messagingStatusLabel}</dd></div>
+                  </dl>
+                </section>
+                <section className={styles.groupProfileSection} aria-label="群公告摘要">
+                  <h3>群公告</h3>
+                  {groupProfile.announcementTitle ? <div className={styles.groupAnnouncement}><strong>{groupProfile.announcementTitle}</strong><p>{groupProfile.announcementPreview}</p></div> : <p className={styles.groupProfileEmpty}>当前没有群公告</p>}
+                </section>
+                <section className={styles.groupProfileSection} aria-label="群成员">
+                  <h3>群成员 <span>{groupProfile.members.length} 位可见 / {groupProfile.memberCount} 人</span></h3>
+                  <div className={styles.groupMemberList}>{groupProfile.members.map((member) => <div className={styles.groupMember} key={member.id}><span>{member.displayName.slice(0, 1)}</span><div><strong>{member.displayName}{member.currentUser ? '（我）' : ''}</strong><small>{member.roleLabel} · {member.relationship}</small></div></div>)}</div>
+                  {groupProfile.members.length < groupProfile.memberCount ? <p className={styles.groupProfileNote}>这里只展示固定演示成员；完整成员目录由 ClassIn 班级服务提供。</p> : null}
+                </section>
+                <footer className={styles.groupProfileFooter}><small>更新于 {formatResourceUpdatedAt(groupProfile.updatedAt)} · 管理动作未接入</small><button type="button" onClick={() => navigate(`/${role === 'teacher' ? 'teacher' : 'student'}/classes/${groupProfile.classId}`)}>进入班级</button></footer>
+              </div>
+            ) : <div className={styles.utilityError} role="alert"><span>当前班级资料不可用。</span><button type="button" onClick={closeUtilitySurface}>返回会话</button></div>}
+          </aside>
+        ) : null}
+
+        {utilitySurface === 'mentions' ? (
+          <aside className={styles.utilitySurface} aria-label="@我的">
+            <header><div><strong>@我的</strong><small>直接提及与 @所有人</small></div><button type="button" onClick={closeUtilitySurface} aria-label="关闭@我的"><X aria-hidden="true" size={17} /></button></header>
+            <div className={styles.attentionFilters} role="group" aria-label="提及筛选">
+              <button type="button" aria-pressed={mentionView === 'unread'} onClick={() => setMentionView('unread')}>未读 <strong>{unreadMentionCount}</strong></button>
+              <button type="button" aria-pressed={mentionView === 'all'} onClick={() => setMentionView('all')}>全部 <strong>{mentionAttentionItems.length}</strong></button>
+            </div>
+            <div className={styles.utilityResults} aria-live="polite">
+              {visibleMentionAttentionItems.length === 0 ? <div className={styles.utilityEmpty}><AtSign aria-hidden="true" size={20} /><span>{mentionView === 'unread' ? '没有未读的提及消息' : '暂时没有人提到你'}</span></div> : null}
+              {visibleMentionAttentionItems.map((item) => (
+                <button className={styles.attentionResult} data-read={item.read} type="button" key={item.id} onClick={() => openMentionAttentionItem(item)}>
+                  <span><strong>{item.mentionKind === 'direct' ? '提到你' : '@所有人'}</strong><time>{formatMessageListTime(item.sentAt, MESSAGE_NOW)}</time></span>
+                  <small>{item.classLabel} · {item.authorName}</small>
+                  <p>{item.bodyPreview}</p>
+                  {item.unavailable ? <em>原消息已撤回</em> : !item.read ? <em>未读</em> : null}
+                </button>
+              ))}
+            </div>
+          </aside>
+        ) : null}
+
+        {utilitySurface === 'notifications' ? (
+          <aside className={styles.utilitySurface} aria-label="桌面通知设置">
+            <header><div><strong>桌面通知</strong><small>离开当前会话时提醒</small></div><button type="button" onClick={closeUtilitySurface} aria-label="关闭桌面通知设置"><X aria-hidden="true" size={17} /></button></header>
+            <div className={styles.notificationSettings}>
+              <span className={styles.notificationState} data-state={desktopNotificationPermission}><BellRing aria-hidden="true" size={18} /><span><strong>{DESKTOP_NOTIFICATION_LABELS[desktopNotificationPermission]}</strong><small>站内未读和 @我的始终保留</small></span></span>
+              <p>普通免打扰消息不会弹出桌面通知；直接提及和 @所有人仍会提醒。</p>
+              {desktopNotificationPermission === 'prompt' || desktopNotificationPermission === 'failed' ? <button className={styles.utilityPrimaryAction} type="button" onClick={() => void actions.requestDesktopNotificationPermission().then((permission) => setNotificationFeedback(DESKTOP_NOTIFICATION_LABELS[permission]))}>启用桌面通知</button> : null}
+              {desktopNotificationPermission === 'granted' ? <button className={styles.utilityPrimaryAction} type="button" onClick={() => void actions.sendTestDesktopNotification().then((result) => setNotificationFeedback(result.status === 'delivered' ? '测试通知已发送。' : result.message))}>发送测试通知</button> : null}
+              {desktopNotificationPermission === 'denied' ? <p className={styles.notificationHelp}>请在浏览器或 ClassIn 客户端设置中重新允许通知；站内提醒不受影响。</p> : null}
+              {desktopNotificationPermission === 'unsupported' ? <p className={styles.notificationHelp}>当前浏览器不提供通知能力，后续可由 ClassIn PC Native Adapter 接入。</p> : null}
+              {notificationFeedback ? <p role="status">{notificationFeedback}</p> : null}
+            </div>
+          </aside>
+        ) : null}
+
+        {announcement ? (
+          <section className={styles.announcementBanner} aria-label="班级公告" data-unread={announcement.unread}>
+            <Megaphone aria-hidden="true" size={16} />
+            <span><strong>{announcement.title}</strong><small>{announcement.bodyPreview}</small></span>
+            <button type="button" onClick={() => navigate(`/${role === 'teacher' ? 'teacher' : 'student'}/classes/${announcement.classId}/announcements/${announcement.id}?from=messages`)}>{announcement.canManage ? '管理公告' : announcement.unread ? '查看并确认' : '查看公告'}</button>
+          </section>
+        ) : null}
+
+        {importantReminder ? (
+          <section className={styles.importantReminderBanner} aria-label="重要提醒">
+            <BellRing aria-hidden="true" size={16} />
+            <span><strong>重要提醒 · {importantReminder.authorName}</strong><small><b>@所有人</b> {importantReminder.body}</small></span>
+            {importantReminder.sourceMessageId ? <button type="button" onClick={() => locateTimelineMessage(importantReminder.sourceMessageId ?? '')}>查看原消息</button> : null}
+            <button type="button" onClick={() => actions.dismissReminder(importantReminder.id)} aria-label="关闭重要提醒"><X aria-hidden="true" size={15} /></button>
+          </section>
+        ) : null}
+
         {pinned ? (
           <div className={styles.pinnedBanner}>
             <Pin aria-hidden="true" size={14} />
-            <span><strong>置顶</strong>{pinned.body}</span>
+            <span><strong>置顶</strong>{getMessageEntryPreview(pinned)}</span>
           </div>
         ) : null}
 
@@ -982,19 +1644,28 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
           role="log"
           tabIndex={0}
         >
-          {thread.classAgentBinding?.channel === 'private-direct' ? (
-            <div className={styles.historyControl} role="status">
-              {thread.olderEntries?.length ? (
-                <button type="button" disabled={historyLoadingThreadId === thread.id} onClick={loadOlderSelectedMessages}>
-                  {historyLoadingThreadId === thread.id ? '正在加载更早消息…' : '加载更早消息'}
+          {connection.status !== 'online' ? (
+            <div className={styles.connectionBanner} data-status={connection.status} role={connection.status === 'offline' ? 'alert' : 'status'}>
+              <WifiOff aria-hidden="true" size={16} />
+              <span><strong>{connection.status === 'offline' ? '消息服务已断开' : '正在重新连接'}</strong><small>{connection.message} · SIMULATED</small></span>
+              <button type="button" disabled={connection.status === 'reconnecting'} onClick={() => void actions.reconnect()}>{connection.status === 'reconnecting' ? '连接中…' : '重新连接'}</button>
+            </div>
+          ) : null}
+          {thread.olderEntries?.length || (threadHistory && threadHistory.status !== 'idle') ? (
+            <div className={styles.historyControl} aria-live="polite">
+              {threadHistory?.cursor ? (
+                <button type="button" disabled={threadHistory.status === 'loading'} onClick={loadOlderSelectedMessages}>
+                  {threadHistory.status === 'loading' ? '正在加载更早消息…' : threadHistory.status === 'error' ? '重试加载更早消息' : '加载更早消息'}
                 </button>
               ) : <span>已显示全部历史消息</span>}
+              {threadHistory?.status === 'error' ? <small role="alert">{threadHistory.message}</small> : null}
             </div>
           ) : null}
           <div className={styles.dateMarker}>今天</div>
           {thread.entries.map((entry, index) => {
+            const newMessageBoundary = entry.id === readBoundaryMessageId ? <div className={styles.newMessageDivider}><span>以下为新消息</span></div> : null;
             if (entry.kind === 'system') {
-              return <p className={styles.systemEntry} key={entry.id}>{entry.body}</p>;
+              return <Fragment key={entry.id}>{newMessageBoundary}<p className={styles.systemEntry}>{entry.body}</p></Fragment>;
             }
             const previous = thread.entries[index - 1];
             const grouped = previous !== undefined
@@ -1003,28 +1674,77 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
               && previous.authorName === entry.authorName;
             const own = entry.authorRole === role;
             const isClassAgentEntry = entry.authorRole === 'class-agent' && entry.classAgent !== undefined;
-            const canRecall = !readOnly && thread.category === 'class' && canRecallClassMessage(role, entry, MESSAGE_NOW);
-            const canPin = !readOnly && role === 'teacher' && thread.category === 'class' && entry.kind !== 'retracted';
+            const canRecall = !threadReadOnly && thread.category === 'class' && canRecallClassMessage(role, entry, MESSAGE_NOW);
+            const canPin = !threadReadOnly && role === 'teacher' && thread.category === 'class' && entry.kind !== 'retracted';
+            const translationState = translationByMessageId[entry.id];
             return (
-              <article className={styles.messageEntry} data-agent={isClassAgentEntry} data-grouped={grouped} data-message-id={entry.id} data-own={own} data-retracted={entry.kind === 'retracted'} key={entry.id} tabIndex={entry.id.startsWith('workbuddy-reminder-') ? -1 : undefined}>
+              <Fragment key={entry.id}>
+              {newMessageBoundary}
+              <article className={styles.messageEntry} data-agent={isClassAgentEntry} data-grouped={grouped} data-highlighted={highlightedMessageId === entry.id} data-mention-everyone={entry.mentions?.some(({ kind }) => kind === 'everyone')} data-message-id={entry.id} data-own={own} data-retracted={entry.kind === 'retracted'} tabIndex={entry.id.startsWith('workbuddy-reminder-') || highlightedMessageId === entry.id ? -1 : undefined}>
                 {!own && !grouped ? <span className={styles.messageAvatar}>{isClassAgentEntry ? <Sparkles aria-hidden="true" size={15} /> : entry.authorName.slice(0, 1)}</span> : null}
                 <div>
                   {!grouped ? <span className={styles.messageAuthor}>{own ? '我' : entry.authorName} · {formatEntryTime(entry.sentAt)}</span> : null}
-                  <p className={entry.contentReference?.kind === 'guided-explanation' ? styles.messageWithLink : undefined}>
+                  {entry.replyTo ? <button className={styles.replyPreview} type="button" onClick={() => locateTimelineMessage(entry.replyTo?.messageId ?? '')}><MessageSquareReply aria-hidden="true" size={13} /><span><strong>{entry.replyTo.authorName}</strong>{entry.replyTo.bodyPreview}</span></button> : null}
+                  {entry.body ? <p className={entry.contentReference?.kind === 'guided-explanation' ? styles.messageWithLink : undefined}>
                     <span>{entry.body}</span>
                   {entry.contentReference?.kind === 'guided-explanation' ? (
                     <button className={styles.explanationLink} type="button" onClick={(event) => { explanationTriggerRef.current = event.currentTarget; setOpenExplanation(entry.contentReference ?? null); }}>
                       <Link2 aria-hidden="true" size={14} />{entry.contentReference.linkLabel}
                     </button>
                   ) : null}
-                  </p>
+                  </p> : null}
+                  {entry.attachments?.length ? <div className={styles.messageMedia} data-count={entry.attachments.length}>
+                    {entry.attachments.map((attachment, attachmentIndex) => {
+                      const contentUrl = mediaAdapter.resolveContent(attachment.contentRef);
+                      if (attachment.kind === 'image') return <button className={styles.imageMessage} type="button" key={attachment.id} aria-label={`查看图片 ${attachment.name}`} onClick={(event) => setMediaViewer({ attachments: entry.attachments ?? [], initialIndex: attachmentIndex, returnFocusTarget: event.currentTarget })}>{contentUrl ? <img alt={attachment.name} src={contentUrl} /> : <span><Image aria-hidden="true" size={20} />图片不可用</span>}</button>;
+                      return <button className={styles.videoMessage} type="button" key={attachment.id} aria-label={`播放视频 ${attachment.name}`} onClick={(event) => setMediaViewer({ attachments: entry.attachments ?? [], initialIndex: attachmentIndex, returnFocusTarget: event.currentTarget })}>
+                        {attachment.posterRef && mediaAdapter.resolveContent(attachment.posterRef) ? <img alt="" src={mediaAdapter.resolveContent(attachment.posterRef) ?? ''} /> : <span className={styles.videoFallback} />}
+                        <span className={styles.videoPlay}><Play aria-hidden="true" fill="currentColor" size={18} /></span>
+                        <span className={styles.videoMeta}><strong>{attachment.name}</strong><small>{attachment.durationSeconds ? `${Math.floor(attachment.durationSeconds / 60)}:${String(attachment.durationSeconds % 60).padStart(2, '0')}` : '视频'}</small></span>
+                      </button>;
+                    })}
+                  </div> : null}
+                  {entry.objectCards?.length ? <div className={styles.messageObjectCards}>
+                    {entry.objectCards.map((card) => card.kind === 'contact' ? (
+                      <article className={styles.contactCard} key={card.id}>
+                        <button type="button" className={styles.cardPrimary} aria-label={`查看联系人资料 ${card.name}`} onClick={() => setContactCardProfile(card)}>
+                          <span className={styles.objectAvatar}>{card.name.slice(0, 1)}</span>
+                          <span><strong>{card.name}</strong><small>{card.identityLabel} · {card.relationship}</small><em>联系人名片 · {card.truthLabel}</em></span>
+                        </button>
+                        <button type="button" className={styles.cardMenuButton} aria-label={`${card.name}名片操作`} title="名片操作" onClick={() => setFeedback('可查看联系人资料；真实转发、保存和举报动作未接入。')}><MoreHorizontal aria-hidden="true" size={16} /></button>
+                      </article>
+                    ) : (
+                      <article className={styles.temporaryClassroomCard} data-status={card.status} key={card.id}>
+                        <header><span><Presentation aria-hidden="true" size={17} />临时教室</span><strong>{card.statusLabel}</strong><button type="button" aria-label={`${card.title}卡片操作`} title="卡片操作" onClick={() => setFeedback('临时教室卡保留查看信息动作；真实转发和课堂管理未接入。')}><MoreHorizontal aria-hidden="true" size={16} /></button></header>
+                        <h3>{card.title}</h3>
+                        <dl><div><dt>主办人</dt><dd>{card.hostName}</dd></div><div><dt>时间</dt><dd>{card.timeLabel} · {card.durationLabel}</dd></div><div><dt>容量</dt><dd>{card.capacityLabel}</dd></div></dl>
+                        <p>{card.participantLabel}</p>
+                        <footer><span>{card.truthLabel}</span><button type="button" disabled={card.status === 'ended'} onClick={() => setFeedback(temporaryClassroomAdapter.enter(role, card.classroomId).message)}>{card.status === 'ended' ? '已结束' : '进入临时教室'}</button></footer>
+                      </article>
+                    ))}
+                  </div> : null}
+                  {entry.resources?.length ? <div className={styles.messageResources}>{entry.resources.map((resource) => <span key={resource.id} title="固定资源引用；真实下载未接入"><FileText aria-hidden="true" size={14} /><span><strong>{resource.name}</strong><small>{getMessageResourceFormat(resource)} · {resource.sizeLabel} · {resource.truthLabel}</small></span></span>)}</div> : null}
+                  {translationState?.status === 'loading' ? <div className={styles.translationPanel} role="status">正在翻译…</div> : null}
+                  {translationState?.status === 'error' ? <div className={styles.translationPanel} role="alert"><span>{translationState.message}</span><button type="button" onClick={() => void actions.translateMessage(entry.id, entry.body, translationState.targetLocale)}>重试</button></div> : null}
+                  {translationState?.status === 'ready' ? <div className={styles.translationPanel}><span className={styles.translationLabel}><Languages aria-hidden="true" size={13} />译文 · {translationState.translation.truthLabel}</span><p>{translationState.translation.translatedBody}</p><button type="button" onClick={() => actions.clearTranslation(entry.id)}>收起译文</button></div> : null}
                   {entry.classAgent?.channel === 'public-class' ? <small className={styles.classAgentMessageMeta}>{entry.classAgent.visibilityLabel}</small> : null}
-                  {canRecall || canPin ? <div className={styles.messageActions}>
+                  {own && entry.delivery ? <div className={styles.deliveryState} data-status={entry.delivery.status} role={entry.delivery.status === 'failed' ? 'alert' : undefined}>
+                    {entry.delivery.status === 'read' ? <CheckCheck aria-hidden="true" size={13} /> : null}
+                    <span>{getMessageDeliveryLabel(entry.delivery)}</span>
+                    {entry.delivery.status !== 'sending' && entry.delivery.status !== 'failed' ? <em>{entry.delivery.receipt.truthLabel}</em> : null}
+                    {getMessageDeliveryRecoveryAction(entry.delivery) === 'retry' ? <button type="button" onClick={() => void actions.retryMessage(role, thread.id, entry.id)}>重新发送</button> : null}
+                    {getMessageDeliveryRecoveryAction(entry.delivery) === 'sync-and-retry' ? <button type="button" onClick={() => void actions.syncAndRetryMessage(role, thread.id, entry.id)}>同步并重试</button> : null}
+                  </div> : null}
+                  {!threadReadOnly && entry.kind !== 'retracted' ? <div className={styles.messageActions}>
+                    <button type="button" onClick={() => { const reference = createReplyReference(entry); if (reference) { setReplyByThread((current) => ({ ...current, [thread.id]: reference })); window.requestAnimationFrame(() => document.querySelector<HTMLTextAreaElement>('textarea[aria-label="输入消息"]')?.focus()); } }}><MessageSquareReply aria-hidden="true" size={13} />回复</button>
+                    {MESSAGE_REACTION_OPTIONS.map((emoji) => { const reaction = entry.reactions?.find((item) => item.emoji === emoji); const selected = reaction?.actorIds.includes(role) ?? false; return <button className={styles.reactionButton} data-selected={selected} type="button" aria-label={`${selected ? '取消' : '添加'} ${emoji} Reaction${reaction?.actorIds.length ? `，当前 ${reaction.actorIds.length} 人` : ''}`} aria-pressed={selected} key={emoji} onClick={() => actions.toggleReaction(thread.id, entry.id, role, emoji)}><span aria-hidden="true">{emoji}</span>{reaction?.actorIds.length ? <em>{reaction.actorIds.length}</em> : null}</button>; })}
+                    {entry.body ? <button type="button" onClick={() => void actions.translateMessage(entry.id, entry.body, /[\u4e00-\u9fff]/u.test(entry.body) ? 'en' : 'zh-CN')}><Languages aria-hidden="true" size={13} />翻译</button> : null}
                     {canPin ? <button type="button" onClick={() => togglePin(entry.id)}><Pin aria-hidden="true" size={13} />{thread.pinnedMessageId === entry.id ? '取消置顶' : '置顶'}</button> : null}
                     {canRecall ? <button type="button" onClick={() => recallMessage(entry.id)}><Undo2 aria-hidden="true" size={13} />撤回</button> : null}
                   </div> : null}
                 </div>
               </article>
+              </Fragment>
             );
           })}
           {classAgentStatus.status === 'replying' ? (
@@ -1055,22 +1775,32 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
 
         {composerBlocked ? (
           <div className={styles.readOnlyBar} role="status">
-            {readOnly ? '当前群聊仅供查看' : '当前群聊已开启全体禁言'}
+            {readOnly ? '当前群聊仅供查看' : threadReadOnly ? threadAccess.reason ?? '当前会话仅供查看' : '当前群聊已开启全体禁言'}
           </div>
         ) : (
           <WorkspaceComposer
             ariaLabel="输入消息"
             className={styles.composerDock}
-            target={activeTarget ? (
-              <div className={styles.agentTarget} data-status={activeTarget.status}>
-                <strong>@{activeTarget.agent.name}</strong>
-                <span className={styles.agentTargetActions}>
-                  {activeTargetUndo ? <button className={styles.agentTargetUndo} type="button" onClick={undoAgentTargetSwitch}>撤销切换</button> : null}
-                  <button type="button" onClick={() => { setPrimaryAgentTarget(null); setAgentTargetUndo(null); }} aria-label={`移除${activeTarget.agent.name}`} title="移除 Agent"><X aria-hidden="true" size={14} /></button>
-                </span>
+            target={activeTarget || replyReference || selectedResources.length || selectedObjectCards.length ? (
+              <div className={styles.composerContext}>
+                {replyReference ? <div className={styles.replyTarget}><MessageSquareReply aria-hidden="true" size={14} /><span><strong>回复 {replyReference.authorName}</strong><small>{replyReference.bodyPreview}</small></span><button type="button" onClick={() => setReplyByThread((current) => ({ ...current, [thread.id]: null }))} aria-label="取消引用回复"><X aria-hidden="true" size={14} /></button></div> : null}
+                {selectedResources.map((resource) => <div className={styles.resourceTarget} key={resource.id}><FileText aria-hidden="true" size={14} /><span>{resource.name}</span><button type="button" onClick={() => setResourcesByThread((current) => ({ ...current, [thread.id]: (current[thread.id] ?? []).filter(({ id }) => id !== resource.id) }))} aria-label={`移除资源${resource.name}`}><X aria-hidden="true" size={14} /></button></div>)}
+                {selectedObjectCards.map((card) => <div className={styles.contactCardTarget} key={card.id}><Contact aria-hidden="true" size={14} /><span><strong>{card.name}</strong><small>{card.identityLabel} · {card.relationship}</small></span><button type="button" onClick={() => removeContactCard(thread.id, card.id)} aria-label={`移除名片${card.name}`}><X aria-hidden="true" size={14} /></button></div>)}
+                {activeTarget ? <div className={styles.agentTarget} data-status={activeTarget.status}>
+                  <strong>@{activeTarget.agent.name}</strong>
+                  <span className={styles.agentTargetActions}>
+                    {activeTargetUndo ? <button className={styles.agentTargetUndo} type="button" onClick={undoAgentTargetSwitch}>撤销切换</button> : null}
+                    <button type="button" onClick={() => { setPrimaryAgentTarget(null); setAgentTargetUndo(null); }} aria-label={`移除${activeTarget.agent.name}`} title="移除 Agent"><X aria-hidden="true" size={14} /></button>
+                  </span>
+                </div> : null}
               </div>
             ) : null}
-            onSubmit={sendMessage}
+            imageAttachments={ordinaryMediaAvailable ? selectedMedia.map((draft) => ({ id: draft.id, name: draft.name, previewUrl: mediaAdapter.resolveContent(draft.contentRef) ?? '', byteSize: draft.byteSize })) : []}
+            hasPendingContent={selectedResources.length > 0 || selectedObjectCards.length > 0}
+            imageError={ordinaryMediaAvailable ? mediaError : undefined}
+            onAddImages={ordinaryMediaAvailable ? (files, source) => void addMessageImages(files, source) : undefined}
+            onRemoveImage={ordinaryMediaAvailable ? removeMessageImage : undefined}
+            onSubmit={() => void sendMessage()}
             onTextareaKeyDown={handleComposerKeyDown}
             onValueChange={updateComposer}
             placeholder="输入消息"
@@ -1085,24 +1815,28 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
                   onQueryChange={agentPicker.mode === 'agent-only' ? (nextQuery) => { setAgentPicker({ mode: 'agent-only', query: nextQuery, caret: agentPicker.caret }); setAgentPickerActiveIndex(0); } : undefined}
                   onSelectAgent={selectPublicAgent}
                   onSelectPerson={selectMentionPerson}
-                  people={CLASS_MENTION_PEOPLE[role]}
+                  people={mentionPeople}
                   projection={publicAgentProjection}
                 />
               ) : null}
               {isPublicClassAgent ? <button type="button" className={styles.classAgentMentionTool} aria-expanded={agentPicker !== null} onClick={() => openAgentPicker('agent-only')} aria-label="选择班级 Agent" title="选择班级 Agent"><Sparkles aria-hidden="true" size={17} /><span>@Agent</span></button> : null}
               {attachmentOpen ? <div className={styles.attachmentPanel} aria-label="附件与扩展">
-                {ATTACHMENT_ACTIONS.map(({ Icon, label }) => <button type="button" key={label} onClick={() => { setAttachmentOpen(false); setFeedback(`${label}入口为 Placeholder，未访问真实设备或文件服务。`); }}><Icon aria-hidden="true" size={17} /><span>{label}</span></button>)}
+                <button type="button" ref={screenshotTriggerRef} disabled={!ordinaryMediaAvailable || !mediaAdapter.capabilities.captureScreen} title={!ordinaryMediaAvailable ? 'Agent 会话暂不支持图片' : mediaAdapter.capabilities.captureScreen ? '截取屏幕区域' : '当前浏览器不支持屏幕截图'} onClick={() => void startScreenCapture()}><ScanLine aria-hidden="true" size={17} /><span>截图</span></button>
+                <button type="button" disabled title="将在 ClassIn 原生客户端提供"><ScanLine aria-hidden="true" size={17} /><span>隐藏当前窗口</span></button>
+                {ATTACHMENT_ACTIONS.map(({ Icon, label }) => <button type="button" key={label} disabled={label === '文件' && !ordinaryMediaAvailable} onClick={() => { setAttachmentOpen(false); if (label === '文件') openResourceSurface(); else setFeedback(`${label}入口为 Placeholder，未访问真实设备或文件服务。`); }}><Icon aria-hidden="true" size={17} /><span>{label}</span></button>)}
+                <button type="button" disabled={!ordinaryMediaAvailable} title={!ordinaryMediaAvailable ? 'Agent 会话暂不支持联系人名片' : '选择联系人名片'} onClick={() => { setAttachmentOpen(false); setContactCardPickerOpen(true); }}><Contact aria-hidden="true" size={17} /><span>名片</span></button>
                 <button type="button" onClick={() => { setAttachmentOpen(false); setFeedback('临时教室入口为 Placeholder，未访问真实设备或文件服务。'); }}><Presentation aria-hidden="true" size={17} /><span>临时教室</span></button>
               </div> : null}
-              <button type="button" onClick={sendEmoji} aria-label="发送表情" title="发送表情"><Smile aria-hidden="true" size={18} /></button>
-              <button type="button" aria-expanded={attachmentOpen} onClick={() => setAttachmentOpen((value) => !value)} aria-label="添加附件" title="添加附件"><Paperclip aria-hidden="true" size={18} /></button>
+              {emojiOpen ? <MessageEmojiPicker recentIds={recentEmojiIds} favoriteIds={favoriteEmojiIds} customEmoji={customEmoji} resolveContent={mediaAdapter.resolveContent} onSelectAsset={selectEmojiAsset} onSelectCustom={selectCustomEmoji} onToggleFavorite={toggleFavoriteEmoji} onAddCustom={(files) => void addCustomEmoji(files)} onClose={() => setEmojiOpen(false)} /> : null}
+              <button type="button" aria-expanded={emojiOpen} onClick={() => { setEmojiOpen((value) => !value); setAttachmentOpen(false); }} aria-label="打开表情与贴纸" title="表情与贴纸"><Smile aria-hidden="true" size={18} /></button>
+              <button type="button" ref={attachmentTriggerRef} aria-expanded={attachmentOpen} onClick={() => { setAttachmentOpen((value) => !value); setEmojiOpen(false); }} aria-label="添加附件" title="添加附件"><Paperclip aria-hidden="true" size={18} /></button>
             </>}
             value={composer}
           />
         )}
         {visibleFeedback ? <p className={styles.feedback} role="status">{visibleFeedback}</p> : null}
         </section>
-        {workBuddyOpen && !detachAssistant ? <WorkBuddyImSidecar onClose={() => closeWorkBuddy(thread)} onInsertDirectReply={(body) => insertWorkBuddyDirectReply(thread, body)} onLocateMessage={locateWorkBuddyMessage} /> : null}
+        {workBuddyOpen && !detachAssistant ? <WorkBuddyImSidecar onClose={() => closeWorkBuddy(thread)} onInsertDirectReply={(body, targetThreadRef) => insertWorkBuddyDirectReply(thread, body, targetThreadRef)} onLocateMessage={locateWorkBuddyMessage} /> : null}
       </div>
     );
   };
@@ -1117,6 +1851,12 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
       }
       const prefix = role === 'teacher' ? '/teacher' : '/student';
       const params = new URLSearchParams({ source: 'notification', notification: thread.id });
+      if (notice.actionTarget.kind === 'open-course') {
+        if (notice.actionTarget.view === 'review') params.set('intent', 'review');
+        const suffix = notice.actionTarget.view === 'preflight' ? '/preflight' : '';
+        navigate(`${prefix}/open-courses/${notice.actionTarget.courseId}${suffix}?${params.toString()}`);
+        return;
+      }
       const base = `${prefix}/homework/${notice.actionTarget.homeworkId}`;
       if (notice.actionTarget.view === 'correction') params.set('mode', 'correction');
       const suffix = notice.actionTarget.view === 'correction'
@@ -1127,10 +1867,12 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     return (
       <article className={styles.notice} aria-labelledby="notice-title">
         <header className={styles.noticeHeader}>
+          {notice.sourceLabel ? <strong className={styles.noticeSource}>{notice.sourceLabel}</strong> : null}
           <span>{notice.tag}</span>
           <h2 id="notice-title">{getMessageThreadTitle(role, thread)}</h2>
           <p>{getMessageThreadSubtitle(role, thread)} · {formatMessageListTime(thread.updatedAt, MESSAGE_NOW)}</p>
         </header>
+        {notice.coverLabel ? <div className={styles.noticeCover} data-presentation={notice.presentation}><span>{notice.presentation === 'official-content' ? 'ClassIn 官方内容' : '公开课状态'}</span><strong>{notice.coverLabel}</strong></div> : null}
         <div className={styles.noticeBody}>
           {notice.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         </div>
@@ -1146,20 +1888,42 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     );
   };
 
+  const objectCardDialogs = <>
+    {contactCardPickerOpen ? <ContactCardPickerDialog
+      role={role}
+      snapshot={directoryAdapter.getSnapshot()}
+      selectedIds={selectedObjectCards.map(({ personId }) => personId)}
+      onClose={closeContactCardPicker}
+      onConfirm={confirmContactCards}
+    /> : null}
+    {contactCardProfile ? <ContactCardProfileDialog
+      card={contactCardProfile}
+      canMessage={canOpenContactCardThread(contactCardProfile, role, visibleThreadIds)}
+      onClose={() => setContactCardProfile(null)}
+      onMessage={() => {
+        const target = contactCardProfile.targetThreadId;
+        if (!target) return;
+        setContactCardProfile(null);
+        setSearchParams({ category: 'direct', thread: target });
+      }}
+    /> : null}
+  </>;
+
   if (fixedClassId) {
     if (embedded) {
-      return selectedThread ? renderChat(selectedThread) : (
+      return <>{selectedThread ? renderChat(selectedThread) : (
         <div className={styles.contentEmpty}>
           <MessagesSquare aria-hidden="true" size={24} />
           <strong>当前班级暂无可用群聊</strong>
         </div>
-      );
+      )}{objectCardDialogs}</>;
     }
     if (immersive) {
       const assistantAvailable = selectedThread !== null && isWorkBuddyAvailable(selectedThread);
       return (
+        <>
         <MessageWorkspaceResizableLayout
-          assistant={assistantAvailable && selectedThread ? <WorkBuddyImSidecar onInsertDirectReply={(body) => insertWorkBuddyDirectReply(selectedThread, body)} onLocateMessage={locateWorkBuddyMessage} /> : null}
+          assistant={assistantAvailable && selectedThread && utilitySurface === null ? <WorkBuddyImSidecar onInsertDirectReply={(body, targetThreadRef) => insertWorkBuddyDirectReply(selectedThread, body, targetThreadRef)} onLocateMessage={locateWorkBuddyMessage} /> : null}
           scope="messages-class"
         >
           {selectedThread ? renderChat(selectedThread, { detachAssistant: true }) : (
@@ -1169,11 +1933,14 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
             </div>
           )}
         </MessageWorkspaceResizableLayout>
+        {objectCardDialogs}
+        </>
       );
     }
     const prefix = role === 'teacher' ? '/teacher' : '/student';
     const returnPath = `${prefix}/classes/${fixedClassId}${searchParams.get('from') === 'home' ? '?from=home' : ''}`;
     return (
+      <>
       <div className={styles.focusedPage}>
         <header className={styles.focusedHeader}>
           <button type="button" onClick={() => navigate(returnPath)}><ArrowLeft aria-hidden="true" size={17} />返回班级</button>
@@ -1189,13 +1956,15 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
           )}
         </main>
       </div>
+      {objectCardDialogs}
+      </>
     );
   }
 
   const renderThreadRow = (thread: MessageThread) => {
     const unread = thread.unreadByRole[role] ?? 0;
     const lastEntry = getLastMessageEntry(thread);
-    const preview = lastEntry?.body ?? thread.notice?.body[0] ?? '';
+    const preview = getMessageEntryPreview(lastEntry) || thread.notice?.body[0] || '';
     const directAgent = thread.classAgentBinding?.channel === 'private-direct'
       ? classAgentConversation?.getAgent(thread.classAgentBinding.agentId) ?? null
       : null;
@@ -1230,7 +1999,7 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
   };
 
   const threadPanel = (
-    <section className={styles.threadPanel} data-direct={category === 'direct'} aria-label={`${MESSAGE_CATEGORY_LABELS[category]}列表`}>
+    <section className={styles.threadPanel} data-direct={category === 'direct'} data-class={category === 'class'} aria-label={`${MESSAGE_CATEGORY_LABELS[category]}列表`}>
         <div className={styles.categoryTabs} role="group" aria-label="消息分类">
           {CATEGORY_ORDER.map((item) => {
             const count = unreadCounts[item];
@@ -1260,13 +2029,13 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
             {category === 'direct' ? (
               <button
                 type="button"
-                aria-label="发起私聊"
+                aria-label="通讯录"
                 onClick={() => {
                   contactTriggerRef.current = document.activeElement instanceof HTMLButtonElement ? document.activeElement : null;
                   setContactOpen(true);
                 }}
                 ref={contactTriggerRef}
-                title="发起私聊"
+                title="通讯录与对象发现"
               >
                 <UserRoundPlus aria-hidden="true" size={17} />
               </button>
@@ -1315,6 +2084,13 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
             {query ? <span role="status">{directDirectory.resultCount} 个结果</span> : null}
           </div>
         ) : null}
+        {category === 'class' ? (
+          <div className={styles.classAttentionBar}>
+            <button type="button" aria-expanded={utilitySurface === 'mentions'} aria-label="查看@我的" onClick={() => setUtilitySurface((current) => current === 'mentions' ? null : 'mentions')}>
+              <AtSign aria-hidden="true" size={14} /><span>@我的</span>{unreadMentionCount > 0 ? <strong>{formatUnreadCount(unreadMentionCount)}</strong> : <small>暂无未读</small>}
+            </button>
+          </div>
+        ) : null}
         <div className={styles.threadList} data-thread-list>
           {directDirectory
             ? directDirectory.sections.map((section) => (
@@ -1358,49 +2134,15 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
   );
 
   const contactDialog = contactOpen ? (
-    <dialog
-          aria-labelledby="contact-dialog-title"
-          className={styles.contactDialog}
-          ref={contactDialogRef}
-          onCancel={(event) => {
-            event.preventDefault();
-            closeContacts();
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape') {
-              event.preventDefault();
-              closeContacts();
-              return;
-            }
-            trapContactDialogFocus(event);
-          }}
-        >
-          <div className={styles.contactContent}>
-          <header>
-            <h2 id="contact-dialog-title">发起私聊</h2>
-            <button type="button" onClick={closeContacts} aria-label="关闭联系人"><X aria-hidden="true" size={18} /></button>
-          </header>
-          <label className={styles.contactSearch}>
-            <Search aria-hidden="true" size={15} />
-            <span className={styles.srOnly}>搜索联系人</span>
-            <input autoFocus value={contactQuery} onChange={(event) => setContactQuery(event.target.value)} placeholder="搜索姓名、Agent 或能力" />
-          </label>
-          <div className={styles.contactList}>
-            {pendingContactThreadId ? <div className={styles.contactSwitchNotice} role="status">切换后草稿会保留在当前会话；再次选择目标 Agent 以确认。</div> : null}
-            {contacts.map((contact, index) => (
-              <div className={styles.contactOption} key={contact.id}>
-                {(index === 0 || Boolean(contacts[index - 1]?.agentId) !== Boolean(contact.agentId)) ? <span className={styles.contactGroupLabel}>{contact.agentId ? '班级 Agent' : '联系人'}</span> : null}
-              <button type="button" onClick={() => openContactThread(contact.targetThreadId)}>
-                <span>{contact.agentId ? <Sparkles aria-hidden="true" size={15} /> : contact.name.slice(0, 1)}</span>
-                <span><strong>{contact.name}</strong><small>{pendingContactThreadId === contact.targetThreadId ? '再次选择以确认切换' : contact.relationship}</small></span>
-                <MessageCircle aria-hidden="true" size={17} />
-              </button>
-              </div>
-            ))}
-            {contacts.length === 0 ? <div className={styles.contactEmpty} role="status"><strong>没有匹配的对象</strong><span>请尝试名称、学科或能力关键词</span></div> : null}
-          </div>
-          </div>
-    </dialog>
+    <MessageDirectoryDialog
+      role={role}
+      adapter={directoryAdapter}
+      onClose={closeContacts}
+      onOpenThread={openContactThread}
+      onOpenClass={openDirectoryClass}
+      onOpenCourse={openDirectoryCourse}
+      onOpenJoin={openDirectoryJoin}
+    />
   ) : null;
 
   const explanationDialog = (
@@ -1410,13 +2152,30 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
       returnFocusRef={explanationTriggerRef}
     />
   );
+  const captureDialog = captureFrame && mediaAdapter.resolveContent(captureFrame.contentRef) ? (
+    <MessageScreenCaptureDialog
+      busy={captureBusy}
+      frame={captureFrame}
+      sourceUrl={mediaAdapter.resolveContent(captureFrame.contentRef) ?? ''}
+      onCancel={closeScreenCapture}
+      onConfirm={(selection) => void confirmScreenCapture(selection)}
+    />
+  ) : null;
+  const mediaViewerDialog = mediaViewer ? (
+    <MessageMediaViewer
+      attachments={mediaViewer.attachments}
+      initialIndex={mediaViewer.initialIndex}
+      resolveContent={mediaAdapter.resolveContent}
+      onClose={closeMediaViewer}
+    />
+  ) : null;
 
   if (immersive) {
     const assistantAvailable = selectedThread !== null && isWorkBuddyAvailable(selectedThread);
     return (
       <>
         <MessageWorkspaceResizableLayout
-          assistant={assistantAvailable ? <WorkBuddyImSidecar onInsertDirectReply={(body) => insertWorkBuddyDirectReply(selectedThread, body)} onLocateMessage={locateWorkBuddyMessage} /> : null}
+          assistant={assistantAvailable && utilitySurface === null ? <WorkBuddyImSidecar onInsertDirectReply={(body, targetThreadRef) => insertWorkBuddyDirectReply(selectedThread, body, targetThreadRef)} onLocateMessage={locateWorkBuddyMessage} /> : null}
           scope="messages-global"
           wideNavigation={category === 'direct'}
         >
@@ -1424,7 +2183,10 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
           {contentWorkspace}
         </MessageWorkspaceResizableLayout>
         {contactDialog}
+        {objectCardDialogs}
         {explanationDialog}
+        {captureDialog}
+        {mediaViewerDialog}
       </>
     );
   }
@@ -1434,7 +2196,10 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
       {threadPanel}
       {contentWorkspace}
       {contactDialog}
+      {objectCardDialogs}
       {explanationDialog}
+      {captureDialog}
+      {mediaViewerDialog}
     </div>
   );
 }

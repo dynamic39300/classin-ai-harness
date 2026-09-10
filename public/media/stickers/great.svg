@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="真棒">
+  <rect width="160" height="160" rx="32" fill="#e6f7ef"/>
+  <circle cx="80" cy="68" r="42" fill="#16a56f"/>
+  <path d="M55 68l16 16 34-36" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="80" y="133" text-anchor="middle" font-size="22" font-family="sans-serif" font-weight="700" fill="#116b4d">真棒</text>
+</svg>

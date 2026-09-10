@@ -54,6 +54,23 @@ describe('runtime workspace', () => {
     expect(screen.queryByRole('link', { name: '课程工作流' })).not.toBeInTheDocument();
   });
 
+  it('sends an uploaded image through the runtime and clears its preview after acceptance', async () => {
+    const { adapter } = fixture();
+    const { container } = setup(adapter);
+    await screen.findByText('TeachBuddy 已连接');
+    const bytes = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    const file = new File([bytes], '课堂板书.png', { type: 'image/png' });
+    Object.defineProperty(file, 'arrayBuffer', { value: async () => bytes.buffer });
+    fireEvent.change(container.querySelector('input[type="file"]')!, { target: { files: [file] } });
+    expect(screen.getByRole('list', { name: '已添加 1 张图片' })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: '发送给 TeachBuddy' }));
+    await waitFor(() => expect(adapter.send).toHaveBeenCalled());
+    expect(adapter.send).toHaveBeenCalledWith('ideal-full', 'session-a', '', expect.any(String), [{
+      name: '课堂板书.png', mediaType: 'image/png', byteSize: 8, data: 'iVBORw0KGgo=',
+    }]);
+    await waitFor(() => expect(screen.queryByRole('list', { name: '已添加 1 张图片' })).not.toBeInTheDocument());
+  });
+
   it('prefills a capability intent without creating or sending a session', async () => {
     const { adapter } = fixture();
     setup(adapter, '/new', '使用“作业错因聚类”帮我完成：');
@@ -83,7 +100,8 @@ describe('runtime workspace', () => {
     const { adapter } = fixture(runtimeSession({ status: 'running' }));
     const view = setup(adapter);
     await act(async () => {});
-    expect(screen.getByText('TeachBuddy 正在处理…')).toBeVisible();
+    expect(screen.getByRole('region', { name: 'TeachBuddy 分析过程' })).toBeVisible();
+    expect(screen.getByText('正在等待运行事件')).toBeVisible();
     expect(screen.getByRole('button', { name: '发送给 TeachBuddy' })).toBeDisabled();
     await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
     expect(adapter.read).toHaveBeenCalledTimes(2);

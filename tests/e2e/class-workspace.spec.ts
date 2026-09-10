@@ -157,7 +157,7 @@ test('uses the immersive single-class chat with WorkBuddy and returns to the cla
   await conversation.getByRole('button', { name: '发送', exact: true }).click();
 
   await expect(conversation.getByRole('status')).toContainText('消息已在本地 Demo 中发送');
-  for (const label of ['发送表情', '添加附件', '发送']) {
+  for (const label of ['打开表情与贴纸', '添加附件', '发送']) {
     await expect(conversation.getByRole('button', { name: label, exact: true })).toBeVisible();
   }
 

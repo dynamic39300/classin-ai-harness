@@ -10,13 +10,20 @@ describe('HTTP runtime adapter', () => {
     const adapter = createHttpAgentRuntime(fetcher);
     await adapter.send('classin-mvp', 'session/a', '教案', 'same-command');
     expect(fetcher).toHaveBeenCalledWith('/api/teachbuddy/sessions/session%2Fa/messages', expect.objectContaining({
-      method: 'POST', body: JSON.stringify({ scope: 'classin-mvp', text: '教案', commandId: 'same-command' }), credentials: 'same-origin',
+      method: 'POST', body: JSON.stringify({ scope: 'classin-mvp', text: '教案', commandId: 'same-command', images: [] }), credentials: 'same-origin',
     }));
     fetcher.mockResolvedValue(new Response(JSON.stringify(runtimeSession())));
     await adapter.approve('standalone-teacher', 'session/a', 'artifact/a', 2, 'approval-1');
     expect(fetcher).toHaveBeenLastCalledWith('/api/teachbuddy/sessions/session%2Fa/artifacts/artifact%2Fa/approve', expect.objectContaining({
       body: JSON.stringify({ scope: 'standalone-teacher', version: 2, commandId: 'approval-1' }),
     }));
+  });
+
+  it('carries encoded image bytes through the governed message endpoint', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify(runtimeSession())));
+    const image = { name: '板书.png', mediaType: 'image/png' as const, byteSize: 8, data: 'iVBORw0KGgo=' };
+    await createHttpAgentRuntime(fetcher).send('ideal-full', 'session-a', '', 'image-command', [image]);
+    expect(fetcher.mock.calls[0]?.[1]?.body).toBe(JSON.stringify({ scope: 'ideal-full', text: '', commandId: 'image-command', images: [image] }));
   });
 
   it('implements health, list, create, read, and cancel endpoints', async () => {
@@ -54,7 +61,7 @@ describe('HTTP runtime adapter', () => {
       init?.signal?.addEventListener('abort', () => reject(new Error('abort')));
     }));
     const result = expect(createHttpAgentRuntime(fetcher).send('ideal-full', 'a', '教案', 'cmd')).rejects.toThrow('操作结果尚未确认');
-    await vi.advanceTimersByTimeAsync(20_000);
+    await vi.advanceTimersByTimeAsync(60_000);
     await result;
     expect(fetcher).toHaveBeenCalledTimes(1);
   });

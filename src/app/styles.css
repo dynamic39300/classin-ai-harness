@@ -32,6 +32,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+@media (max-width: 49.99rem) {
+  body:has([data-message-shell-mode='entering']),
+  body:has([data-message-shell-mode='immersive']),
+  body:has(dialog[aria-labelledby='message-directory-title'][open]) {
+    min-width: 0;
+  }
+}
+
 button,
 input,
 select,

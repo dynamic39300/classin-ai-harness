@@ -93,7 +93,7 @@
   .assistantTray {
     position: absolute;
     z-index: var(--z-modal);
-    inset: var(--space-sm) var(--space-sm) var(--space-sm) auto;
+    inset: calc(var(--space-sm) + 2.5rem) var(--space-sm) var(--space-sm) auto;
     width: min(32.5rem, calc(100% - 3rem));
     box-shadow: var(--shadow-overlay);
   }

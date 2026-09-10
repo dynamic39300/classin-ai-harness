@@ -9,6 +9,7 @@ import { WORKBUDDY_IM_TASKS } from '@domain/workbuddy/im-task-catalog';
 import type { WorkBuddyImRunProjection, WorkBuddyImTarget } from '@contracts/workbuddy/im-conversation-run';
 import type { EvaluationEvent } from '@domain/workbuddy/evaluation';
 import type { GuidedExplanationApproval, GuidedExplanationArtifact, GuidedExplanationReceipt, GuidedExplanationRevision, SendGuidedExplanationAction } from '@domain/workbuddy/guided-explanation';
+import type { ImSidecarAgentServices } from '@contracts/workbuddy/business-context';
 
 export { WORKBUDDY_IM_TASKS };
 export const WORKBUDDY_IM_REFERENCE_TASK = WORKBUDDY_IM_TASKS[0].prompt;
@@ -97,7 +98,7 @@ export type WorkBuddyImActions = Readonly<{
   approveAndSend: (body?: string) => Promise<void>;
 }>;
 
-export type WorkBuddyImStore = Readonly<{ state: WorkBuddyImState; actions: WorkBuddyImActions }>;
+export type WorkBuddyImStore = Readonly<{ state: WorkBuddyImState; actions: WorkBuddyImActions; agentServices?: ImSidecarAgentServices }>;
 
 export const WorkBuddyImContext = createContext<WorkBuddyImStore | null>(null);
 

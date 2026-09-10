@@ -101,7 +101,8 @@ async function start() {
   if (extra.some(arg => arg !== '--dump-config')) {
     throw new Error('Only --dump-config is accepted; the runtime host, port, patch, and paths are fixed.');
   }
-  const args = ['--yes', 'pnpm@11.7.0', 'dlx', `@deepseek-ai/dsh@${runtimeVersion}`, 'web', '--patch', join(configRoot, 'cordis.patch.yml')];
+  const allowedBuilds = ['@deepseek-ai/dsh-subprocess-local', '@google/genai', 'koffi', 'node-pty', 'protobufjs'];
+  const args = ['--yes', 'pnpm@11.7.0', 'dlx', ...allowedBuilds.map(name => `--allow-build=${name}`), `@deepseek-ai/dsh@${runtimeVersion}`, 'web', '--patch', join(configRoot, 'cordis.patch.yml')];
   args.push(...(extra.length ? ['--dump-config'] : ['--no-open', '--port', '3080']));
   launch('npx', args, { cwd: env.DSH_CWD, env });
 }

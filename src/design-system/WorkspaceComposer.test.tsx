@@ -78,4 +78,26 @@ describe('WorkspaceComposer', () => {
     expect(screen.getByText('5 / 10')).toBeVisible();
     expect(screen.getByRole('textbox')).toHaveAttribute('maxlength', '10');
   });
+
+  it('adds selected and pasted images while keeping image-only submission available', () => {
+    const addImages = vi.fn();
+    const removeImage = vi.fn();
+    const { container, rerender } = render(
+      <WorkspaceComposer ariaLabel="输入消息" imageAttachments={[]} onAddImages={addImages} onRemoveImage={removeImage} onSubmit={() => undefined} onValueChange={() => undefined} placeholder="输入消息" submitLabel="发送消息" value="" />,
+    );
+    const selected = new File(['png'], '课堂板书.png', { type: 'image/png' });
+    const input = container.querySelector('input[type="file"]');
+    expect(input).toHaveAttribute('accept', 'image/png,image/jpeg,image/webp,image/gif');
+    fireEvent.change(input!, { target: { files: [selected] } });
+    expect(addImages).toHaveBeenLastCalledWith([selected], 'picker');
+
+    const pasted = new File(['jpeg'], '粘贴图片.jpg', { type: 'image/jpeg' });
+    fireEvent.paste(screen.getByRole('textbox'), { clipboardData: { items: [{ kind: 'file', getAsFile: () => pasted }] } });
+    expect(addImages).toHaveBeenLastCalledWith([pasted], 'clipboard');
+
+    rerender(<WorkspaceComposer ariaLabel="输入消息" imageAttachments={[{ id: 'image-1', name: selected.name, previewUrl: '', byteSize: selected.size }]} onAddImages={addImages} onRemoveImage={removeImage} onSubmit={() => undefined} onValueChange={() => undefined} placeholder="输入消息" submitLabel="发送消息" value="" />);
+    expect(screen.getByRole('button', { name: '发送消息' })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: `移除图片 ${selected.name}` }));
+    expect(removeImage).toHaveBeenCalledWith('image-1');
+  });
 });

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="有进步">
+  <rect width="160" height="160" rx="32" fill="#e9f2ff"/>
+  <path d="M42 97l30-30 18 18 30-39" fill="none" stroke="#397bd9" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M102 46h18v18" fill="none" stroke="#397bd9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="80" y="132" text-anchor="middle" font-size="22" font-family="sans-serif" font-weight="700" fill="#2459a3">有进步</text>
+</svg>

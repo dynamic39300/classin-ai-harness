@@ -266,10 +266,16 @@ describe('alignment foundation journeys', () => {
     expect(screen.queryByRole('heading', { name: '最近反馈' })).not.toBeInTheDocument();
   });
 
-  it('restores student message context from a home deep link', () => {
+  it('restores student message context from a home deep link', async () => {
+    const user = userEvent.setup();
     renderApp('student-family', '/student/messages?category=direct&thread=direct-wang-li&source=home');
 
-    const breadcrumb = screen.getByRole('navigation', { name: '面包屑' });
+    expect(screen.getByRole('banner', { name: '消息沉浸工作区导航' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '王老师' })).toBeInTheDocument();
+    expect(document.querySelector('[data-thread-id="direct-wang-li"]')).toHaveFocus();
+
+    await user.click(screen.getByRole('button', { name: '退出沉浸模式' }));
+    const breadcrumb = await screen.findByRole('navigation', { name: '面包屑' });
     expect(breadcrumb).toHaveTextContent('首页');
     expect(breadcrumb).toHaveTextContent('王老师');
     expect(document.querySelector('[data-thread-id="direct-wang-li"]')).toHaveFocus();

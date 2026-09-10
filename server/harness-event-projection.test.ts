@@ -38,6 +38,14 @@ const result = (seq: number, callId: string, isError = false, turn = 1, step = 1
 const project = (entries: unknown[]) => projectHarnessEvents(SESSION, entries);
 
 describe('projectHarnessEvents', () => {
+  it('keeps image-only teacher messages visible without exposing attachment ids', () => {
+    const projection = projectHarnessEvents('session-image', [event(1, 'user/message', {
+      id: 'message-image', role: 'user', source: { kind: 'user' },
+      content: [{ type: 'image', attachment: { attachmentId: 'secret-ref', name: '课堂板书.png', mediaType: 'image/png' } }],
+    })]);
+    expect(projection.events).toContainEqual(expect.objectContaining({ kind: 'teacher_message', summary: '已附 1 张图片（课堂板书.png）' }));
+    expect(JSON.stringify(projection)).not.toContain('secret-ref');
+  });
   it('projects only human-source user text and ignores synthetic context, raw views and reasoning', () => {
     const human = event(2, 'user/message', {
       id: 'human-1', role: 'user', source: { kind: 'user' },
@@ -203,6 +211,26 @@ describe('projectHarnessEvents', () => {
     expect(resumed.status).toBe('running');
     expect(resumed).not.toHaveProperty('error');
     expect(resumed.events.filter(row => row.kind === 'error')).toHaveLength(1);
+  });
+
+  it('turns a vision permission rejection into a safe recovery instruction', () => {
+    const projected = project([
+      event(0, 'turn/start', { turn: 1 }),
+      chunk(1, { type: 'finish', reason: { kind: 'error', failure: {
+        code: 'AUTH', status: 403, message: 'key not allowed to access model deepseek-v4-flash-vision-exp',
+      } } }),
+    ]);
+    expect(projected.error).toBe('当前模型凭据未开通图片理解，请联系服务管理员开通 DeepSeek 视觉模型后重试。');
+    expect(projected.failureCode).toBe('vision-permission');
+    expect(JSON.stringify(projected)).not.toContain('deepseek-v4-flash-vision-exp');
+    const resumed = project([
+      event(0, 'turn/start', { turn: 1 }),
+      chunk(1, { type: 'finish', reason: { kind: 'error', failure: {
+        code: 'AUTH', status: 403, message: 'key not allowed to access model deepseek-v4-flash-vision-exp',
+      } } }),
+      event(2, 'turn/start', { turn: 2 }),
+    ]);
+    expect(resumed).not.toHaveProperty('failureCode');
   });
 
   it('redacts failed tool result content, error metadata and custom views', () => {

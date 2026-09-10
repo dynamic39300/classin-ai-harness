@@ -11,6 +11,7 @@ function isSession(value: unknown): value is RuntimeSession {
     && value.id !== '' && value.id !== '.' && value.id !== '..'
     && oneOf(value.status, ['idle', 'running', 'stopped', 'failed'])
     && (value.error === undefined || typeof value.error === 'string')
+    && (value.failureCode === undefined || value.failureCode === 'vision-permission')
     && Array.isArray(value.events) && value.events.every((event: unknown) => object(event)
       && stringFields(event, ['id', 'runRef', 'occurredAt', 'updatedAt', 'title', 'summary'])
       && Number.isSafeInteger(event.sequence)
@@ -49,7 +50,7 @@ export class RuntimeHttpError extends Error {
 export function createHttpAgentRuntime(fetcher: typeof fetch = (...args) => fetch(...args)): AgentRuntimeAdapter {
   async function request<T>(path: string, validate: (value: unknown) => value is T, body?: object): Promise<T> {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20_000);
+    const timeout = setTimeout(() => controller.abort(), path.endsWith('/messages') ? 60_000 : 20_000);
     try {
       const response = await fetcher(`/api/teachbuddy${path}`, {
         method: body ? 'POST' : 'GET',
@@ -80,7 +81,7 @@ export function createHttpAgentRuntime(fetcher: typeof fetch = (...args) => fetc
     list: (scope) => request(`/sessions?${new URLSearchParams({ scope })}`, (value): value is readonly RuntimeSession[] => Array.isArray(value) && value.every(isSession)),
     create: (scope) => request('/sessions', isSession, { scope }),
     read: (scope, id) => request(`${sessionPath(id)}?${new URLSearchParams({ scope })}`, isSession),
-    send: (scope, id, text, commandId) => request(`${sessionPath(id)}/messages`, isSession, { scope, text, commandId }),
+    send: (scope, id, text, commandId, images = []) => request(`${sessionPath(id)}/messages`, isSession, { scope, text, commandId, images }),
     cancel: (scope, id) => request(`${sessionPath(id)}/cancel`, isSession, { scope }),
     approve: (scope, id, artifactId, version, commandId) => request(`${sessionPath(id)}/artifacts/${encodeURIComponent(artifactId)}/approve`, isSession, { scope, version, commandId }),
   };

@@ -2,12 +2,12 @@ import type { AppRole } from '@domain/account/role';
 import type { ClassMember, ClassRecord } from '@domain/class/class';
 
 export type CollaborationRole = Extract<AppRole, 'teacher' | 'student-family'>;
-export type CollaborationSource = 'home' | 'classes';
+export type CollaborationSource = 'home' | 'classes' | 'messages';
 
 export const CLASS_COLLABORATION_DEMO_NOW_ISO = '2026-08-09T12:00:00+08:00';
 
 export function normalizeCollaborationSource(value: string | null): CollaborationSource {
-  return value === 'home' ? 'home' : 'classes';
+  return value === 'home' || value === 'messages' ? value : 'classes';
 }
 
 export function getRolePath(role: CollaborationRole): 'teacher' | 'student' {
@@ -19,11 +19,13 @@ export function getClassDetailPath(
   classId: string,
   source: CollaborationSource,
 ): string {
+  if (source === 'messages') return `/${getRolePath(role)}/messages?category=class&thread=class-${classId}`;
   const suffix = source === 'home' ? '?from=home' : '';
   return `/${getRolePath(role)}/classes/${classId}${suffix}`;
 }
 
 export function getClassListReturnPath(role: CollaborationRole, source: CollaborationSource): string {
+  if (source === 'messages') return `/${getRolePath(role)}/messages?category=class`;
   return source === 'home' ? `/${getRolePath(role)}/home` : `/${getRolePath(role)}/classes`;
 }
 
@@ -51,5 +53,5 @@ export function getCurrentClassMember(record: ClassRecord, role: CollaborationRo
 }
 
 export function withSource(path: string, source: CollaborationSource): string {
-  return source === 'home' ? `${path}?from=home` : path;
+  return source === 'home' || source === 'messages' ? `${path}?from=${source}` : path;
 }

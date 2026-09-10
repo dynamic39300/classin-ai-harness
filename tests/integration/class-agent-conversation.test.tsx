@@ -184,8 +184,11 @@ function RevokedRetryHarness() {
 }
 
 function renderAgentWorkspace(role: AppRole, initialEntry = '/', failOnce = false, responseDelayMs = 0) {
+  const entry = initialEntry === '/'
+    ? `/${role === 'teacher' ? 'teacher' : 'student'}/messages?category=class&thread=class-physics-3`
+    : initialEntry;
   return render(
-    <MemoryRouter initialEntries={[initialEntry]}>
+    <MemoryRouter initialEntries={[entry]}>
       <MessageWorkspaceProvider>
         <AgentBridge failOnce={failOnce} responseDelayMs={responseDelayMs}>
           <MessageWorkspace role={role} />
@@ -391,10 +394,7 @@ describe('shared class agent conversation channels', () => {
     const user = userEvent.setup();
     renderAgentWorkspace('teacher');
     await user.click(screen.getByRole('button', { name: '私聊' }));
-    await user.click(screen.getByRole('button', { name: '发起私聊' }));
-    const dialog = screen.getByRole('dialog', { name: '发起私聊' });
-    await user.type(within(dialog).getByRole('textbox', { name: '搜索联系人' }), PHYSICS_CLASS_AGENT.name);
-    await user.click(within(dialog).getByRole('button', { name: new RegExp(PHYSICS_CLASS_AGENT.name) }));
+    await user.click(screen.getByRole('button', { name: new RegExp(PHYSICS_CLASS_AGENT.name) }));
     expect(screen.getByTestId('location')).toHaveTextContent('thread=direct-class-agent-physics-3-teacher');
     expect(screen.getByTestId('location')).not.toHaveTextContent('direct-class-agent-physics-3-student');
   });

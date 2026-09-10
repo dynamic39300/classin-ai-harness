@@ -33,6 +33,8 @@ function TestRoutes() {
         <Route path="/student/open-courses/:openCourseId/preflight" element={<StudentOpenCoursePreflightPage />} />
         <Route path="/teacher/open-courses" element={<TeacherOpenCourseCollectionWorkspace />} />
         <Route path="/student/open-courses" element={<span>学生公开课列表</span>} />
+        <Route path="/student/messages" element={<span>学生消息</span>} />
+        <Route path="/teacher/messages" element={<span>教师消息</span>} />
         <Route path="/teacher/home" element={<span>教师首页</span>} />
         <Route path="/student/home" element={<span>学生首页</span>} />
       </Routes>
@@ -90,6 +92,14 @@ async function createReadyCourse(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe('open course workspace', () => {
+  it('returns a notification deep link to the exact system thread', async () => {
+    const user = userEvent.setup();
+    renderWorkspace('/student/open-courses/open-math-live?source=notification&notification=system-open-course-open-math-live');
+
+    await user.click(screen.getByRole('button', { name: '返回' }));
+    expect(screen.getByLabelText('当前路径')).toHaveTextContent('/student/messages?category=system&thread=system-open-course-open-math-live');
+  });
+
   it('validates the fixed Demo clock and all constrained create fields', async () => {
     const user = userEvent.setup();
     renderWorkspace('/teacher/open-courses/new');

@@ -6,10 +6,11 @@ import {
   resolveOpenCourseStatus,
 } from '@domain/open-course/open-course';
 
-export type OpenCourseSource = 'home' | 'list' | 'schedule';
+export type OpenCourseSource = 'home' | 'list' | 'schedule' | 'notification';
 
 export function normalizeOpenCourseSource(value: string | null): OpenCourseSource {
   if (value === 'home') return 'home';
+  if (value === 'notification') return 'notification';
   if (value === 'teacher_schedule' || value === 'student_schedule') return 'schedule';
   return 'list';
 }
@@ -20,6 +21,12 @@ export function getOpenCourseSource(searchParams: Pick<URLSearchParams, 'get'>):
 
 export function getOpenCourseReturnPath(role: AppRole, source: OpenCourseSource, context?: Pick<URLSearchParams, 'get'>): string {
   const root = role === 'teacher' ? 'teacher' : 'student';
+  if (source === 'notification') {
+    const notification = context?.get('notification');
+    const params = new URLSearchParams({ category: 'system' });
+    if (notification) params.set('thread', notification);
+    return `/${root}/messages?${params.toString()}`;
+  }
   if (source === 'schedule') {
     const params = new URLSearchParams();
     for (const key of ['date', 'view', 'event']) {
@@ -31,8 +38,11 @@ export function getOpenCourseReturnPath(role: AppRole, source: OpenCourseSource,
   return source === 'home' ? `/${root}/home` : `/${root}/open-courses`;
 }
 
-export function withOpenCourseSource(path: string, source: OpenCourseSource): string {
-  return `${path}?${new URLSearchParams({ source }).toString()}`;
+export function withOpenCourseSource(path: string, source: OpenCourseSource, context?: Pick<URLSearchParams, 'get'>): string {
+  const params = new URLSearchParams({ source });
+  const notification = context?.get('notification');
+  if (source === 'notification' && notification) params.set('notification', notification);
+  return `${path}?${params.toString()}`;
 }
 
 export function formatOpenCourseDateTime(value: string): string {

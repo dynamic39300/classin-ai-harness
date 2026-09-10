@@ -16,10 +16,11 @@ import { WorkBuddyReviewArtifact } from './WorkBuddyReviewArtifact';
 import { WorkBuddyWeeklyPlanReviewArtifact } from './WorkBuddyWeeklyPlanReviewArtifact';
 import { WorkBuddyGuidedExplanationReview } from './WorkBuddyGuidedExplanationReview';
 import styles from './WorkBuddyImSidecar.module.css';
+import { ImSidecarAgentSurface } from './ImSidecarAgentSurface';
 
 type WorkBuddyImSidecarProps = Readonly<{
   onLocateMessage: (messageId: string) => void;
-  onInsertDirectReply?: (body: string) => void;
+  onInsertDirectReply?: (body: string, threadRef?: string) => void;
   onClose?: () => void;
 }>;
 
@@ -50,6 +51,15 @@ function useTeachBuddyGreeting(): string {
 }
 
 export function WorkBuddyImSidecar({ onLocateMessage, onInsertDirectReply, onClose }: WorkBuddyImSidecarProps) {
+  const store = useWorkBuddyIm();
+  if (store.agentServices && store.state.isOpen && store.state.target) {
+    const key = `${store.agentServices.actor.id}:${store.agentServices.tenantRef}:${store.agentServices.scope}:${store.state.target.threadId}`;
+    return <ImSidecarAgentSurface key={key} services={store.agentServices} target={store.state.target} onLocateMessage={onLocateMessage} onInsertDirectReply={onInsertDirectReply} onClose={onClose} />;
+  }
+  return <LegacyWorkBuddyImSidecar onLocateMessage={onLocateMessage} onInsertDirectReply={onInsertDirectReply} onClose={onClose} />;
+}
+
+function LegacyWorkBuddyImSidecar({ onLocateMessage, onInsertDirectReply, onClose }: WorkBuddyImSidecarProps) {
   const { state, actions } = useWorkBuddyIm();
   const composerDraft = state.composerDraft;
   const greeting = useTeachBuddyGreeting();

@@ -452,7 +452,7 @@ export function InviteDialog({ course, onClose }: { course: ReturnType<typeof to
         </section>
       </div>
       <div className={styles.shareChannels} aria-label="外部邀请渠道">
-        {['ClassIn', '微信', '朋友圈', '短信', 'QQ'].map((channel) => <button type="button" key={channel} onClick={() => placeholder(channel)}><ExternalLink aria-hidden="true" size={14} />{channel}</button>)}
+        {['ClassIn', '微信', '朋友圈', '短信', 'QQ', '邮件'].map((channel) => <button type="button" key={channel} onClick={() => placeholder(channel)}><ExternalLink aria-hidden="true" size={14} />{channel}</button>)}
       </div>
       {feedback ? <p className={styles.feedback} role="status">{feedback}</p> : null}
     </OpenCourseDialog>

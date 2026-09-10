@@ -1,6 +1,10 @@
 import type { AppRole } from '@domain/account/role';
 import type { ClassAgentChannel, ClassAgentThreadBinding, ClassAgentTruthLabel } from '@domain/class-agent/class-agent';
 import type { GuidedExplanationContentReference } from '@domain/workbuddy/guided-explanation';
+import type { MessageReaction, MessageReplyReference, MessageResourceRef } from './im2-basic';
+import { getMessageContentPreview, type MessageMediaAttachment, type MessageMentionRef } from './message-media';
+import { getMessageObjectCardPreview, type MessageObjectCard } from './message-object-card';
+import type { MessageDeliveryState } from './message-lifecycle';
 
 export type MessageCategory = 'direct' | 'class' | 'system' | 'official';
 export type MessageAuthorRole = AppRole | 'system' | 'official' | 'class-agent';
@@ -22,6 +26,13 @@ export type MessageEntry = {
   retractedAt?: string;
   classAgent?: ClassAgentMessageMetadata;
   contentReference?: GuidedExplanationContentReference;
+  replyTo?: MessageReplyReference;
+  reactions?: readonly MessageReaction[];
+  resources?: readonly MessageResourceRef[];
+  attachments?: readonly MessageMediaAttachment[];
+  mentions?: readonly MessageMentionRef[];
+  objectCards?: readonly MessageObjectCard[];
+  delivery?: MessageDeliveryState;
 };
 
 export type MessageNotice = {
@@ -33,8 +44,15 @@ export type MessageNotice = {
     kind: 'homework';
     homeworkId: string;
     view: 'detail' | 'correction' | 'result';
+  } | {
+    kind: 'open-course';
+    courseId: string;
+    view: 'detail' | 'preflight' | 'review';
   };
   metadata: Array<{ label: string; value: string }>;
+  presentation?: 'open-course' | 'official-content';
+  sourceLabel?: string;
+  coverLabel?: string;
 };
 
 export type MessageThread = {
@@ -65,6 +83,34 @@ export function prependOlderMessagePage(thread: MessageThread, pageSize = 6): Me
     ...thread,
     entries: [...page, ...thread.entries],
     olderEntries: thread.olderEntries.slice(0, pageStart),
+  };
+}
+
+export function prependMessageHistoryPage(
+  thread: MessageThread,
+  page: readonly MessageEntry[],
+): MessageThread {
+  if (!page.length) return thread;
+  const existingIds = new Set(thread.entries.map(({ id }) => id));
+  const uniquePage = page.filter(({ id }) => !existingIds.has(id));
+  if (!uniquePage.length) return thread;
+  const loadedIds = new Set(uniquePage.map(({ id }) => id));
+  return {
+    ...thread,
+    entries: [...uniquePage, ...thread.entries],
+    olderEntries: thread.olderEntries?.filter(({ id }) => !loadedIds.has(id)),
+  };
+}
+
+export function updateMessageDelivery(
+  thread: MessageThread,
+  messageId: string,
+  delivery: MessageDeliveryState,
+): MessageThread {
+  if (!thread.entries.some(({ id }) => id === messageId)) return thread;
+  return {
+    ...thread,
+    entries: thread.entries.map((entry) => entry.id === messageId ? { ...entry, delivery } : entry),
   };
 }
 
@@ -123,6 +169,12 @@ export function getLastMessageEntry(thread: MessageThread): MessageEntry | undef
   return thread.entries.at(-1);
 }
 
+export function getMessageEntryPreview(entry: MessageEntry | undefined): string {
+  if (!entry) return '';
+  if (entry.kind === 'retracted') return '消息已撤回';
+  return getMessageContentPreview(entry) || getMessageObjectCardPreview(entry.objectCards);
+}
+
 export function filterMessageThreads(
   role: AppRole,
   threads: ReadonlyArray<MessageThread>,
@@ -137,7 +189,7 @@ export function filterMessageThreads(
       const searchable = [
         getMessageThreadTitle(role, thread),
         getMessageThreadSubtitle(role, thread),
-        getLastMessageEntry(thread)?.body ?? '',
+        getMessageEntryPreview(getLastMessageEntry(thread)),
         thread.notice?.body.join(' ') ?? '',
       ].join(' ').toLocaleLowerCase();
       return searchable.includes(normalized);
@@ -199,9 +251,15 @@ export function appendLocalMessage(
   authorRole: MessageAuthorRole = role,
   classAgent?: ClassAgentMessageMetadata,
   contentReference?: GuidedExplanationContentReference,
+  replyTo?: MessageReplyReference,
+  resources?: readonly MessageResourceRef[],
+  attachments?: readonly MessageMediaAttachment[],
+  mentions?: readonly MessageMentionRef[],
+  objectCards?: readonly MessageObjectCard[],
+  delivery?: MessageDeliveryState,
 ): MessageThread {
   const content = body.trim();
-  if (!content || !isWritableMessageThread(thread)) return thread;
+  if (!(getMessageContentPreview({ body: content, resources, attachments }) || getMessageObjectCardPreview(objectCards)) || !isWritableMessageThread(thread)) return thread;
   return {
     ...thread,
     updatedAt: sentAt,
@@ -217,6 +275,12 @@ export function appendLocalMessage(
         kind,
         classAgent,
         contentReference,
+        replyTo,
+        resources,
+        attachments,
+        mentions,
+        objectCards,
+        delivery,
       },
     ],
   };
@@ -254,7 +318,7 @@ export function recallClassMessage(
     ...thread,
     pinnedMessageId: thread.pinnedMessageId === messageId ? null : thread.pinnedMessageId,
     entries: thread.entries.map((entry) => entry.id === messageId
-      ? { ...entry, body: '消息已撤回', kind: 'retracted', retractedAt: recalledAt }
+      ? { ...entry, body: '消息已撤回', kind: 'retracted', retractedAt: recalledAt, attachments: undefined, objectCards: undefined }
       : entry),
   };
 }

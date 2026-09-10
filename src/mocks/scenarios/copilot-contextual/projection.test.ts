@@ -1,0 +1,230 @@
+import { describe, expect, it } from 'vitest'
+import { copilotScenarioCheckpoints, projectCopilotScenario } from './index'
+import sourceInventory from './source-inventory.json'
+import audit from './audit.json'
+
+describe('Copilot contextual scenario contract', () => {
+  it('keeps the complete selected homework scope and the unverified group membership separate', () => {
+    const first = projectCopilotScenario('S5')
+    const second = projectCopilotScenario('S5', { classId: 'copilot-class-b' })
+    expect(first.students).toHaveLength(51)
+    expect(second.students).toHaveLength(127)
+    expect(sourceInventory.homeworks).toHaveLength(9)
+    expect(sourceInventory.studentWork).toHaveLength(609)
+    expect(sourceInventory.lessonRoster).toHaveLength(177)
+    expect(sourceInventory.attendanceSnapshot).toHaveLength(159)
+    expect(audit.sourceHomeworksWithMatchedActivity).toBe(9)
+    expect(first.classRoom.membershipStatus).toBe('unknown')
+    expect(second.classRoom.membershipStatus).toBe('unknown')
+    expect(first.attendance.expected).toBe(51)
+    expect(first.attendance.expected).not.toBe(first.classRoom.sourceCounts.courseStudentNum)
+    expect(audit.sourceFilesVerifiedBeforeAndAfter).toBe(56)
+    expect(audit.originalSnapshotUnchanged).toBe(true)
+    expect(audit.sameTeacherHomeworkAndAnchorRelationsVerified).toBe(true)
+  })
+
+  it('shows the upcoming lesson, two supported recap items and one grading object before class', () => {
+    const view = projectCopilotScenario('S1')
+    expect(view.opportunities.main?.kind).toBe('preclass-reminder')
+    expect(view.lesson?.status).toBe('scheduled')
+    expect(view.attendance.missing).toEqual([])
+    expect(view.homework).toBeNull()
+    expect(view.opportunities.secondary.map(item => item.count)).toEqual([2, 1])
+    const grading = view.opportunities.secondary.flatMap(item => item.items).find(item => item.kind === 'teacher-grading')
+    expect(grading?.prompt).toBeNull()
+    expect(grading?.buttonLabel).toBe('查看待批改名单')
+    for (const item of view.opportunities.secondary[0]?.items ?? []) {
+      expect(view.recapMaterials.some(material => material.lessonId === item.targetLessonId && material.source === 'simulated-material')).toBe(true)
+    }
+  })
+
+  it('does not infer actual start from the timetable, and never publishes future events or homework', () => {
+    const beforeStart = new Date(Date.parse(copilotScenarioCheckpoints.S2) - 10 * 60_000 - 1).toISOString()
+    expect(projectCopilotScenario('S2', { at: beforeStart }).lesson?.actualStartedAt).toBeNull()
+    const early = projectCopilotScenario('S1')
+    expect(early.visibleEvents.some(event => event.kind === 'lesson-started')).toBe(false)
+    expect(early.visibleEvents.some(event => event.kind === 'homework-submitted' && event.homeworkId === 'copilot-class-a-homework-01')).toBe(false)
+    expect(early.agentContext.homework).toBeNull()
+    for (const scenario of ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9'] as const) {
+      const view = projectCopilotScenario(scenario)
+      expect(view.visibleEvents.every(event => Date.parse(event.at) <= Date.parse(view.now))).toBe(true)
+      expect(view.messages.every(message => Date.parse(message.at) <= Date.parse(view.now))).toBe(true)
+      expect(view.recapMaterials.every(material => Date.parse(material.availableAt) <= Date.parse(view.now))).toBe(true)
+      expect(view.agentContext.asOf).toBe(view.now)
+    }
+  })
+
+  it('excludes leave and reflects 3 to 2 late arrivals without changing the expected roster', () => {
+    const first = projectCopilotScenario('S2')
+    const next = projectCopilotScenario('S3')
+    expect(first.attendance.expected).toBe(51)
+    expect(first.attendance.excused).toHaveLength(1)
+    expect(first.attendance.entered).toHaveLength(47)
+    expect(first.attendance.missing).toHaveLength(3)
+    expect(next.attendance.entered).toHaveLength(48)
+    expect(next.attendance.missing).toHaveLength(2)
+    expect(first.opportunities.main?.targetStudentIds).toEqual(first.attendance.missing?.map(student => student.id))
+    expect(next.opportunities.main?.targetStudentIds).toEqual(next.attendance.missing?.map(student => student.id))
+    expect(next.attendance.missing?.some(student => first.attendance.excused?.some(excused => excused.id === student.id))).toBe(false)
+    expect(next.agentContext.attendance).toEqual(next.attendance)
+  })
+
+  it('requires published homework with an explicit link for the post-class announcement', () => {
+    const view = projectCopilotScenario('S4')
+    expect(view.lesson?.status).toBe('ended')
+    expect(view.homework?.lessonId).toBe(view.lesson?.id)
+    expect(view.homework?.lessonLinkSource).toBe('simulated-link')
+    expect(view.opportunities.main?.kind).toBe('homework-announcement')
+    expect(view.submission.unsubmitted).toHaveLength(51)
+  })
+
+  it('keeps student follow-up and grading separate and counts each homework once', () => {
+    const view = projectCopilotScenario('S5')
+    expect(view.submission.unsubmitted).toHaveLength(4)
+    expect(view.submission.pendingGrading).toHaveLength(1)
+    expect(view.submission.graded).toHaveLength(46)
+    expect(view.opportunities.main?.targetStudentIds).toHaveLength(4)
+    const secondary = view.opportunities.secondary.find(item => item.id === 'homework')
+    expect(secondary?.count).toBe(1)
+    expect(secondary?.items).toHaveLength(1)
+    expect(secondary?.items[0]?.kind).toBe('teacher-grading')
+    const consumed = projectCopilotScenario('S5', { consumedActionIds: [view.opportunities.main!.id] })
+    expect(consumed.opportunities.main).toBeNull()
+    expect(consumed.opportunities.secondary.find(item => item.id === 'homework')?.count).toBe(1)
+    expect(consumed.agentContext.actions.some(item => item.kind === 'teacher-grading')).toBe(true)
+  })
+
+  it('deduplicates a delivered reminder without claiming a student submitted or read it', () => {
+    const at = new Date(Date.parse(copilotScenarioCheckpoints.S5) + 40 * 60_000).toISOString()
+    const view = projectCopilotScenario('S5', { at, courseId: 'copilot-class-a-course-alpha' })
+    expect(view.submission.unsubmitted).toHaveLength(4)
+    expect(view.opportunities.main?.targetStudentIds).toHaveLength(3)
+    expect(view.opportunities.main?.title).toBe('4 位学员尚未提交，3 位可提醒')
+    expect(view.visibleEvents.filter(event => event.kind === 'reminder-sent')).toHaveLength(1)
+  })
+
+  it('removes follow-up after all submissions while leaving grading work', () => {
+    const view = projectCopilotScenario('S6')
+    expect(view.submission.unsubmitted).toEqual([])
+    expect(view.submission.pendingGrading).toHaveLength(5)
+    expect(view.opportunities.main).toBeNull()
+    expect(view.opportunities.secondary.find(item => item.id === 'homework')?.count).toBe(1)
+  })
+
+  it('uses the same clock on chat switch and cannot mix class recipients or mutations', () => {
+    const first = projectCopilotScenario('S7')
+    const second = projectCopilotScenario('S7', { classId: 'copilot-class-b', at: first.now })
+    expect(second.now).toBe(first.now)
+    expect(second.lesson?.status).toBe('scheduled')
+    expect(second.submission.unsubmitted).toHaveLength(3)
+    expect(second.opportunities.main?.targetStudentIds.every(id => second.classRoom.studentIds.includes(id))).toBe(true)
+    expect(second.opportunities.main?.targetStudentIds.some(id => first.classRoom.studentIds.includes(id))).toBe(false)
+    const firstStudent = first.students[0]
+    if (!firstStudent) throw new Error('Expected selected class participants')
+    firstStudent.name = '本地修改'
+    first.classRoom.studentIds.length = 0
+    const restored = projectCopilotScenario('S7')
+    expect(restored.students[0]?.name).not.toBe('本地修改')
+    expect(restored.classRoom.studentIds).toHaveLength(51)
+  })
+
+  it.each(['unknown', 'denied', 'retryable'] as const)('represents %s as unavailable, never a false zero', failure => {
+    const view = projectCopilotScenario('S8', { failure })
+    expect(view.attendance.status).toBe(failure)
+    expect(view.attendance.expected).toBeNull()
+    expect(view.attendance.missing).toBeNull()
+    expect(view.submission.unsubmitted).toBeNull()
+    expect(view.opportunities.main).toBeNull()
+    expect(view.opportunities.secondary.every(item => item.count === null && item.status === failure)).toBe(true)
+    expect(view.agentContext.actions).toEqual([])
+    expect(view.visibleEvents).toEqual([])
+  })
+
+  it('rejects invalid clocks rather than projecting arbitrary availability', () => {
+    expect(() => projectCopilotScenario('S1', { at: 'not-a-date' })).toThrow('ISO timestamp')
+  })
+
+  it('projects two courses in one shared group, retaining actual category references and unknown directory names', () => {
+    const view = projectCopilotScenario('S9')
+    expect(view.courses).toHaveLength(2)
+    expect(view.courses.map(course => course.relationshipSource)).toEqual(['dw-category-derived', 'simulated-course-link'])
+    expect(view.courses.map(course => course.sourceMappingStatus)).toEqual(['reference-verified', 'unknown'])
+    expect(view.courses.every(course => course.catalogNameStatus === 'unknown')).toBe(true)
+    expect(view.courses.every(course => JSON.stringify(course.studentIds) === JSON.stringify(view.classRoom.studentIds))).toBe(true)
+    expect(view.classRoom.threadId).toBe('copilot-class-a-group')
+    expect(view.courseContexts).toHaveLength(2)
+    expect(view.courseContexts.map(context => context.lesson?.status)).toEqual(['ended', 'in-progress'])
+    expect(audit.sourceClassCategoryCoverage).toEqual({ classes: 29, classesWithMultipleActiveCategories: 0 })
+  })
+
+  it('keeps same-titled course assignments and one student’s different submissions distinct', () => {
+    const alpha = projectCopilotScenario('S9', { courseId: 'copilot-class-a-course-alpha' })
+    const beta = projectCopilotScenario('S9', { courseId: 'copilot-class-a-course-beta' })
+    expect(alpha.homework?.title).toBe(beta.homework?.title)
+    expect(alpha.homework?.id).not.toBe(beta.homework?.id)
+    expect(alpha.homework?.dueAt).not.toBe(beta.homework?.dueAt)
+    expect(alpha.submission.unsubmitted).toHaveLength(4)
+    expect(alpha.submission.pendingGrading).toHaveLength(1)
+    expect(beta.submission.unsubmitted).toHaveLength(3)
+    expect(beta.submission.pendingGrading).toHaveLength(2)
+    const student = beta.submission.unsubmitted?.find(person => !alpha.submission.unsubmitted?.some(other => other.id === person.id))
+    expect(student).toBeDefined()
+    expect([...alpha.submission.pendingGrading ?? [], ...alpha.submission.graded ?? []].some(person => person.id === student?.id)).toBe(true)
+    for (const view of [alpha, beta]) {
+      expect(view.visibleEvents.every(event => event.courseId === view.course.id)).toBe(true)
+      expect(view.publishedHomeworks.every(homework => homework.courseId === view.course.id)).toBe(true)
+      expect(view.agentContext.actions.every(action => action.courseId === view.course.id)).toBe(true)
+      expect(view.agentContext.courseId).toBe(view.course.id)
+      for (const action of view.agentContext.actions) {
+        expect(action.businessRef).toEqual({ classId: view.classRoom.id, courseId: view.course.id,
+          lessonId: action.targetLessonId, homeworkId: action.targetHomeworkId })
+        expect(action.id).toContain(view.course.id)
+        if (action.prompt) expect(action.prompt).toContain(view.course.title)
+      }
+    }
+  })
+
+  it('does not let a receipt or consumed action in one course suppress another course’s target', () => {
+    const alpha = projectCopilotScenario('S9', { courseId: 'copilot-class-a-course-alpha' })
+    const beta = projectCopilotScenario('S9', { courseId: 'copilot-class-a-course-beta' })
+    const sent = alpha.visibleEvents.find(event => event.kind === 'reminder-sent')
+    expect(sent?.studentId).toBeDefined()
+    expect(alpha.opportunities.main?.targetStudentIds).not.toContain(sent?.studentId)
+    expect(beta.opportunities.main?.targetStudentIds).toContain(sent?.studentId)
+    const group = projectCopilotScenario('S9')
+    expect(group.opportunities.main?.courseId).toBe(beta.course.id)
+    expect(group.opportunities.secondary.find(item => item.id === 'homework')?.count).toBe(2)
+    const consumed = projectCopilotScenario('S9', { consumedActionIds: [beta.opportunities.main!.id] })
+    expect(consumed.opportunities.main?.courseId).toBe(alpha.course.id)
+    expect(consumed.agentContext.actions.some(action => action.kind === 'teacher-grading' && action.courseId === beta.course.id)).toBe(true)
+    expect(consumed.opportunities.secondary.find(item => item.id === 'homework')?.count).toBe(2)
+  })
+
+  it('keeps unknown course facts distinct from unpublished assignments and completed business', () => {
+    const courseId = 'copilot-class-a-course-beta'
+    const unknown = projectCopilotScenario('S8', { courseId })
+    expect(unknown.submission.status).toBe('unknown')
+    expect(unknown.submission.unsubmitted).toBeNull()
+    expect(unknown.agentContext.actions).toEqual([])
+    const unpublished = projectCopilotScenario('S5', { courseId })
+    expect(unpublished.submission.status).toBe('ready')
+    expect(unpublished.homework).toBeNull()
+    expect(unpublished.publishedHomeworks).toEqual([])
+    const complete = projectCopilotScenario('S6', { courseId })
+    expect(complete.homework).not.toBeNull()
+    expect(complete.submission.unsubmitted).toEqual([])
+    expect(complete.submission.graded).toHaveLength(51)
+  })
+
+  it('cannot select a different class’s course and does not mutate course reset state', () => {
+    expect(() => projectCopilotScenario('S9', { classId: 'copilot-class-b', courseId: 'copilot-class-a-course-beta' })).toThrow('does not belong')
+    const view = projectCopilotScenario('S9')
+    const course = view.courses[0]
+    if (!course) throw new Error('Expected first source course')
+    course.title = '局部编辑'
+    course.studentIds.length = 0
+    const reset = projectCopilotScenario('S9')
+    expect(reset.courses[0]?.title).not.toBe('局部编辑')
+    expect(reset.courses[0]?.studentIds).toHaveLength(51)
+  })
+})

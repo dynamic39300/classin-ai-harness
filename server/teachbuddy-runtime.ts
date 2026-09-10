@@ -1,15 +1,19 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { AgentRuntimeAdapter, RuntimeArtifact, RuntimeScope, RuntimeSession } from '../src/contracts/workbuddy/agent-runtime.ts';
+import type { AgentRuntimeAdapter, RuntimeArtifact, RuntimeImageInput, RuntimeImageMediaType, RuntimeScope, RuntimeSession } from '../src/contracts/workbuddy/agent-runtime.ts';
 import type { ConversationRunEvent } from '../src/contracts/workbuddy/conversation-run.ts';
 import type { SessionFileFormat, SessionFileLibrary } from '../src/contracts/workbuddy/session-files.ts';
 import { projectHarnessEvents } from './harness-event-projection.ts';
 import { createLocalSessionFileLibrary, SessionFileError } from './session-file-library.ts';
+import { teacherVisibleRuntimeText } from '../src/shared/runtime-context-format.ts';
+import { parsePrivateImDemoSnapshot, type PrivateImDemoSnapshot } from '../src/contracts/workbuddy/private-im-demo.ts';
 
 type Command = {
   text: string; at: string;
+  imageSignature?: string;
+  imageNames?: string[];
   state: 'pending' | 'accepted' | 'queued' | 'claimed' | 'delivered' | 'uncertain' | 'rejected' | 'cancelled';
   error?: string;
   afterSeq?: number;
@@ -20,7 +24,11 @@ type StoredSession = {
   cancelRequested?: { reason: 'user' | 'timeout'; at: number; status?: 'pending' | 'settled' };
 };
 type Rpc = (method: string, payload: Record<string, unknown>, rpcId?: string) => Promise<unknown>;
-type MaintainedRuntime = AgentRuntimeAdapter & { maintain(): Promise<void>; files: SessionFileLibrary };
+type MaintainedRuntime = AgentRuntimeAdapter & {
+  maintain(): Promise<void>;
+  files: SessionFileLibrary;
+  readPrivateImDemoContext(): PrivateImDemoSnapshot | null;
+};
 type HistoryEntry = { event: { seq: number; time: number; type: string; data: Record<string, unknown> } };
 type Admission = { state: 'queued' | 'claimed' | 'delivered' | 'cancelled' | 'rejected'; messageId: string; sequence: number; turn?: number };
 const RUN_LIMIT_MS = 10 * 60_000;
@@ -31,12 +39,86 @@ const TIMED_OUT = '任务执行超过 10 分钟，已请求停止。已有内容
 const scopes = new Set(['ideal-full', 'classin-mvp', 'standalone-teacher']);
 const identifier = /^[a-zA-Z0-9_-]{1,120}$/;
 const artifactFormats = new Set<SessionFileFormat>(['markdown', 'html', 'text', 'json']);
+const imageMediaTypes = new Set<RuntimeImageMediaType>(['image/png', 'image/jpeg', 'image/webp', 'image/gif']);
+const MAX_IMAGES = 4;
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const MAX_IMAGE_TOTAL_BYTES = 20 * 1024 * 1024;
+const MAX_MESSAGE_REQUEST_BYTES = 28 * 1024 * 1024;
+const MODEL_DEFAULT_RESTORE_SESSION = 'tb-model-default-restore';
 const now = () => new Date().toISOString();
 export function record(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 class RuntimeError extends Error {
   constructor(message: string, readonly status = 502, readonly code?: string) { super(message); }
+}
+
+function validImageBytes(mediaType: RuntimeImageMediaType, bytes: Buffer): boolean {
+  if (mediaType === 'image/png') return bytes.length >= 8 && bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  if (mediaType === 'image/jpeg') return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  if (mediaType === 'image/webp') return bytes.length >= 12 && bytes.subarray(0, 4).toString('ascii') === 'RIFF' && bytes.subarray(8, 12).toString('ascii') === 'WEBP';
+  return bytes.length >= 6 && ['GIF87a', 'GIF89a'].includes(bytes.subarray(0, 6).toString('ascii'));
+}
+
+function normalizeRuntimeImages(value: unknown): { images: RuntimeImageInput[]; signature: string } {
+  if (value === undefined) return { images: [], signature: createHash('sha256').update('[]').digest('hex') };
+  if (!Array.isArray(value) || value.length > MAX_IMAGES) throw new RuntimeError(`每次最多上传 ${MAX_IMAGES} 张图片。`, 400);
+  let totalBytes = 0;
+  const images = value.map((entry, index): RuntimeImageInput => {
+    if (!record(entry) || typeof entry.name !== 'string' || typeof entry.mediaType !== 'string'
+      || !imageMediaTypes.has(entry.mediaType as RuntimeImageMediaType) || typeof entry.data !== 'string'
+      || typeof entry.byteSize !== 'number' || !Number.isSafeInteger(entry.byteSize)) {
+      throw new RuntimeError(`第 ${index + 1} 张图片格式不正确。`, 400);
+    }
+    if (!entry.data || entry.data.length > Math.ceil(MAX_IMAGE_BYTES / 3) * 4 + 4 || !/^[A-Za-z0-9+/]+={0,2}$/.test(entry.data)) {
+      throw new RuntimeError(`第 ${index + 1} 张图片内容不正确。`, 400);
+    }
+    const bytes = Buffer.from(entry.data, 'base64');
+    if (bytes.length <= 0 || bytes.length > MAX_IMAGE_BYTES || bytes.length !== entry.byteSize
+      || bytes.toString('base64') !== entry.data || !validImageBytes(entry.mediaType as RuntimeImageMediaType, bytes)) {
+      throw new RuntimeError(`第 ${index + 1} 张图片内容不正确。`, 400);
+    }
+    totalBytes += bytes.length;
+    if (totalBytes > MAX_IMAGE_TOTAL_BYTES) throw new RuntimeError('本次图片合计不能超过 20 MB。', 400);
+    const leafName = [...(entry.name.split(/[\\/]/).at(-1) ?? '')]
+      .filter((character) => character.charCodeAt(0) > 31 && character.charCodeAt(0) !== 127)
+      .join('').trim().slice(0, 120);
+    return { name: leafName || `图片-${index + 1}`, mediaType: entry.mediaType as RuntimeImageMediaType, byteSize: bytes.length, data: entry.data };
+  });
+  const digest = createHash('sha256');
+  for (const image of images) digest.update(image.name).update('\0').update(image.mediaType).update('\0').update(image.data).update('\0');
+  return { images, signature: digest.digest('hex') };
+}
+
+const imageSummary = (names: readonly string[]) => names.length
+  ? `已附 ${names.length} 张图片${names.length <= 2 ? `（${names.join('、')}）` : ''}`
+  : '';
+
+async function selectImageModel(rpc: Rpc, sessionId: string) {
+  const directory = await rpc('session.models', { sessionId });
+  const directoryRecord = record(directory) ? directory : undefined;
+  const currentSelection = directoryRecord && record(directoryRecord.current) ? directoryRecord.current : undefined;
+  if (!directoryRecord || !currentSelection || typeof currentSelection.provider !== 'string'
+    || typeof currentSelection.model !== 'string' || !Array.isArray(directoryRecord.groups)) {
+    throw new RuntimeError('无法核对图片模型能力，请稍后重试。', 503);
+  }
+  const groups = directoryRecord.groups.filter(record);
+  const currentGroup = groups.find((group) => group.id === currentSelection.provider);
+  const models = currentGroup && Array.isArray(currentGroup.models) ? currentGroup.models.filter(record) : [];
+  const current = models.find((model) => model.id === currentSelection.model);
+  if (current?.id === 'deepseek-v4-flash-vision-exp'
+    || (current && Array.isArray(current.inputModalities) && current.inputModalities.includes('image'))) return;
+  const vision = models.find((model) => model.id === 'deepseek-v4-flash-vision-exp')
+    ?? models.find((model) => Array.isArray(model.inputModalities) && model.inputModalities.includes('image'));
+  if (!vision || typeof vision.id !== 'string') throw new RuntimeError('当前 DeepSeek 模型不支持图片理解，请联系服务管理员配置视觉模型。', 409);
+  await rpc('session.selectModel', { sessionId, provider: currentSelection.provider, model: vision.id });
+  try {
+    await rpc('session.create', { sessionId: MODEL_DEFAULT_RESTORE_SESSION, agentPreset: 'teachbuddy' });
+    await rpc('session.selectModel', { sessionId: MODEL_DEFAULT_RESTORE_SESSION, provider: currentSelection.provider, model: currentSelection.model,
+      ...(typeof currentSelection.reasoningEffort === 'string' ? { reasoningEffort: currentSelection.reasoningEffort } : {}) });
+  } catch {
+    throw new RuntimeError('图片模型已选择，但默认文本模型未能安全恢复，请稍后重试。', 503);
+  }
 }
 
 export function createHarnessRpc(baseUrl = 'http://127.0.0.1:3080'): Rpc {
@@ -47,7 +129,7 @@ export function createHarnessRpc(baseUrl = 'http://127.0.0.1:3080'): Rpc {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Origin: baseUrl },
         body: JSON.stringify({ type: 'client-request', rpcId, method, payload }),
-        signal: AbortSignal.timeout(15_000),
+        signal: AbortSignal.timeout(method === 'session.prompt' ? 60_000 : 15_000),
       });
     } catch {
       throw new RuntimeError('连接中断或等待超时，请检查运行服务后重试。');
@@ -61,6 +143,7 @@ export function createHarnessRpc(baseUrl = 'http://127.0.0.1:3080'): Rpc {
       const code = record(envelope.result.error) ? envelope.result.error.code : '';
       throw new RuntimeError(code === 'model-unavailable'
         ? '模型暂时不可用，请检查服务端模型与凭据配置。'
+        : code === 'attachment-error' ? '当前模型未能接收图片，请检查视觉模型配置后重试。'
         : code === 'agent-busy' ? '当前任务仍在执行，请等待完成或先停止。'
           : code === 'session-not-found' ? '运行会话已不可用，请新建对话。'
             : '运行服务未接受请求，请检查配置后重试。', 409, typeof code === 'string' ? code : undefined);
@@ -155,6 +238,7 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
   const rpc = options.rpc ?? createHarnessRpc();
   const sessionFiles = createLocalSessionFileLibrary(root);
   const locks = new Map<string, Promise<unknown>>();
+  let modelMutation: Promise<unknown> = Promise.resolve();
   const sessionsDir = join(root, 'sessions');
   mkdirSync(sessionsDir, { recursive: true });
   const sessionPath = (id: string) => {
@@ -177,6 +261,11 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
     const task = previous.catch(() => {}).then(operation);
     locks.set(id, task);
     try { return await task; } finally { if (locks.get(id) === task) locks.delete(id); }
+  };
+  const modelExclusive = async <T>(operation: () => Promise<T>): Promise<T> => {
+    const task = modelMutation.catch(() => {}).then(operation);
+    modelMutation = task;
+    return task;
   };
   const artifacts = async (scope: RuntimeScope, id: string, sessionTitle: string, existing: readonly RuntimeArtifact[]): Promise<RuntimeArtifact[]> => {
     const directory = join(root, 'artifacts', id);
@@ -321,7 +410,7 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
         actor: 'teacher', kind: 'teacher_message',
         state: command.state === 'uncertain' || command.state === 'rejected' ? 'failed'
           : command.state === 'cancelled' ? 'cancelled' : command.state === 'claimed' ? 'running' : 'queued',
-        title: '您', summary: command.text, objectRefs: [], allowedCommands: [] }];
+        title: '您', summary: [teacherVisibleRuntimeText(command.text), imageSummary(command.imageNames ?? [])].filter(Boolean).join('\n'), objectRefs: [], allowedCommands: [] }];
     });
     const awaitingAdmission = unconfirmed && !current.cancelRequested && current.startedAt !== undefined && age < ADMISSION_WAIT_MS;
     const latest = commands.at(-1);
@@ -331,6 +420,7 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
       : current.cancelRequested?.reason === 'timeout' ? TIMED_OUT : projection.error;
     const next: RuntimeSession = {
       ...current.snapshot, status, error,
+      failureCode: status === 'failed' ? projection.failureCode : undefined,
       events: [...projection.events, ...pending].sort((a, b) => a.sequence - b.sequence).map((event, sequence) => ({ ...event, sequence })),
       artifacts: await artifacts(scope, id, current.snapshot.title, current.snapshot.artifacts),
     };
@@ -401,25 +491,27 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
       const health = await adapter.health();
       if (health.status !== 'ready') throw new RuntimeError(health.message, 503);
       const id = `tb-${randomUUID()}`;
-      const created = await rpc('session.create', { sessionId: id, cwd: join(root, 'workspace'), agentPreset: 'teachbuddy' });
+      const created = await modelExclusive(() => rpc('session.create', { sessionId: id, cwd: join(root, 'workspace'), agentPreset: 'teachbuddy' }));
       if (!record(created) || created.sessionId !== id) throw new RuntimeError('无法创建运行会话。');
       const snapshot: RuntimeSession = { id, title: '新对话', status: 'idle', updatedAt: now(), events: [], artifacts: [] };
       save({ scope, snapshot, commands: {} });
       return snapshot;
     },
     read: (scope, id) => exclusive(id, () => sync(scope, id)),
-    send: (scope, id, text, commandId) => exclusive(id, async () => {
+    send: (scope, id, text, commandId, rawImages) => exclusive(id, async () => {
       const current = load(scope, id);
-      if (!identifier.test(commandId) || typeof text !== 'string' || !text.trim() || text.length > 4000) {
-        throw new RuntimeError('请输入 1 到 4000 字的消息。', 400);
+      const teacherText = typeof text === 'string' ? teacherVisibleRuntimeText(text).trim() : '';
+      const { images, signature: imageSignature } = normalizeRuntimeImages(rawImages);
+      if (!identifier.test(commandId) || typeof text !== 'string' || (!teacherText && images.length === 0) || teacherText.length > 4000 || text.length > 12_000) {
+        throw new RuntimeError('请输入 1 到 4000 字的消息，或添加图片。', 400);
       }
       const prior = Object.hasOwn(current.commands, commandId) ? current.commands[commandId] : undefined;
       if (prior) {
-        if (prior.text !== text) throw new RuntimeError('请求标识与原消息不一致。', 409);
+        if (prior.text !== text || prior.imageSignature !== imageSignature) throw new RuntimeError('请求标识与原消息不一致。', 409);
         if (prior.state === 'rejected') throw new RuntimeError(prior.error ?? REJECTED, 409);
         return sync(scope, id);
       }
-      if (text.trim().startsWith('/')) throw new RuntimeError('请用自然语言描述教学任务。', 400);
+      if (teacherText.startsWith('/')) throw new RuntimeError('请用自然语言描述教学任务。', 400);
       const fresh = await sync(scope, id);
       if (fresh.status === 'running') throw new RuntimeError('任务正在执行，请等待完成或先停止。', 409);
       if (Object.values(load(scope, id).commands).some((command) => command.state === 'uncertain')) {
@@ -429,13 +521,17 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
       if (health.status !== 'ready') throw new RuntimeError(health.message, 503);
       const state = load(scope, id);
       const at = now();
-      Object.defineProperty(state.commands, commandId, { value: { text, at, state: 'pending', afterSeq: state.cursor ?? -1 }, enumerable: true, writable: true, configurable: true });
+      Object.defineProperty(state.commands, commandId, { value: { text, at, state: 'pending', afterSeq: state.cursor ?? -1, imageSignature, imageNames: images.map(({ name }) => name) }, enumerable: true, writable: true, configurable: true });
       state.startedAt = Date.now();
       delete state.cancelRequested;
-      state.snapshot = { ...fresh, title: Object.keys(state.commands).length === 1 ? text.slice(0, 40) : fresh.title, status: 'running', error: undefined, updatedAt: at };
+      state.snapshot = { ...fresh, title: Object.keys(state.commands).length === 1 ? (teacherText || imageSummary(images.map(({ name }) => name))).slice(0, 40) : fresh.title, status: 'running', error: undefined, updatedAt: at };
       save(state);
       try {
-        await rpc('session.prompt', { sessionId: id, mode: 'queue', content: [{ type: 'text', text }], clientTimeZone: 'Asia/Shanghai' }, commandId);
+        if (images.length) await modelExclusive(() => selectImageModel(rpc, id));
+        await rpc('session.prompt', { sessionId: id, mode: 'queue', content: [
+          ...(text ? [{ type: 'text', text }] : []),
+          ...images.map(({ mediaType, data, name }) => ({ type: 'image', mediaType, data, name })),
+        ], clientTimeZone: 'Asia/Shanghai' }, commandId);
         state.commands[commandId]!.state = 'accepted';
       } catch (error) {
         state.commands[commandId]!.state = error instanceof RuntimeError && error.status === 409 ? 'rejected' : 'uncertain';
@@ -485,6 +581,17 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
       save(current);
       return current.snapshot;
     }),
+    readPrivateImDemoContext() {
+      const path = join(root, 'private', 'im-demo-context.json');
+      if (!existsSync(path)) return null;
+      let value: unknown;
+      try { value = JSON.parse(readFileSync(path, 'utf8')); } catch {
+        throw new RuntimeError('本机真实消息上下文无法读取。', 503);
+      }
+      const snapshot = parsePrivateImDemoSnapshot(value);
+      if (!snapshot) throw new RuntimeError('本机真实消息上下文未通过安全校验。', 503);
+      return snapshot;
+    },
     files: sessionFiles,
   };
   return adapter;
@@ -508,13 +615,13 @@ export function maintainRuntime(adapter: AgentRuntimeAdapter & { maintain?: () =
   return () => clearInterval(timer);
 }
 
-async function readBody(request: IncomingMessage): Promise<Record<string, unknown>> {
+async function readBody(request: IncomingMessage, maxBytes = 32_000): Promise<Record<string, unknown>> {
   const chunks: Buffer[] = [];
   let bytes = 0;
   for await (const chunk of request) {
     const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
     bytes += buffer.length;
-    if (bytes > 32_000) throw new RuntimeError('请求内容过长。', 413);
+    if (bytes > maxBytes) throw new RuntimeError('请求内容过长。', 413);
     chunks.push(buffer);
   }
   let value: unknown;
@@ -523,7 +630,10 @@ async function readBody(request: IncomingMessage): Promise<Record<string, unknow
   return value;
 }
 
-export function runtimeMiddleware(adapter: AgentRuntimeAdapter & { files?: SessionFileLibrary }) {
+export function runtimeMiddleware(adapter: AgentRuntimeAdapter & {
+  files?: SessionFileLibrary;
+  readPrivateImDemoContext?: () => PrivateImDemoSnapshot | null;
+}) {
   return (request: IncomingMessage, response: ServerResponse, next: () => void) => {
     const path = request.url ?? '';
     if (!path.startsWith('/api/teachbuddy/')) return next();
@@ -542,10 +652,18 @@ export function runtimeMiddleware(adapter: AgentRuntimeAdapter & { files?: Sessi
         throw new RuntimeError('请求格式不正确。', 415);
       }
       if (method === 'GET' && url.pathname === '/api/teachbuddy/health') return adapter.health();
-      const body = method === 'POST' ? await readBody(request) : {};
+      const body = method === 'POST' ? await readBody(request, url.pathname.endsWith('/messages') ? MAX_MESSAGE_REQUEST_BYTES : 32_000) : {};
       const scope = method === 'POST' ? body.scope : url.searchParams.get('scope');
       if (typeof scope !== 'string' || !scopes.has(scope)) throw new RuntimeError('工作区不存在。', 400);
       const selectedScope = scope as RuntimeScope;
+      if (url.pathname === '/api/teachbuddy/im-demo-context') {
+        if (method !== 'GET' || selectedScope !== 'ideal-full' || !adapter.readPrivateImDemoContext) {
+          throw new RuntimeError('接口不存在。', 404);
+        }
+        const snapshot = adapter.readPrivateImDemoContext();
+        if (!snapshot) throw new RuntimeError('本机真实消息上下文尚未准备。', 404);
+        return snapshot;
+      }
       if (url.pathname === '/api/teachbuddy/files') {
         if (method !== 'GET' || !adapter.files) throw new RuntimeError('接口不存在。', 404);
         const sessions = await adapter.list(selectedScope);
@@ -576,7 +694,7 @@ export function runtimeMiddleware(adapter: AgentRuntimeAdapter & { files?: Sessi
       const [, id, action, artifactId] = match;
       if (method === 'GET' && !action) return adapter.read(selectedScope, id!);
       if (method === 'POST' && action === 'messages' && typeof body.text === 'string' && typeof body.commandId === 'string') {
-        return adapter.send(selectedScope, id!, body.text, body.commandId);
+        return adapter.send(selectedScope, id!, body.text, body.commandId, body.images as readonly RuntimeImageInput[] | undefined);
       }
       if (method === 'POST' && action === 'cancel') return adapter.cancel(selectedScope, id!);
       if (method === 'POST' && artifactId && typeof body.version === 'number' && typeof body.commandId === 'string') {

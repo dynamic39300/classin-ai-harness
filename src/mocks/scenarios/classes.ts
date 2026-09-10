@@ -61,6 +61,7 @@ export const CLASS_RECORDS: ReadonlyArray<ClassRecord> = [
 ];
 
 export const OPEN_COURSE_RECORDS: ReadonlyArray<OpenCourseRecord> = [
+  { id: 'open-math-live', title: '数学思维直播公开课', subject: '数学', instructorName: '赵老师', startsAt: '2026-08-08T14:00:00+08:00', durationMinutes: 60, status: 'live', visibleTo: ['teacher', 'student-family'], ownerRoles: [], enrolledCount: 26, maxSeats: 40, description: '用图形与数量关系解决一道开放问题。', classroomSummary: '线上直播间 A' },
   { id: 'open-reading', title: '高效阅读公开课', subject: '英语', instructorName: '陈老师', startsAt: '2026-08-08T16:00:00+08:00', durationMinutes: 40, status: 'scheduled', visibleTo: ['teacher', 'student-family'], ownerRoles: [], enrolledCount: 18, maxSeats: 30, description: '从文章结构入手，练习阅读定位与主旨判断。', classroomSummary: '线上直播间' },
   { id: 'open-family', title: '家长会说明会', subject: '家庭教育', instructorName: '王老师', startsAt: '2026-08-08T19:00:00+08:00', durationMinutes: 40, status: 'scheduled', visibleTo: ['teacher', 'student-family'], ownerRoles: ['teacher'], enrolledCount: 22, maxSeats: 60, description: '介绍新学期的学习节奏与家校沟通方式。', classroomSummary: '线上直播间' },
   { id: 'open-history', title: '产品经理成长训练营', subject: '职业素养', instructorName: '张老师', startsAt: '2026-08-06T19:00:00+08:00', durationMinutes: 60, status: 'ended', visibleTo: ['teacher'], ownerRoles: ['teacher'], enrolledCount: 36, maxSeats: 60, description: '已结束的公开课记录。', classroomSummary: '课堂回放' },

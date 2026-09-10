@@ -45,7 +45,7 @@ function createWorkspaceTree(
   guidedMode: GuidedExplanationScenario = 'success',
 ) {
   return (
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[`/${role === 'teacher' ? 'teacher' : 'student'}/messages?category=class&thread=class-physics-3`]}>
       <MessageWorkspaceProvider>
         <TestWorkBuddyBridge mode={mode} guidedMode={guidedMode}>
           <MessageWorkspace immersive={immersive} role={role} />
@@ -209,6 +209,7 @@ describe('WorkBuddy IM assistance', () => {
     expect(within(sidecar).getByText('高二物理 3 班')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: '私聊' }));
+    await user.click(screen.getByRole('button', { name: /李明.*明白了，我重新画一下过程图/ }));
     await waitFor(() => expect(within(sidecar).getByText('李明')).toBeInTheDocument());
     expect(within(sidecar).getByText('告诉我你想如何回复当前私聊')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'TeachBuddy' })).not.toBeInTheDocument();
@@ -231,6 +232,7 @@ describe('WorkBuddy IM assistance', () => {
     const user = userEvent.setup();
     renderWorkspace('teacher');
     await user.click(screen.getByRole('button', { name: '私聊' }));
+    await user.click(screen.getByRole('button', { name: /李明.*明白了，我重新画一下过程图/ }));
 
     const trigger = screen.getByRole('button', { name: 'TeachBuddy' });
     await user.click(trigger);

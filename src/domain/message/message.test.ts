@@ -84,6 +84,17 @@ describe('message mutations', () => {
     expect(appendLocalMessage('teacher', '王老师', makeThread(), '🙂', '2026-08-08T10:05:00+08:00', 'emoji').entries.at(-1)?.kind).toBe('emoji');
   });
 
+  it('appends and recalls media-only messages through opaque references', () => {
+    const image = { id: 'image-1', kind: 'image' as const, name: '板书.png', mimeType: 'image/png', byteSize: 42, contentRef: 'image:opaque', source: 'upload' as const };
+    const next = appendLocalMessage(
+      'teacher', '王老师', makeThread({ category: 'class' }), '', '2026-08-08T10:05:00+08:00', 'text', undefined, 'teacher', undefined, undefined, undefined, undefined, [image],
+      [{ id: 'everyone', kind: 'everyone', label: '所有人' }],
+    );
+    expect(next.entries.at(-1)).toMatchObject({ body: '', attachments: [image], mentions: [{ kind: 'everyone' }] });
+    const recalled = recallClassMessage('teacher', next, next.entries.at(-1)?.id ?? '', '2026-08-08T10:06:00+08:00');
+    expect(recalled.entries.at(-1)).toMatchObject({ body: '消息已撤回', kind: 'retracted', attachments: undefined });
+  });
+
   it('prepends one stable older page without replacing current messages', () => {
     const olderEntries = Array.from({ length: 8 }, (_, index) => ({
       id: `old-${index}`,

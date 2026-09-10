@@ -1,8 +1,8 @@
 ---
 title: WorkBuddy IM 人机协作 Implementation Traceability
-status: AGENT_DIRECT_EXPERIENCE_V20_PASS
-version: v0.20
-date: 2026-08-24
+status: TEACHING_DYNAMICS_V21_PASS
+version: v0.21
+date: 2026-09-09
 ---
 
 # Implementation Traceability
@@ -47,6 +47,9 @@ date: 2026-08-24
 | IM-PRD-109—111 | Feature Spec §6.15 | M4.2-12 | `GuidedExplanationArtifact.delivery`、可编辑最终发送话术、发送前/后共享 Viewer、Context 题目定位及 IM 身份/格式标签收敛 | Domain + Adapter + 5-file Integration + E2E/a11y + 8 scoped visual | PASS |
 | IM-PRD-112 | Feature Spec §6.15、§7 | M4.2-13 | Message Timeline 统一 `pre-wrap` 纯文本正文排版，保留换行、空行和缩进并安全折行 | Manual + homework reminder + weekly notice + guided explanation E2E/visual | PASS |
 | IM-PRD-113 | Feature Spec §6.16、§7 | M4.2-14 | 共用 `FocusedMessageEditor`、Sidecar 内联增高、宽度锁定、单一受控 Textarea、根 Surface 非滚动裁剪、Header/Composer 固定与紧凑视口内部滚动 | Unit + E2E/a11y + 展开滚底回归 + 1440×900 / 1024×640 visual | PASS |
+| IM-PRD-141—145、148 | Feature Spec §6.19、§7 | IM-031、IM-032 | `TeachingDynamicsAdapter`、四阶段投影、当前阶段强调、其他阶段摘要、按线程保存的展开/紧凑呈现与非打断更新 | Domain + Adapter + Component + Browser/Visual | PASS |
+| IM-PRD-146—149 | Feature Spec §6.19、§7 | IM-031、IM-033 | 稳定业务引用、时钟过滤、确认/未知语义与事项按钮一键提交教师可读请求；业务生命周期与 AI Run 解耦 | Domain + Adapter + E2E | PASS |
+| IM-PRD-150—153 | Feature Spec §6.19、§7 | IM-032—IM-034 | `TeachBuddy · 仅你可见`、自由输入与`教学协作`、无正常连接/工程身份/上下文计数、无二级配置页、键盘与窄宽适配 | Component + E2E + axe + 1440×900 self-review | PASS |
 
 ## 代码证据
 
@@ -105,6 +108,9 @@ date: 2026-08-24
 - Four-entry Browser Verification：`tests/e2e/message-workspace.spec.ts` 覆盖师生公开 mention、双方独立私聊、隐藏对方线程、教师 WorkBuddy 群聊/1v1 回归和学生不可发现；axe 无 serious / critical violation。
 - Class Agent Visual：`teacher-class-agent-public-reply-1440x900`、`teacher-class-agent-direct-1440x900`、`student-class-agent-direct-1440x900` 均无横向溢出、遮挡或不可达操作。
 - Multi-Agent Verification：`agent-discovery.test.ts` 覆盖角色/渠道过滤、名称/别名/班级/能力匹配与授权版本变化；Integration 覆盖按钮 Picker、typed `@` 键盘选择、成员 Mention 与失败重试；E2E 覆盖师生公开选择、Direct Agent 切换和线程隔离；`teacher-multi-agent-picker-1440x900` 与公开/私聊基线通过。
+- Teaching Dynamics Module：`src/contracts/workbuddy/teaching-dynamics.ts` 定义唯一读取 Interface；`src/domain/workbuddy/teaching-dynamics.ts` 隐藏四阶段归一化、跨阶段去重、优先级排序、可操作事项计数与紧凑摘要；`src/mocks/adapters/workbuddy-im-teaching-dynamics.ts` 通过固定时钟投影可重置 Scenario。
+- Teaching Dynamics Surface：`TeachingDynamics.tsx` 与 `ImSidecarAgentSurface.tsx` 复用消息侧栏和原有 Runtime；事项动作直接提交教师可读请求，补问、生成、修订、审阅和发送留在对话，展开状态仅按线程保存在浏览器会话中。
+- Teaching Dynamics Verification：Domain、Adapter、Component 和 Sidecar 单元测试覆盖生命周期、T-1 谨慎语义、原位展开/收起与一键触发；`teachbuddy-im-personalized-services.spec.ts` 覆盖六条消息入口闭环并运行 axe；1440×900 展开态和紧凑态完成自查。
 - Research Basis：`docs/01-research/source-notes/workbuddy-composer-autogrow-patterns-20260823.md` 汇总 MUI、assistant-ui、Slack、Discord、GOV.UK 与 VS Code 一手依据，并区分 FACT / CLASSIN INFERENCE / OPEN
 - Resizable Research Basis：`docs/01-research/source-notes/immersive-workspace-resizable-panels-20260823.md` 汇总 W3C、Apple、VS Code、GitHub 与 resizable panels 官方证据，并区分 FACT / CLASSIN INFERENCE / OPEN
 - Human Review Research Basis：`docs/01-research/source-notes/workbuddy-human-review-send-artifact-patterns-20260823.md` 汇总 Microsoft、Slack、Gmail、GOV.UK、GitHub、OpenAI Agents SDK、assistant-ui 与 W3C 一手依据，并区分 FACT / CLASSIN INFERENCE / OPEN

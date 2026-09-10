@@ -5,6 +5,7 @@ import { ClassWorkspaceProvider, useClassWorkspaceStore } from '@features/class-
 import { HomeworkWorkspaceProvider, useHomeworkWorkspace } from '@features/homework-workspace';
 import { MessageWorkspaceProvider, useMessageWorkspaceStore } from '@features/message-workspace';
 import { WorkBuddyImProvider } from '@features/workbuddy-im-assistance';
+import { createHttpAgentRuntime } from '@features/agent-runtime';
 import { ClassAgentConversationProvider } from '@features/class-agent-conversation';
 import { parseWorkBuddyWorkspaceRoute, WorkBuddyWorkspaceProvider } from '@features/ai-agent-workspace';
 import { StandaloneTeacherProvider, StandaloneWorkBuddyRoutes, useStandaloneTeacher } from '@features/standalone-workbuddy';
@@ -35,6 +36,10 @@ import { MockTeacherInAdapter } from '@mocks/adapters/workbuddy-teacherin';
 import { DisconnectedTeacherInAdapter } from '@mocks/adapters/disconnected-teacherin';
 import { MockWorkBuddyImHomeworkReminderAdapter } from '@mocks/adapters/workbuddy-im-homework-reminder';
 import { MockGuidedExplanationDistributionAdapter } from '@mocks/adapters/workbuddy-guided-explanation';
+import { FixedWorkBuddyImBusinessContextAdapter } from '@mocks/adapters/workbuddy-im-business-context';
+import { FixedWorkBuddyImTeachingDynamicsAdapter } from '@mocks/adapters/workbuddy-im-teaching-dynamics';
+import { TEACHING_DYNAMICS_DEMO_NOW } from '@mocks/scenarios/workbuddy-im-teaching-dynamics';
+import { MockWorkBuddyImMessageDraftAdapter } from '@mocks/adapters/workbuddy-im-message-draft';
 import { MockClassAgentConversationAdapter } from '@mocks/adapters/class-agent/class-agent-conversation';
 import { CLASS_AGENT_DEFINITIONS, DIRECT_CLASS_AGENT_BINDINGS } from '@mocks/scenarios/class-agent';
 import { WORKBUDDY_QUIZ_PAPER } from '@mocks/scenarios/workbuddy-quiz-activity';
@@ -80,6 +85,11 @@ function ClassHomeworkBridge({ children }: { children: ReactNode }) {
   return <HomeworkWorkspaceProvider onHomeworkPublished={projectHomework}>{children}</HomeworkWorkspaceProvider>;
 }
 
+function ClassMessageBridge({ children }: { children: ReactNode }) {
+  const { classes } = useClassWorkspaceStore();
+  return <MessageWorkspaceProvider classRecords={classes}>{children}</MessageWorkspaceProvider>;
+}
+
 function WorkBuddyImBridge({ children }: { children: ReactNode }) {
   const homework = useHomeworkWorkspace();
   const { actions: messageActions } = useMessageWorkspaceStore();
@@ -99,8 +109,22 @@ function WorkBuddyImBridge({ children }: { children: ReactNode }) {
   const guidedExplanationAdapter = useMemo(() => new MockGuidedExplanationDistributionAdapter({
     appendTeacherMessage: ({ id, threadId, authorName, body, sentAt, contentReference }) => messageActions.appendMessage({ role: 'teacher', authorName, threadId, body, sentAt, messageId: id, contentReference }),
   }), [messageActions]);
+  const agentServices = useMemo(() => ({
+    runtime: createHttpAgentRuntime(),
+    businessContext: new FixedWorkBuddyImBusinessContextAdapter(() => HOMEWORK_NOW),
+    teachingDynamics: new FixedWorkBuddyImTeachingDynamicsAdapter(() => TEACHING_DYNAMICS_DEMO_NOW),
+    messageDraft: new MockWorkBuddyImMessageDraftAdapter({
+      now: () => new Date(),
+      appendTeacherMessage: ({ id, threadId, authorName, body, sentAt }) => messageActions.appendMessage({
+        role: 'teacher', authorName, threadId, body, sentAt, messageId: id,
+      }),
+    }),
+    actor: Object.freeze({ id: 'teacher-001', name: '王老师' }),
+    tenantRef: 'classin-demo-school',
+    scope: 'ideal-full' as const,
+  }), [messageActions]);
   return (
-    <WorkBuddyImProvider adapter={adapter} guidedExplanationAdapter={guidedExplanationAdapter} onArtifactCreated={artifactLibrary.add} teacher={{ id: 'teacher-001', name: '王老师' }} now={() => HOMEWORK_NOW}>
+    <WorkBuddyImProvider adapter={adapter} guidedExplanationAdapter={guidedExplanationAdapter} agentServices={agentServices} onArtifactCreated={artifactLibrary.add} teacher={{ id: 'teacher-001', name: '王老师' }} now={() => HOMEWORK_NOW}>
       {children}
     </WorkBuddyImProvider>
   );
@@ -266,7 +290,7 @@ function ClassInProductComposition() {
           <ClassHomeworkBridge>
             <OpenCourseWorkspaceProvider store={OPEN_COURSE_SESSION}>
               <WorkBuddyArtifactLibraryProvider>
-                <MessageWorkspaceProvider>
+                <ClassMessageBridge>
                   <ClassAgentBridge>
                     <WorkBuddyImBridge>
                       <SpaceWorkspaceProvider>
@@ -276,7 +300,7 @@ function ClassInProductComposition() {
                       </SpaceWorkspaceProvider>
                     </WorkBuddyImBridge>
                   </ClassAgentBridge>
-                </MessageWorkspaceProvider>
+                </ClassMessageBridge>
               </WorkBuddyArtifactLibraryProvider>
             </OpenCourseWorkspaceProvider>
           </ClassHomeworkBridge>

@@ -6,6 +6,13 @@ export type RuntimeHealth = Readonly<{
   status: 'ready' | 'unconfigured' | 'offline';
   message: string;
 }>;
+export type RuntimeImageMediaType = 'image/png' | 'image/jpeg' | 'image/webp' | 'image/gif';
+export type RuntimeImageInput = Readonly<{
+  name: string;
+  mediaType: RuntimeImageMediaType;
+  byteSize: number;
+  data: string;
+}>;
 export type RuntimeArtifact = Readonly<{
   id: string;
   title: string;
@@ -28,13 +35,14 @@ export type RuntimeSession = Readonly<{
   events: readonly ConversationRunEvent[];
   artifacts: readonly RuntimeArtifact[];
   error?: string;
+  failureCode?: 'vision-permission';
 }>;
 export interface AgentRuntimeAdapter {
   health(): Promise<RuntimeHealth>;
   list(scope: RuntimeScope): Promise<readonly RuntimeSession[]>;
   create(scope: RuntimeScope): Promise<RuntimeSession>;
   read(scope: RuntimeScope, id: string): Promise<RuntimeSession>;
-  send(scope: RuntimeScope, id: string, text: string, commandId: string): Promise<RuntimeSession>;
+  send(scope: RuntimeScope, id: string, text: string, commandId: string, images?: readonly RuntimeImageInput[]): Promise<RuntimeSession>;
   cancel(scope: RuntimeScope, id: string): Promise<RuntimeSession>;
   approve(scope: RuntimeScope, id: string, artifactId: string, version: number, commandId: string): Promise<RuntimeSession>;
 }

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { ClassInHomeworkReminderAdapter } from '@contracts/workbuddy/im-homework-reminder';
 import type { GuidedExplanationAdapter } from '@contracts/workbuddy/guided-explanation';
+import type { ImSidecarAgentServices } from '@contracts/workbuddy/business-context';
 import type { WorkBuddyImExperienceScheduler, WorkBuddyImTarget } from '@contracts/workbuddy/im-conversation-run';
 import {
   approveHomeworkReminder,
@@ -49,6 +50,7 @@ type WorkBuddyImProviderProps = Readonly<{
   now: () => Date;
   experienceScheduler?: WorkBuddyImExperienceScheduler;
   onArtifactCreated?: (artifact: GuidedExplanationArtifact) => void;
+  agentServices?: ImSidecarAgentServices;
   children: ReactNode;
 }>;
 
@@ -62,7 +64,7 @@ const INITIAL_STATE: WorkBuddyImState = Object.freeze({
   evaluationHistory: Object.freeze([]),
 });
 
-export function WorkBuddyImProvider({ adapter, guidedExplanationAdapter, teacher, now, experienceScheduler, onArtifactCreated, children }: WorkBuddyImProviderProps) {
+export function WorkBuddyImProvider({ adapter, guidedExplanationAdapter, teacher, now, experienceScheduler, onArtifactCreated, agentServices, children }: WorkBuddyImProviderProps) {
   const scheduler = useMemo(() => experienceScheduler ?? createBrowserWorkBuddyImExperienceScheduler(), [experienceScheduler]);
   const [state, setState] = useState<WorkBuddyImState>(INITIAL_STATE);
   const stateRef = useRef(state);
@@ -523,6 +525,6 @@ export function WorkBuddyImProvider({ adapter, guidedExplanationAdapter, teacher
   const actions = useMemo<WorkBuddyImActions>(() => ({
     open, close, editComposerDraft, generate, supplement, removeStudent, removeGroup, restoreChecklist, editBody, reviseExplanation, retryExplanation, approveAndSend,
   }), [approveAndSend, close, editBody, editComposerDraft, generate, open, removeGroup, removeStudent, restoreChecklist, retryExplanation, reviseExplanation, supplement]);
-  const value = useMemo(() => ({ state, actions }), [actions, state]);
+  const value = useMemo(() => ({ state, actions, agentServices }), [actions, agentServices, state]);
   return <WorkBuddyImContext.Provider value={value}>{children}</WorkBuddyImContext.Provider>;
 }

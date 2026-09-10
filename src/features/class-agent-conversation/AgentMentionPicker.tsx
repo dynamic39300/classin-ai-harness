@@ -64,9 +64,9 @@ export function AgentMentionPicker({
   }, [activeIndex]);
 
   return (
-    <section className={styles.picker} aria-label="选择班级 Agent" data-agent-picker-mode={projection.mode}>
+    <section className={styles.picker} aria-label={projection.mode === 'mixed-mention' ? '选择提及对象' : '选择班级 Agent'} data-agent-picker-mode={projection.mode}>
       <header className={styles.header}>
-        <span><strong>{projection.mode === 'mixed-mention' ? '选择提及对象' : '选择班级 Agent'}</strong><small>{projection.totalAuthorized} 个可用</small></span>
+        <span><strong>{projection.mode === 'mixed-mention' ? '选择提及对象' : '选择班级 Agent'}</strong><small>{projection.mode === 'mixed-mention' ? options.length : projection.totalAuthorized} 个可用</small></span>
         {onQueryChange ? (
           <label className={styles.search}>
             <Search aria-hidden="true" size={15} />

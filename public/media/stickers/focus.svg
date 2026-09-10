@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="保持专注">
+  <rect width="160" height="160" rx="32" fill="#fff4dd"/>
+  <circle cx="80" cy="67" r="40" fill="#ffb52e"/>
+  <circle cx="67" cy="63" r="5" fill="#5d4319"/><circle cx="93" cy="63" r="5" fill="#5d4319"/>
+  <path d="M63 80q17 12 34 0" fill="none" stroke="#5d4319" stroke-width="6" stroke-linecap="round"/>
+  <text x="80" y="132" text-anchor="middle" font-size="20" font-family="sans-serif" font-weight="700" fill="#765017">保持专注</text>
+</svg>

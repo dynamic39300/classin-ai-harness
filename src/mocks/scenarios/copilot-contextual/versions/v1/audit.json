@@ -1,0 +1,71 @@
+{
+  "version": "im-copilot-contextual-v1",
+  "snapshotId": "im-copilot-source-2026-09-09-v1",
+  "sourceFilesVerifiedBeforeAndAfter": 56,
+  "originalSnapshotUnchanged": true,
+  "sourceToScenarioOffsetSeconds": 1038600,
+  "selectionRule": "same-teacher, >=2 homeworks, roster and group messages, descending homework count",
+  "sameTeacherHomeworkAndAnchorRelationsVerified": true,
+  "otherTeachingIdentitiesPreserved": 2,
+  "classes": [
+    {
+      "id": "copilot-class-a",
+      "membershipStatus": "unknown",
+      "collectionScope": "complete-selected-homework-associations",
+      "sourceCounts": {
+        "courseStudentNum": 2000,
+        "lessons": 14,
+        "teacherLessons": 7,
+        "homeworks": 7,
+        "activeWorkRows": 357,
+        "distinctHomeworkStudents": 51,
+        "lessonRosterRows": 51,
+        "attendanceRows": 45,
+        "messages": 2
+      }
+    },
+    {
+      "id": "copilot-class-b",
+      "membershipStatus": "unknown",
+      "collectionScope": "complete-selected-homework-associations",
+      "sourceCounts": {
+        "courseStudentNum": 2000,
+        "lessons": 16,
+        "teacherLessons": 8,
+        "homeworks": 2,
+        "activeWorkRows": 252,
+        "distinctHomeworkStudents": 127,
+        "lessonRosterRows": 126,
+        "attendanceRows": 114,
+        "messages": 2
+      }
+    }
+  ],
+  "inventoryCounts": {
+    "lessons": 30,
+    "homeworks": 9,
+    "studentWork": 609,
+    "activities": 248,
+    "units": 40,
+    "sourceMessageRewrites": 4,
+    "lessonRoster": 177,
+    "attendanceSnapshot": 159
+  },
+  "sourceHomeworksWithMatchedActivity": 9,
+  "scenarioCounts": {
+    "students": 178,
+    "syntheticEvents": 640,
+    "sceneHomeworks": 3
+  },
+  "outputsSha256": {
+    "pack.json": "6fd0631ffc83ef7ca3d3ae4b908de72d2dcc09180d64773292346d2a3574098e",
+    "source-inventory.json": "fb8cedf1d4fb28eb53fb81109143f092e14f058900cc962921c354a9c4cb1bd5"
+  },
+  "privacy": {
+    "rawIdentifiersIncluded": false,
+    "rawNamesIncluded": false,
+    "rawMessageTextIncluded": false,
+    "privateIdentityMapCommitted": false,
+    "sourceAttachmentsCopied": false
+  }
+}

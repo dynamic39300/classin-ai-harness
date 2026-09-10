@@ -7,5 +7,5 @@ export function runtimeSession(overrides: Partial<RuntimeSession> = {}): Runtime
 
 export function runtimeEvent(summary: string, actor: 'teacher' | 'agent' = 'agent'): ConversationRunEvent {
   return { id: `${actor}-${summary}`, runRef: 'session-a', sequence: 1, occurredAt: '2026-09-04T10:00:00Z', updatedAt: '2026-09-04T10:00:00Z', actor,
-    kind: actor === 'teacher' ? 'teacher_message' : 'goal_understood', state: 'completed', title: actor === 'teacher' ? '您' : 'TeachBuddy', summary, objectRefs: [], allowedCommands: [] };
+    kind: actor === 'teacher' ? 'teacher_message' : 'process', state: 'completed', title: actor === 'teacher' ? '您' : 'TeachBuddy', summary, objectRefs: [], allowedCommands: [] };
 }

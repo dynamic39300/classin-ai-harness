@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-label="动量守恒实验回放封面">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17324d"/><stop offset="1" stop-color="#0a8470"/></linearGradient></defs>
+  <rect width="960" height="540" rx="24" fill="url(#g)"/>
+  <path d="M120 374h720" stroke="#d7ebe7" stroke-width="8" opacity=".7"/>
+  <rect x="194" y="283" width="150" height="88" rx="18" fill="#f4b950"/>
+  <rect x="614" y="283" width="150" height="88" rx="18" fill="#71c8d9"/>
+  <path d="M382 327h156" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-dasharray="18 18"/>
+  <circle cx="480" cy="202" r="64" fill="rgb(255 255 255 / 18%)"/>
+  <path d="M463 165l48 37-48 37z" fill="#fff"/>
+  <text x="70" y="90" font-size="42" font-family="sans-serif" font-weight="700" fill="#fff">动量守恒实验回放</text>
+  <text x="72" y="137" font-size="24" font-family="sans-serif" fill="#cfe7e2">高二物理 3 班 · 课堂观察片段</text>
+</svg>

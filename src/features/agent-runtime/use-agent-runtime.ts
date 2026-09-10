@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { AgentRuntimeAdapter, RuntimeHealth, RuntimeScope, RuntimeSession } from '@contracts/workbuddy/agent-runtime';
+import type { AgentRuntimeAdapter, RuntimeHealth, RuntimeImageInput, RuntimeScope, RuntimeSession } from '@contracts/workbuddy/agent-runtime';
 import { RuntimeHttpError } from './http-agent-runtime';
 
 type Command =
-  | { kind: 'send'; text: string; commandId: string }
+  | { kind: 'send'; text: string; commandId: string; images?: readonly RuntimeImageInput[] }
   | { kind: 'cancel' }
   | { kind: 'approve'; artifactId: string; version: number; commandId: string };
 type Operation = { status: 'pending'; command: Command } | { status: 'failed'; command: Command; error: string; rejected: boolean };
@@ -113,7 +113,7 @@ export function useAgentRuntime(adapter: AgentRuntimeAdapter, scope: RuntimeScop
     setOperations((current) => ({ ...current, [id]: { status: 'pending', command } }));
     try {
       const result = command.kind === 'send'
-        ? await adapter.send(scope, id, command.text, command.commandId)
+        ? await adapter.send(scope, id, command.text, command.commandId, command.images)
         : command.kind === 'cancel'
           ? await adapter.cancel(scope, id)
           : await adapter.approve(scope, id, command.artifactId, command.version, command.commandId);

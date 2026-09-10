@@ -2,7 +2,7 @@ import type { AppRole } from '@domain/account/role';
 import type { ClassRecord, OpenCourseRecord } from '@domain/class/class';
 import type { GrowthOverview } from '@domain/growth/growth';
 import type { ClassInsight } from '@domain/insights/insights';
-import { countUnreadByCategory, formatMessageListTime, getLastMessageEntry, getMessageThreadSubtitle, getMessageThreadTitle, getVisibleMessageThreads, type MessageThread } from '@domain/message/message';
+import { countUnreadByCategory, formatMessageListTime, getLastMessageEntry, getMessageEntryPreview, getMessageThreadSubtitle, getMessageThreadTitle, getVisibleMessageThreads, type MessageThread } from '@domain/message/message';
 import { resolveScheduleActions, getVisibleScheduleEvents, type ScheduleEvent } from '@domain/schedule/schedule';
 import { getVisibleTaskItems, resolveTaskActions, resolveTaskTimeBucket, resolveTaskUrgency, type TaskItem, type TaskTimeBucket } from '@domain/task/task';
 import type { ProductTarget } from '@domain/navigation/product-target';
@@ -340,7 +340,7 @@ export function buildStudentHomeModel(
         id: latestThread.id,
         category: 'class',
         title: getMessageThreadTitle('student-family', latestThread),
-        preview: getLastMessageEntry(latestThread)?.body ?? latestThread.notice?.body[0] ?? '',
+        preview: getMessageEntryPreview(getLastMessageEntry(latestThread)) || latestThread.notice?.body[0] || '',
         timeLabel: formatMessageListTime(latestThread.updatedAt, now),
         unreadCount: latestThread.unreadByRole['student-family'] ?? 0,
         classId: latestThread.classId,
@@ -482,7 +482,7 @@ function buildMessageSummaries(role: AppRole, threads: ReadonlyArray<MessageThre
       category: thread.category,
       title: getMessageThreadTitle(role, thread),
       subtitle: getMessageThreadSubtitle(role, thread),
-      preview: getLastMessageEntry(thread)?.body ?? thread.notice?.body[0] ?? '',
+      preview: getMessageEntryPreview(getLastMessageEntry(thread)) || thread.notice?.body[0] || '',
       timeLabel: formatMessageListTime(thread.updatedAt, now),
       unreadCount: thread.unreadByRole[role] ?? 0,
       classId: thread.classId,
@@ -504,8 +504,13 @@ export function buildTeacherHomeModel(
     return formatCalendarDate(date);
   });
   const taskModel = getTeacherHomeTasks(sources.tasks, now);
-  const unread = countUnreadByCategory('teacher', sources.messageThreads);
-  const messageSummaries = buildMessageSummaries('teacher', sources.messageThreads, now);
+  const availableMessageThreads = sources.messageThreads.filter(({ updatedAt }) => {
+    const updatedAtTime = new Date(updatedAt).getTime();
+    const nextDay = now.getTime() + 24 * 60 * 60 * 1000;
+    return !Number.isFinite(updatedAtTime) || updatedAtTime <= nextDay;
+  });
+  const unread = countUnreadByCategory('teacher', availableMessageThreads);
+  const messageSummaries = buildMessageSummaries('teacher', availableMessageThreads, now);
   const scheduleStatus = sources.statuses?.schedule ?? (events.length > 0 ? 'ready' : 'empty');
   const tasksStatus = sources.statuses?.tasks ?? (taskModel.openTasks.length > 0 ? 'ready' : 'empty');
   const messagesStatus = sources.statuses?.messages ?? (messageSummaries.length > 0 ? 'ready' : 'empty');

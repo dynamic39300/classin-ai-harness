@@ -55,11 +55,16 @@ async function expectMessageShellLocked(
   }
 }
 
+async function selectPhysics3Thread(page: Page) {
+  await page.locator('[data-thread-id="class-physics-3"]').click();
+  await expect(page.getByRole('region', { name: '高二物理 3 班会话' })).toBeVisible();
+}
+
 test('message scrolling stays inside the timeline while navigation and composer remain fixed', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 640 });
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
-  await page.getByRole('link', { name: /消息/ }).click();
+  await page.goto('/teacher/messages?category=class&thread=class-physics-3');
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
   await expect(page.locator('[data-shell-mode="linear-workbench"]')).toHaveAttribute('data-message-shell-mode', 'standard');
   await page.waitForTimeout(800);
@@ -110,16 +115,42 @@ test('teacher immersive message center keeps scrolling inside the communication 
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
-  await page.getByRole('link', { name: /消息/ }).click();
+  await page.goto('/teacher/messages?category=class&thread=class-physics-3');
   await expect(page.locator('[data-shell-mode="linear-workbench"]')).toHaveAttribute('data-message-shell-mode', 'immersive');
   await expectMessageShellLocked(page, '高二物理 3 班会话');
+});
+
+test('class announcements, important reminders and @mine stay distinct and locatable @a11y', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: /老师视角/ }).click();
+  await page.goto('/teacher/messages?category=class&thread=class-physics-3');
+
+  const conversation = page.getByRole('region', { name: '高二物理 3 班会话' });
+  await expect(conversation.getByRole('region', { name: '班级公告' })).toContainText('课前练习单提醒');
+  const reminder = conversation.getByRole('region', { name: '重要提醒' });
+  await expect(reminder).toContainText('@所有人');
+  await expect(conversation.getByText('以下为新消息')).toBeVisible();
+  await reminder.getByRole('button', { name: '关闭重要提醒' }).click();
+  await expect(conversation.getByRole('region', { name: '重要提醒' })).toHaveCount(0);
+
+  await page.getByRole('button', { name: '查看@我的' }).click();
+  const attention = page.getByRole('complementary', { name: '@我的' });
+  await expect(attention.getByText('提到你')).toBeVisible();
+  await attention.getByRole('button', { name: /提到你/ }).click();
+  await expect(page.locator('[data-message-id="cp3-4"]')).toHaveAttribute('data-highlighted', 'true');
+
+  const accessibilityScan = await new AxeBuilder({ page })
+    .include('#main-content')
+    .analyze();
+  expect(accessibilityScan.violations.filter((violation) => ['critical', 'serious'].includes(violation.impact ?? ''))).toEqual([]);
 });
 
 test('teacher Agent direct chat keeps scrolling inside its own timeline', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 640 });
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
-  await page.getByRole('link', { name: /消息/ }).click();
+  await page.goto('/teacher/messages?category=class&thread=class-physics-3');
   await page.getByRole('button', { name: '退出沉浸模式' }).click();
   await page.getByRole('button', { name: '私聊', exact: true }).click();
   await page.locator('[data-thread-id="direct-class-agent-physics-3-teacher"]').click();
@@ -146,31 +177,67 @@ test('teacher sends and manages a class message @a11y', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
-  await page.getByRole('link', { name: /消息/ }).click();
+  await page.goto('/teacher/messages?category=class&thread=class-physics-3');
 
   await expect(page.getByRole('heading', { level: 1, name: '消息' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '高二物理 3 班' })).toBeVisible();
   const structuredManualMessage = '请按时进入课堂：\n\n1. 提前准备课本。\n2. 检查课堂练习。';
   await page.getByRole('textbox', { name: '输入消息' }).fill(structuredManualMessage);
   await page.getByRole('button', { name: '发送', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('本地 Demo 中发送');
+  await expect(page.getByText('消息已在本地 Demo 中发送。')).toBeVisible();
 
   const sentMessageBody = page.getByText(structuredManualMessage, { exact: true }).last();
   await expect(sentMessageBody).toHaveCSS('white-space', 'pre-wrap');
   expect(await sentMessageBody.evaluate((element) => (element as HTMLElement).innerText)).toBe(structuredManualMessage);
 
-  await page.getByRole('button', { name: '发送表情' }).click();
-  await expect(page.getByRole('status')).toContainText('表情已在本地 Demo 中发送');
+  await page.getByRole('button', { name: '打开表情与贴纸' }).click();
+  await page.getByRole('tab', { name: 'Emoji' }).click();
+  await page.getByRole('button', { name: '添加😀' }).click();
+  await expect(page.getByRole('textbox', { name: '输入消息' })).toHaveValue('😀');
+  await page.getByRole('button', { name: '发送', exact: true }).click();
+  await expect(page.getByText('😀', { exact: true }).last()).toBeVisible();
+
+  const imageInput = page.getByRole('region', { name: '高二物理 3 班会话' }).locator('input[type="file"]').first();
+  await imageInput.setInputFiles({
+    name: '课堂板书.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64'),
+  });
+  await expect(page.getByText('课堂板书.png')).toBeVisible();
+  await page.getByRole('button', { name: '发送', exact: true }).click();
+  const sentImage = page.getByRole('button', { name: '查看图片 课堂板书.png' });
+  await expect(sentImage).toBeVisible();
+  await sentImage.click();
+  await expect(page.getByRole('dialog', { name: '媒体查看器' })).toBeVisible();
+  await page.getByRole('button', { name: '关闭', exact: true }).click();
+  await expect(sentImage).toBeFocused();
+
+  const composer = page.getByRole('textbox', { name: '输入消息' });
+  await composer.evaluate((element) => {
+    const binary = window.atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=');
+    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    const clipboard = new DataTransfer();
+    clipboard.items.add(new File([bytes], '剪贴板图片.png', { type: 'image/png' }));
+    element.dispatchEvent(new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData: clipboard }));
+  });
+  await expect(page.getByText('剪贴板图片.png')).toBeVisible();
+  await page.getByRole('button', { name: '移除图片 剪贴板图片.png' }).click();
+
   await page.getByRole('button', { name: '添加附件' }).click();
-  await page.getByRole('button', { name: '照片', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('未访问真实设备或文件服务');
+  await expect(page.getByRole('button', { name: '隐藏当前窗口' })).toBeDisabled();
+  await page.getByRole('button', { name: '添加附件' }).click();
+
+  const accessibility = await new AxeBuilder({ page })
+    .include('[aria-label="高二物理 3 班会话"]')
+    .analyze();
+  expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
 
   const sentMessage = sentMessageBody.locator('xpath=ancestor::article');
   await sentMessage.getByRole('button', { name: '撤回' }).click();
   await expect(page.getByText('消息已撤回', { exact: true }).last()).toBeVisible();
 
   await page.getByRole('button', { name: '取消置顶' }).click();
-  await expect(page.getByRole('status')).toContainText('已取消置顶消息');
+  await expect(page.getByText('已取消置顶消息。')).toBeVisible();
   await page.getByRole('button', { name: '会话管理', exact: true }).click();
   await page.getByRole('menuitem', { name: '全体禁言' }).click();
   await page.getByRole('button', { name: '会话管理', exact: true }).click();
@@ -182,9 +249,6 @@ test('teacher sends and manages a class message @a11y', async ({ page }) => {
   await expect(page).toHaveURL(/\/teacher\/homework\/homework-momentum-a\?source=notification&notification=system-teacher-submissions$/);
   await page.getByRole('button', { name: '返回通知' }).click();
   await expect(page).toHaveURL(/\/teacher\/messages\?category=system&thread=system-teacher-submissions$/);
-
-  const accessibility = await new AxeBuilder({ page }).analyze();
-  expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
 });
 
 test('teacher always sees conversation management in class and direct chats', async ({ page }) => {
@@ -192,6 +256,7 @@ test('teacher always sees conversation management in class and direct chats', as
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
+  await selectPhysics3Thread(page);
 
   const classConversation = page.getByRole('region', { name: '高二物理 3 班会话' });
   await expect(classConversation.getByRole('button', { name: '会话管理', exact: true })).toBeVisible();
@@ -318,6 +383,7 @@ test('teacher enters and exits the immersive message workspace without losing co
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
+  await selectPhysics3Thread(page);
 
   const shell = page.locator('[data-shell-mode="linear-workbench"]');
   await expect(shell).toHaveAttribute('data-message-shell-mode', 'immersive');
@@ -576,11 +642,12 @@ test('student follows a notice and reuses the teacher direct thread @a11y', asyn
   await expect(page).toHaveURL(/\/student\/messages\?category=system&thread=system-student-graded$/);
 
   await page.getByRole('button', { name: /私聊/ }).click();
-  const contactTrigger = page.getByRole('button', { name: '发起私聊' });
+  const contactTrigger = page.getByRole('button', { name: '通讯录' });
   await contactTrigger.click();
-  const dialog = page.getByRole('dialog', { name: '发起私聊' });
-  await dialog.getByRole('textbox', { name: '搜索联系人' }).fill('王老师');
-  await dialog.getByRole('button', { name: /王老师/ }).click();
+  const dialog = page.getByRole('dialog', { name: '通讯录' });
+  await dialog.getByRole('textbox', { name: '搜索联系人、班级或公开课' }).fill('王老师');
+  await dialog.getByRole('button', { name: '查看资料' }).click();
+  await dialog.getByRole('button', { name: '发消息' }).click();
   await expect(page.getByRole('heading', { name: '王老师' })).toBeVisible();
   await expect(contactTrigger).toBeFocused();
 
@@ -598,13 +665,41 @@ test('contacts dialog closes with Escape and restores keyboard focus', async ({ 
   await page.getByRole('link', { name: /消息/ }).click();
   await page.getByRole('button', { name: /私聊/ }).click();
 
-  const contactTrigger = page.getByRole('button', { name: '发起私聊' });
+  const contactTrigger = page.getByRole('button', { name: '通讯录' });
   await contactTrigger.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: '发起私聊' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: '通讯录' })).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog', { name: '发起私聊' })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: '通讯录' })).toHaveCount(0);
   await expect(contactTrigger).toBeFocused();
+});
+
+test('directory browses relations and discovers people, classes and open courses @a11y', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: /老师视角/ }).click();
+  await page.goto('/teacher/messages?category=direct');
+  await page.getByRole('button', { name: '通讯录' }).click();
+  const dialog = page.getByRole('dialog', { name: '通讯录' });
+
+  const relationNavigation = dialog.getByRole('navigation', { name: '通讯录分类' });
+  for (const name of ['新好友', '班级', '组织架构']) {
+    await expect(relationNavigation.getByRole('button', { name, exact: true })).toBeVisible();
+  }
+  await relationNavigation.getByRole('button', { name: '组织架构', exact: true }).click();
+  await dialog.getByRole('button', { name: '教学中心', exact: true }).click();
+  await expect(dialog.getByRole('navigation', { name: '组织路径' })).toContainText('教学中心');
+
+  const search = dialog.getByRole('textbox', { name: '搜索联系人、班级或公开课' });
+  await search.fill('139****0317');
+  await expect(dialog.getByText('张老师')).toBeVisible();
+  await search.fill('PHY2303');
+  await expect(dialog.getByText('高二物理 3 班')).toBeVisible();
+  await search.fill('OC-READ-0808');
+  await expect(dialog.getByText('高效阅读公开课')).toBeVisible();
+
+  const accessibility = await new AxeBuilder({ page }).include('dialog').analyze();
+  expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
 });
 
 test('keeps the message list command menu above the thread rows', async ({ page }) => {
@@ -633,6 +728,7 @@ test('teacher reviews a private WorkBuddy reminder and sends one grouped message
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
+  await selectPhysics3Thread(page);
 
   const sidecar = page.getByLabel('TeachBuddy 私密协作窗口');
   await expect(sidecar.getByText('仅你可见')).toHaveCount(0);
@@ -694,6 +790,7 @@ test('expanded WorkBuddy editor keeps the sidecar shell anchored while its conte
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
+  await selectPhysics3Thread(page);
 
   const sidecar = page.getByLabel('TeachBuddy 私密协作窗口');
   await sidecar.getByRole('button', { name: '生成消息草稿' }).click();
@@ -735,6 +832,7 @@ test('teacher turns the weekly teaching plan into a second simulated class notic
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
+  await selectPhysics3Thread(page);
   const sidecar = page.getByLabel('TeachBuddy 私密协作窗口');
   await expect(sidecar.getByRole('button', { name: /核对未截止作业/ })).toBeVisible();
   await sidecar.getByRole('button', { name: /根据本周教学计划生成课前准备通知/ }).click();
@@ -868,6 +966,7 @@ test('teacher resizes the WorkBuddy auxiliary workspace with an accessible separ
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
+  await selectPhysics3Thread(page);
   const communicationSurface = page.getByRole('region', { name: '消息通信主工作台' });
   await expect(communicationSurface.getByRole('region', { name: '班级消息列表', exact: true })).toBeVisible();
   await expect(communicationSurface.getByRole('region', { name: '高二物理 3 班会话', exact: true })).toBeVisible();
@@ -914,6 +1013,7 @@ test('compact immersive messaging keeps WorkBuddy as an overlay without a splitt
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
+  await selectPhysics3Thread(page);
   const sidecar = page.getByLabel('TeachBuddy 私密协作窗口');
   await expect(sidecar).toBeVisible();
   await expect(sidecar.getByRole('button', { name: '关闭 TeachBuddy' })).toHaveCount(0);
@@ -936,6 +1036,7 @@ test('teacher approves a guided explanation, opens it from IM and finds the same
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
+  await selectPhysics3Thread(page);
   const classConversation = page.getByRole('region', { name: '高二物理 3 班会话' });
   await expect(classConversation.getByText(/今天动量守恒练习单第 5 题我不会/)).toBeVisible();
   const sidecar = page.getByLabel('TeachBuddy 私密协作窗口');
@@ -1010,6 +1111,7 @@ test('teacher and student can publicly mention the same authorized class Agent @
     await page.goto('/select-role');
     await page.getByRole('button', { name: perspective }).click();
     await page.getByRole('link', { name: /消息/ }).click();
+    await selectPhysics3Thread(page);
     const conversation = page.getByRole('region', { name: '高二物理 3 班会话' });
     await expect(conversation.getByText(/已授权.*群内公开回复/)).toHaveCount(0);
     await conversation.getByRole('button', { name: '选择班级 Agent' }).click();
@@ -1088,6 +1190,7 @@ test('typed @ searches Agents and members while the direct directory switches is
   await page.goto('/select-role');
   await page.getByRole('button', { name: /老师视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
+  await selectPhysics3Thread(page);
 
   const classConversation = page.getByRole('region', { name: '高二物理 3 班会话' });
   const composer = classConversation.getByRole('textbox', { name: '输入消息' });
@@ -1117,4 +1220,104 @@ test('typed @ searches Agents and members while the direct directory switches is
   await expect(page).toHaveURL(/thread=direct-class-agent-physics-3-teacher/);
   await expect(page.getByRole('region', { name: '物理学习助手会话' }).getByRole('textbox', { name: '输入消息' }))
     .toHaveValue('保留在物理助手会话里的草稿');
+});
+
+test('IM 2.0 basic actions keep message context, search, resources and translation in one workspace', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/select-role');
+  await page.getByRole('button', { name: /老师视角/ }).click();
+  await page.getByRole('link', { name: /消息/ }).click();
+  await page.locator('[data-thread-id="class-physics-3"]').click();
+
+  const conversation = page.getByRole('region', { name: '高二物理 3 班会话' });
+  const target = conversation.locator('[data-message-id="cp3-3"]');
+  await target.hover();
+  await target.getByRole('button', { name: '回复' }).click();
+  await expect(conversation.getByText('回复 李明')).toBeVisible();
+  await conversation.getByRole('textbox', { name: '输入消息' }).fill('收到，我会继续说明。');
+  await conversation.getByRole('button', { name: '发送', exact: true }).click();
+  await expect(conversation.getByRole('button', { name: /李明.*练习单已经准备好了/ })).toBeVisible();
+
+  await target.hover();
+  await target.getByRole('button', { name: '添加 👍 Reaction' }).click();
+  await expect(target.getByRole('button', { name: /取消 👍 Reaction，当前 1 人/ })).toHaveAttribute('aria-pressed', 'true');
+
+  await conversation.getByRole('button', { name: '搜索聊天记录' }).click();
+  const history = conversation.getByRole('complementary', { name: '搜索聊天记录' });
+  await history.getByPlaceholder('输入消息关键词').fill('正负号');
+  await history.getByRole('button', { name: '搜索', exact: true }).click();
+  await expect(history.getByText('找到 1 条消息')).toBeVisible();
+  await history.getByRole('button', { name: /王老师，今天动量守恒练习单第 5 题/ }).click();
+  await expect(conversation.locator('[data-message-id="cp3-4"]')).toHaveAttribute('data-highlighted', 'true');
+
+  await conversation.getByRole('button', { name: '查找会话资源' }).click();
+  const resources = conversation.getByRole('complementary', { name: '群文件' });
+  const resource = resources.locator('article').filter({ hasText: '动量守恒课堂练习单.pdf' });
+  await resource.getByRole('button', { name: '引用' }).click();
+  await resources.getByRole('button', { name: '关闭会话资源' }).click();
+  await conversation.getByRole('textbox', { name: '输入消息' }).fill('请查收这份练习单。');
+  await conversation.getByRole('button', { name: '发送', exact: true }).click();
+  await expect(conversation.getByText('1.8 MB · SIMULATED')).toBeVisible();
+
+  await target.hover();
+  await target.getByRole('button', { name: '翻译' }).click();
+  await expect(conversation.getByText('The practice worksheet is ready.')).toBeVisible();
+  await expect(conversation.getByText('译文 · SIMULATED')).toBeVisible();
+});
+
+test('public-course notices and official ClassIn content stay in the approved four-category model @a11y', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/select-role');
+  await page.getByRole('button', { name: /学生视角/ }).click();
+  await page.goto('/student/messages?category=system&thread=system-open-course-open-reading');
+
+  const courseNotice = page.getByRole('article', { name: '高效阅读公开课即将开始' });
+  await expect(courseNotice.getByText('ClassIn 公开课')).toBeVisible();
+  await expect(courseNotice.getByText('18/30 人')).toBeVisible();
+  await courseNotice.getByRole('button', { name: '查看公开课' }).click();
+  await expect(page).toHaveURL(/\/student\/open-courses\/open-reading\?source=notification&notification=system-open-course-open-reading/);
+  await page.getByRole('button', { name: '返回' }).click();
+  await expect(page).toHaveURL(/category=system&thread=system-open-course-open-reading/);
+
+  await page.getByRole('button', { name: '官方公告' }).click();
+  await page.locator('[data-thread-id="official-update"]').click();
+  const official = page.getByRole('article', { name: 'ClassIn PC 体验更新说明' });
+  await expect(official.getByText('ClassIn 助手 · 官方').first()).toBeVisible();
+  await expect(official.getByText('PC 工作台体验更新')).toBeVisible();
+  await expect(page.getByRole('button', { name: '系统通知', exact: true })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('group', { name: '消息分类' }).getByRole('button')).toHaveCount(4);
+
+  const accessibility = await new AxeBuilder({ page }).include('#main-content').analyze();
+  expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
+});
+
+test('contact cards and received temporary classrooms form readable message objects @a11y', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/select-role');
+  await page.getByRole('button', { name: /老师视角/ }).click();
+  await page.goto('/teacher/messages?category=direct&thread=direct-teacher-zhang');
+
+  const conversation = page.getByRole('region', { name: '张老师会话' });
+  await conversation.getByRole('button', { name: '添加附件' }).click();
+  await conversation.getByRole('button', { name: '名片' }).click();
+  const picker = page.getByRole('dialog', { name: '发送联系人名片' });
+  await expect(picker).toBeVisible();
+  await picker.getByRole('button', { name: /张老师/ }).click();
+  await picker.getByRole('button', { name: '添加 1 张名片' }).click();
+  await expect(conversation.getByRole('button', { name: '移除名片张老师' })).toBeVisible();
+  await conversation.getByRole('button', { name: '发送', exact: true }).click();
+  await conversation.getByRole('button', { name: '查看联系人资料 张老师' }).click();
+  const profile = page.getByRole('dialog', { name: '张老师' });
+  await expect(profile.getByText('CI200317')).toBeVisible();
+  await profile.getByRole('button', { name: '关闭', exact: true }).click();
+
+  await page.goto('/teacher/messages?category=class&thread=class-physics-3');
+  const classConversation = page.getByRole('region', { name: '高二物理 3 班会话' });
+  await expect(classConversation.getByText('动量守恒 15 分钟答疑')).toBeVisible();
+  await expect(classConversation.getByText('本次邀请：李明、周然等 4 位成员')).toBeVisible();
+  await classConversation.getByRole('button', { name: '进入临时教室' }).click();
+  await expect(classConversation.getByRole('status')).toContainText('已进入临时教室演示');
+
+  const accessibility = await new AxeBuilder({ page }).include('[data-message-conversation]').analyze();
+  expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
 });

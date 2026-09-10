@@ -70,6 +70,7 @@
 .welcome p { color: var(--color-ink-muted); line-height: 1.6; }
 .events li { padding-block: var(--space-md); border-bottom: var(--rule-thin) solid var(--color-line-faint); }
 .events li[data-actor='teacher'] { padding-left: var(--space-md); border-left: var(--rule-medium) solid var(--color-line-subtle); }
+.events .analysisItem { border-bottom: 0; }
 .events article { min-width: 0; }
 .events header { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-xs); }
 .events header span { font-size: var(--text-xs); color: var(--color-ink-muted); }
@@ -78,8 +79,7 @@
 .outputs button { justify-content: flex-start; flex-wrap: wrap; text-align: left; padding: var(--space-sm); }
 .outputs button span { overflow-wrap: anywhere; min-width: 0; }
 .outputs small { color: var(--color-ink-muted); }
-.progress { display: flex; align-items: center; gap: var(--space-xs); padding-block: var(--space-md); color: var(--color-ink-muted); }
-.spinner { animation: spin 1s linear infinite; }
+.operationStatus { padding-block: var(--space-sm); color: var(--color-ink-muted); font-size: var(--text-xs); }
 .error { display: grid; justify-items: start; gap: var(--space-xs); padding-block: var(--space-md); color: var(--color-danger); overflow-wrap: anywhere; }
 .composerDock { width: 100%; max-width: 848px; margin-inline: auto; padding: var(--space-sm) var(--space-lg) var(--space-lg); min-width: 0; }
 .review { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-width: 0; min-height: 0; border-left: var(--rule-thin) solid var(--color-line-subtle); background: var(--color-surface); }
@@ -89,8 +89,6 @@
 .document pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-body); font-size: var(--text-base); line-height: 1.8; margin: 0; }
 .review footer { display: grid; gap: var(--space-sm); padding: var(--space-md); border-top: var(--rule-thin) solid var(--color-line-faint); max-height: min(16rem, 40vh); overflow-y: auto; }
 .review footer p { color: var(--color-ink-muted); font-size: var(--text-xs); overflow-wrap: anywhere; line-height: 1.5; }
-@keyframes spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
 @media (max-width: 1100px) {
   .body[data-review='true'][data-history='true'] { grid-template-columns: minmax(0, 1fr) minmax(280px, 45%); }
   .body[data-review='true'] .history { position: absolute; inset: 0 auto 0 0; width: 230px; background: var(--color-surface); z-index: var(--z-raised); }

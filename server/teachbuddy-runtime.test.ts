@@ -55,12 +55,28 @@ function fixture() {
     if (method === 'host.describe') return { cwd: join(root, 'workspace'), version: '0.1.1-rc.2' };
     if (method === 'agentPreset.list') return { presets: [{ id: 'teachbuddy' }] };
     if (method === 'credentials.describe') return { credentials: { DEEPSEEK_API_KEY: { configured } } };
-    if (method === 'session.create') { id = String(payload.sessionId); return { sessionId: id }; }
+    if (method === 'session.create') {
+      const createdId = String(payload.sessionId);
+      if (createdId !== 'tb-model-default-restore') id = createdId;
+      return { sessionId: createdId };
+    }
     if (method === 'session.history') return { events: structuredClone(events), hasMore: false };
     if (method === 'session.list') return { items: [{ sessionId: id, running }] };
+    if (method === 'session.models') return {
+      current: { provider: 'deepseek-official', model: 'deepseek-v4-flash' }, routable: true,
+      groups: [{ id: 'deepseek-official', name: 'DeepSeek', models: [
+        { id: 'deepseek-v4-flash', name: 'DeepSeek-V4-Flash', inputModalities: ['text'] },
+        { id: 'deepseek-v4-flash-vision-exp', name: 'DeepSeek Vision', inputModalities: ['text', 'image'] },
+      ] }], failures: [],
+    };
+    if (method === 'session.selectModel') return { selected: { provider: payload.provider, model: payload.model } };
     if (method === 'session.prompt') {
       if (stage === 'unknown') throw new Error('transport lost before an observable admission');
-      const message = { id: `message-${rpcId}`, role: 'user', source: { kind: 'user', rpcId }, content: payload.content };
+      const content = Array.isArray(payload.content) ? payload.content.map((part) => {
+        if (!part || typeof part !== 'object' || !('type' in part) || part.type !== 'image') return part;
+        return { type: 'image', attachment: { attachmentId: `attachment-${rpcId}`, mediaType: 'mediaType' in part ? part.mediaType : '', name: 'name' in part ? part.name : undefined } };
+      }) : payload.content;
+      const message = { id: `message-${rpcId}`, role: 'user', source: { kind: 'user', rpcId }, content };
       queuedMessage = message;
       // Official agent/src/inbox.ts: insertion, turn/start, claim deletion, then step entry.
       append('agent/inbox/spliced', { target: 'next-turn', start: 0, inserted: [message] });
@@ -125,6 +141,27 @@ describe('TeachBuddy runtime governance', () => {
     const read = await f.adapter.read('ideal-full', session.id);
     expect(read.status).not.toBe('running');
     expect(read.events.filter((event) => event.kind === 'teacher_message')).toHaveLength(1);
+  });
+
+  it('validates image bytes, selects the DeepSeek vision route, and admits image-only prompts', async () => {
+    const f = fixture(); const session = await f.adapter.create('ideal-full');
+    const data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZxQAAAABJRU5ErkJggg==';
+    const image = { name: '../课堂板书.png', mediaType: 'image/png' as const, byteSize: Buffer.from(data, 'base64').length, data };
+    await f.adapter.send('ideal-full', session.id, '', 'image-only', [image]);
+    expect(f.calls.find(({ method }) => method === 'session.selectModel')?.payload).toMatchObject({ provider: 'deepseek-official', model: 'deepseek-v4-flash-vision-exp' });
+    expect(f.calls.filter(({ method }) => method === 'session.selectModel').at(-1)?.payload).toMatchObject({ sessionId: 'tb-model-default-restore', model: 'deepseek-v4-flash' });
+    expect(f.calls.find(({ method }) => method === 'session.prompt')?.payload.content).toEqual([{ type: 'image', mediaType: 'image/png', data, name: '课堂板书.png' }]);
+    expect((await f.adapter.read('ideal-full', session.id)).events).toContainEqual(expect.objectContaining({ kind: 'teacher_message', summary: '已附 1 张图片（课堂板书.png）' }));
+    await expect(f.adapter.send('ideal-full', session.id, '', 'image-only', [{ ...image, name: '另一张.png' }])).rejects.toThrow('不一致');
+    await expect(f.adapter.send('ideal-full', session.id, '', 'bad-image', [{ ...image, data: 'bm90LWEtcG5n', byteSize: 9 }])).rejects.toThrow('内容不正确');
+    f.append('assistant/chunk', { turn: 1, step: 1, chunk: { type: 'finish', reason: { kind: 'error', failure: {
+      code: 'AUTH', status: 403, message: 'key not allowed to access model deepseek-v4-flash-vision-exp',
+    } } } });
+    f.finish('error');
+    expect(await f.adapter.read('ideal-full', session.id)).toMatchObject({
+      status: 'failed', failureCode: 'vision-permission',
+      error: '当前模型凭据未开通图片理解，请联系服务管理员开通 DeepSeek 视觉模型后重试。',
+    });
   });
 
   it('maintains a lost prompt response after BFF restart and enforces its deadline without a browser', async () => {
@@ -438,6 +475,34 @@ describe('TeachBuddy runtime governance', () => {
       expect(download.headers.get('x-content-type-options')).toBe('nosniff');
       expect(await download.text()).toBe('<h1>互动练习</h1>');
       expect((await fetch(`${base}/api/teachbuddy/files/${file.id}?scope=standalone-teacher`)).status).toBe(404);
+    } finally { await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve())); }
+  });
+
+  it('serves only the validated local private IM projection in the ideal scope', async () => {
+    const f = fixture();
+    const directory = join(f.root, 'private');
+    mkdirSync(directory, { recursive: true });
+    writeFileSync(join(directory, 'im-demo-context.json'), JSON.stringify({
+      version: 'private-v1', capturedAt: '2026-09-08T00:00:00.000Z', dataWindow: 'T-1',
+      truthLabel: 'read-only-business-data', source: 'dw-hunter-local',
+      thread: {
+        id: 'class-dw-expression-lab', classId: 'dw-expression-lab', title: '本机教学群', subtitle: '本机快照', avatar: '教',
+        updatedAt: '2026-09-07T12:00:00.000Z', memberCount: 21,
+        entries: [{ id: 'private-1', authorRole: 'teacher', authorName: '教师别名', body: '真实消息正文', sentAt: '2026-09-07T12:00:00.000Z', kind: 'text' }],
+      },
+      context: { courseType: 1, courseStatus: 1, classCount: 0, messageCount: 1, activeSenderCount: 1, teachingTopics: ['作文习作'], interactionPatterns: ['教师布置作业'], evidenceBoundary: '没有结构化评分时不生成个人诊断。' },
+    }));
+    const middleware = runtimeMiddleware(f.adapter);
+    const server = createServer((req, res) => middleware(req, res, () => { res.writeHead(404); res.end(); }));
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address();
+    if (!address || typeof address === 'string') throw new Error('Missing port');
+    const base = `http://127.0.0.1:${address.port}`;
+    try {
+      const response = await fetch(`${base}/api/teachbuddy/im-demo-context?scope=ideal-full`);
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({ truthLabel: 'read-only-business-data', thread: { title: '本机教学群' } });
+      expect((await fetch(`${base}/api/teachbuddy/im-demo-context?scope=classin-mvp`)).status).toBe(404);
     } finally { await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve())); }
   });
 

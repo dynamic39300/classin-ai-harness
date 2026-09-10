@@ -28,9 +28,8 @@ export function AppShell({ role }: AppShellProps) {
   const navigate = useNavigate();
   const [capability, setCapability] = useState<CapabilityKind | null>(null);
   const [agentNavigationOpen, setAgentNavigationOpen] = useState(false);
-  const messageWorkspaceActive = (
-    role === 'teacher' && location.pathname === '/teacher/messages'
-  ) || /^\/(?:teacher|student)\/classes\/[^/]+\/chat$/.test(location.pathname);
+  const messageWorkspaceActive = location.pathname === `/${role === 'teacher' ? 'teacher' : 'student'}/messages`
+    || /^\/(?:teacher|student)\/classes\/[^/]+\/chat$/.test(location.pathname);
   const [messageShellMode, setMessageShellMode] = useState<MessageWorkspaceShellMode>(
     messageWorkspaceActive ? 'immersive' : 'standard',
   );
