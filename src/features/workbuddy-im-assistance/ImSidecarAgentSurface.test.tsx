@@ -70,6 +70,9 @@ describe('ImSidecarAgentSurface', () => {
     expect(within(sidecar).queryByRole('button', { name: /新建.*会话/ })).not.toBeInTheDocument();
     expect(within(guide).getByRole('button', { name: '收起 TeachBuddy 消息建议' })).toHaveAttribute('aria-expanded', 'true');
     const conversation = within(sidecar).getByRole('region', { name: 'TeachBuddy 对话' });
+    expect(sidecar.firstElementChild).toBe(guide);
+    expect(guide.nextElementSibling).toBe(conversation);
+    expect(conversation).not.toContainElement(guide);
     const focusedStage = within(guide).getByRole('tab', { name: /课前/ });
     focusedStage.focus();
     expect(focusedStage).toHaveFocus();

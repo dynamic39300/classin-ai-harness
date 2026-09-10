@@ -432,6 +432,27 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
 
   return (
     <aside className={styles.sidecar} aria-label={`${TEACHBUDDY_BRAND.shortName} 私密协作窗口`} data-dismissible={onClose ? 'true' : 'false'} data-guide-integrated="true" data-surface="floating-assistant" id="workbuddy-im-sidecar">
+      <TeachingDynamics
+        snapshot={dynamics}
+        expanded={presentation.expanded}
+        selectedStage={presentation.selectedStage}
+        loading={dynamicsLoading}
+        error={dynamicsError || catalogError}
+        updatedWhileCompact={dynamicsUpdated}
+        disabled={!canSend}
+        isActionDisabled={(action) => Boolean(action.learningSelection && !catalog)}
+        onExpandedChange={(expanded) => {
+          downwardWheelDistanceRef.current = 0;
+          if (!expanded) suppressFollowLatestUntilRef.current = performance.now() + 400;
+          setPresentation((current) => ({ ...current, expanded }));
+          if (expanded) setDynamicsUpdated(false);
+        }}
+        onSelectedStageChange={(selectedStage) => setPresentation((current) => ({ ...current, selectedStage }))}
+        onAction={triggerTeachingAction}
+        onRetry={() => { void loadDynamics(); runtime.reconnect(); }}
+        onClose={onClose}
+      />
+
       <div
         aria-label="TeachBuddy 对话"
         className={styles.agentBody}
@@ -458,27 +479,6 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         ref={timelineRef}
         role="region"
       >
-        <TeachingDynamics
-          snapshot={dynamics}
-          expanded={presentation.expanded}
-          selectedStage={presentation.selectedStage}
-          loading={dynamicsLoading}
-          error={dynamicsError || catalogError}
-          updatedWhileCompact={dynamicsUpdated}
-          disabled={!canSend}
-          isActionDisabled={(action) => Boolean(action.learningSelection && !catalog)}
-          onExpandedChange={(expanded) => {
-            downwardWheelDistanceRef.current = 0;
-            if (!expanded) suppressFollowLatestUntilRef.current = performance.now() + 400;
-            setPresentation((current) => ({ ...current, expanded }));
-            if (expanded) setDynamicsUpdated(false);
-          }}
-          onSelectedStageChange={(selectedStage) => setPresentation((current) => ({ ...current, selectedStage }))}
-          onAction={triggerTeachingAction}
-          onRetry={() => { void loadDynamics(); runtime.reconnect(); }}
-          onClose={onClose}
-        />
-
         {connectionProblem ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{connectionProblem}{runtime.health?.message ? `：${runtime.health.message}` : ''}</p><button type="button" onClick={runtime.reconnect}><RefreshCw aria-hidden="true" size={14} />重试</button></div> : null}
 
         {recoveringBinding || (sessionRef && !runtime.session && !runtime.readError) ? <p className={styles.runtimeProgress} role="status">正在恢复当前对话…</p> : null}
@@ -542,7 +542,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         placeholder={direct ? '例如：结合当前对话，帮我拟一条专业回复…' : '告诉 TeachBuddy 你想完成什么…'}
         submitLabel="发送给 TeachBuddy"
         canSubmit={canSend}
-        tools={<button type="button" aria-label="打开教学协作" title="教学协作" onClick={() => { setPresentation((current) => ({ ...current, expanded: true })); setDynamicsUpdated(false); timelineRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' }); }}><Sparkles aria-hidden="true" size={17} /><span>教学协作</span></button>}
+        tools={<button type="button" aria-label="打开教学协作" title="教学协作" onClick={() => { setPresentation((current) => ({ ...current, expanded: true })); setDynamicsUpdated(false); }}><Sparkles aria-hidden="true" size={17} /><span>教学协作</span></button>}
         secondaryActions={canStop && sessionRef ? <button type="button" aria-label="停止生成" title="停止生成" disabled={stopping} onClick={() => void runtime.execute(sessionRef, { kind: 'cancel' })}><Square aria-hidden="true" size={14} />停止</button> : undefined}
         value={composerDraft}
       />

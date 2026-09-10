@@ -316,6 +316,26 @@ test('integrated TeachBuddy guide collapses gradually after deliberate downward 
   const content = guide.locator('#teaching-dynamics-content');
   const collapse = guide.getByRole('button', { name: '收起 TeachBuddy 消息建议' });
   await expect(collapse).toHaveAttribute('aria-expanded', 'true');
+  const communication = page.getByRole('region', { name: '消息通信主工作台' });
+  const [sidecarBox, guideBox, communicationBox] = await Promise.all([sidecar.boundingBox(), guide.boundingBox(), communication.boundingBox()]);
+  expect(sidecarBox).not.toBeNull();
+  expect(guideBox).not.toBeNull();
+  expect(communicationBox).not.toBeNull();
+  expect(sidecarBox?.y).toBeCloseTo(communicationBox?.y ?? 0, 0);
+  expect((sidecarBox?.y ?? 0) + (sidecarBox?.height ?? 0)).toBeCloseTo((communicationBox?.y ?? 0) + (communicationBox?.height ?? 0), 0);
+  expect(guideBox?.x).toBeCloseTo(sidecarBox?.x ?? 0, 0);
+  expect(guideBox?.width).toBeCloseTo(sidecarBox?.width ?? 0, 0);
+  const surfaces = await sidecar.evaluate((element) => {
+    const guide = element.querySelector<HTMLElement>('[aria-label="TeachBuddy 消息建议"]');
+    const sidecarStyle = getComputedStyle(element);
+    const guideStyle = guide ? getComputedStyle(guide) : null;
+    return {
+      sidecar: { borderWidth: sidecarStyle.borderWidth, boxShadow: sidecarStyle.boxShadow, margin: sidecarStyle.margin },
+      guide: guideStyle ? { position: guideStyle.position, borderWidth: guideStyle.borderWidth, boxShadow: guideStyle.boxShadow } : null,
+    };
+  });
+  expect(surfaces.sidecar).toEqual({ borderWidth: '0px', boxShadow: 'none', margin: '0px' });
+  expect(surfaces.guide).toEqual({ position: 'relative', borderWidth: '0px', boxShadow: 'none' });
   const motion = await content.evaluate((element) => {
     const style = getComputedStyle(element);
     return { duration: style.transitionDuration, property: style.transitionProperty };
