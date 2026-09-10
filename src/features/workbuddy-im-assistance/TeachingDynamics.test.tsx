@@ -48,6 +48,7 @@ describe('TeachingDynamics', () => {
 
     await user.click(within(module).getByRole('tab', { name: /课前/ }));
     expect(within(module).getByText('课前准备已完成')).toBeVisible();
+    expect(within(module).getByText('无需处理')).toBeVisible();
     expect(within(module).queryByText('正在上课，3 人迟到')).not.toBeInTheDocument();
 
     await user.click(within(module).getByRole('tab', { name: /课后.*建议 2 条/ }));

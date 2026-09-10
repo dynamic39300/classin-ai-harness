@@ -44,7 +44,7 @@ function StageItem({ item, contextPrefix, disabled, onAction }: Readonly<{
     </span>
     {item.action ? <span className={styles.itemAction} aria-hidden="true">
       <Sparkles size={12} />{item.action.label}<ChevronRight size={12} />
-    </span> : <span className={styles.itemStatus}><Check size={12} aria-hidden="true" />已了解</span>}
+    </span> : <span className={styles.itemStatus}><Check size={12} aria-hidden="true" />{item.kind === 'confirmation' ? '无需处理' : '仅供查看'}</span>}
   </>;
 
   if (item.action) {

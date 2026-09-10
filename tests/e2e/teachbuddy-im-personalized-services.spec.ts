@@ -278,14 +278,14 @@ test('teacher starts a governed recap from Teaching Dynamics without a configura
   const accessibility = await new AxeBuilder({ page }).include('#workbuddy-im-sidecar').analyze();
   expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
   await sidecar.getByRole('tab', { name: /总结/ }).click();
-  await sidecar.getByRole('button', { name: /制作解析：/ }).first().click();
+  await sidecar.getByRole('button', { name: /个人总结：李明/ }).first().click();
 
   await expect.poll(() => messageBodies.length).toBe(1);
-  const visibleRequest = '请根据动量守恒练习第 5 题的现有作答和典型错因，制作一份学生容易理解的解析。';
-  expect(String(messageBodies[0]?.text)).toContain('请执行“个性化课堂回顾”');
+  const visibleRequest = '请根据李明在动量守恒单元的课堂、作业和互动证据，整理个人学习进展、困难和下一步建议；只陈述可核验事实。';
+  expect(String(messageBodies[0]?.text)).toContain('请执行“个人学情总结”');
   expect(String(messageBodies[0]?.text)).toContain(visibleRequest);
   await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' }).getByText(visibleRequest, { exact: true })).toBeVisible();
-  await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' })).not.toContainText('请执行“个性化课堂回顾”');
+  await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' })).not.toContainText('请执行“个人学情总结”');
   await expect(sidecar.getByText(/介质不变，所以波速不变/)).toBeVisible();
   await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
   await expect(sidecar.getByRole('table')).toContainText('巩固练习');
@@ -416,7 +416,7 @@ test('rich Agent response stays contained in the compact Sidecar', async ({ page
 
   const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
   await sidecar.getByRole('tab', { name: /总结/ }).click();
-  await sidecar.getByRole('button', { name: /制作解析：/ }).first().click();
+  await sidecar.getByRole('button', { name: /个人总结：李明/ }).first().click();
   await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
   await expect(sidecar.getByRole('table')).toBeVisible();
   await expect(sidecar.getByRole('region', { name: 'AI 消息助手 分析过程' })).toBeVisible();

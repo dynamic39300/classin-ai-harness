@@ -16,14 +16,27 @@ describe('FixedWorkBuddyImTeachingDynamicsAdapter', () => {
     expect(during.currentStage).toBe('during');
     expect(during.stages.find(({ id }) => id === 'before')?.items.some(({ id }) => id === 'physics-upcoming-momentum-class')).toBe(false);
     expect(during.stages.find(({ id }) => id === 'before')?.items.some(({ id }) => id === 'physics-upcoming-induction-class')).toBe(true);
-    expect(during.stages.find(({ id }) => id === 'during')?.items[0]?.title).toContain('3 人迟到');
+    expect(during.stages.find(({ id }) => id === 'during')?.items[0]?.title).toContain('3 人未进入');
+  });
+
+  it('shows the complete teaching prompt inventory at the fixed showcase time', async () => {
+    const result = await new FixedWorkBuddyImTeachingDynamicsAdapter(() => new Date('2026-08-09T14:40:00+08:00')).list(request);
+    const byStage = Object.fromEntries(result.stages.map(({ id, items }) => [id, items]));
+
+    expect(byStage.before?.map(({ action }) => action?.label)).toEqual(['同步计划', '提醒上课']);
+    expect(byStage.during?.map(({ action }) => action?.label)).toEqual(['提醒上课', undefined]);
+    expect(byStage.after?.map(({ action }) => action?.label)).toEqual(['同步任务', '提醒交作业', '提醒交测验', '生成错题卡']);
+    expect(byStage.summary?.map(({ action }) => action?.label)).toEqual(['生成回顾', '整班总结', '个人总结']);
+    expect(byStage.during?.[1]).toMatchObject({ kind: 'confirmation', title: '已上课 15 分钟，全员到齐' });
+    expect(result.stages.flatMap(({ items }) => items).filter(({ action }) => action)).toHaveLength(10);
+    expect(result.stages.flatMap(({ items }) => items).every(({ action }) => !action || action.teacherRequest.startsWith('请'))).toBe(true);
   });
 
   it('expires reminders from business time instead of a UI completion state', async () => {
     const afterDeadline = await new FixedWorkBuddyImTeachingDynamicsAdapter(() => new Date('2026-08-13T09:00:00+08:00')).list(request);
     expect(afterDeadline.currentStage).toBe('summary');
     expect(afterDeadline.stages.flatMap(({ items }) => items).some(({ id }) => id === 'physics-new-homework')).toBe(false);
-    expect(afterDeadline.stages.flatMap(({ items }) => items).some(({ id }) => id === 'physics-review-one-submission')).toBe(false);
+    expect(afterDeadline.stages.flatMap(({ items }) => items).some(({ id }) => id === 'physics-wrong-question-cards')).toBe(false);
   });
 
   it('labels the DW projection and keeps unknown facts cautious', async () => {
