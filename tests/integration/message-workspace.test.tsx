@@ -633,6 +633,8 @@ describe('message workspace', () => {
     expect(video).toHaveTextContent('0:05');
     await user.click(video);
     expect(screen.getByRole('dialog', { name: '媒体查看器' })).toBeInTheDocument();
+    expect(screen.getByLabelText('碰撞实验回放.mp4'))
+      .toHaveAttribute('src', '/media/momentum-collision-experiment.mp4');
     expect(screen.getByLabelText('碰撞实验回放.mp4')).toHaveAttribute('controls');
   });
 

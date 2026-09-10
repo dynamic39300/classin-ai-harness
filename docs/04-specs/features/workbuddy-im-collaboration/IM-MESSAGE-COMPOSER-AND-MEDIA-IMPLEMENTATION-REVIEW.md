@@ -1,14 +1,18 @@
 ---
 title: ClassIn IM 消息输入与媒体 Implementation Review
 status: USER_ACCEPTED
-version: v1.1
-date: 2026-09-09
+version: v1.2
+date: 2026-09-10
 spec: IM-MESSAGE-COMPOSER-AND-MEDIA-FEATURE-SPEC.md
 tickets: IM-MEDIA-T01—T07
 review_gate: PASSED_2026-09-09
 ---
 
 # ClassIn IM 消息输入与媒体 Implementation Review
+
+## 2026-09-10 固定视频素材修正
+
+“高二物理 3 班”的碰撞实验消息曾错误复用 TeachBuddy 头像循环视频，导致封面与实际播放内容不一致。现已替换为独立、固定、去标识的 5 秒 H.264 实验动画：两辆等质量小车演示一维弹性碰撞，并标注碰撞前后速度与总动量。集成测试固定校验该消息只能指向 `/media/momentum-collision-experiment.mp4`，避免再次回退到品牌头像素材。
 
 ## Review 结论
 
