@@ -3,7 +3,7 @@ import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, use
 import { Link } from 'react-router-dom';
 import type { BusinessContextSnapshot, ImSidecarAgentServices, LearningContextCatalog, LearningContextSelection, MessageDraftArtifact, PersonalizedLearningArtifact, SendMessageReceipt } from '@contracts/workbuddy/business-context';
 import type { WorkBuddyImTarget } from '@contracts/workbuddy/im-conversation-run';
-import type { TeachingDynamicAction, TeachingDynamicsSnapshot } from '@contracts/workbuddy/teaching-dynamics';
+import type { TeachingDynamicAction, TeachingDynamicsSnapshot, TeachingStageId } from '@contracts/workbuddy/teaching-dynamics';
 import { TEACHBUDDY_BRAND } from '@contracts/workbuddy/product-brand';
 import { WorkspaceComposer } from '@design-system/WorkspaceComposer';
 import { TeachBuddyAvatar } from '@design-system/TeachBuddyAvatar';
@@ -32,7 +32,11 @@ type DeliveryState =
   | Readonly<{ status: 'sent'; receipt: SendMessageReceipt }>
   | Readonly<{ status: 'failed'; message: string }>;
 
-type TeachingDynamicsPresentation = Readonly<{ expanded: boolean }>;
+type TeachingDynamicsPresentation = Readonly<{
+  expanded: boolean;
+  selectedStage: TeachingStageId | null;
+  autoRotate: boolean;
+}>;
 
 function presentationStorageKey(threadRef: string) {
   return `teachbuddy:teaching-dynamics:${threadRef}`;
@@ -43,10 +47,14 @@ function loadPresentation(threadRef: string, hasBoundSession: boolean): Teaching
     const saved = window.sessionStorage.getItem(presentationStorageKey(threadRef));
     if (saved) {
       const value = JSON.parse(saved) as Partial<TeachingDynamicsPresentation>;
-      return { expanded: value.expanded !== false };
+      return {
+        expanded: value.expanded !== false,
+        selectedStage: value.selectedStage ?? null,
+        autoRotate: value.autoRotate !== false,
+      };
     }
   } catch { /* The local preference must not block the teaching workflow. */ }
-  return { expanded: !hasBoundSession };
+  return { expanded: !hasBoundSession, selectedStage: null, autoRotate: true };
 }
 
 function savePresentation(threadRef: string, presentation: TeachingDynamicsPresentation) {
@@ -293,7 +301,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     setContextError('');
     setLearningResultReady(false);
     setRuntimeArtifactBaselineIds([]);
-    setPresentation({ expanded: true });
+    setPresentation({ expanded: true, selectedStage: dynamics?.currentStage ?? null, autoRotate: true });
     latestTeacherEventIdRef.current = null;
     releaseRuntimeImageDrafts(imageDrafts);
     setImageDrafts([]);
@@ -395,6 +403,8 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         <TeachingDynamics
           snapshot={dynamics}
           expanded={presentation.expanded}
+          selectedStage={presentation.selectedStage}
+          autoRotate={presentation.autoRotate}
           loading={dynamicsLoading}
           error={dynamicsError || catalogError}
           updatedWhileCompact={dynamicsUpdated}
@@ -403,6 +413,8 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
             setPresentation((current) => ({ ...current, expanded }));
             if (expanded) setDynamicsUpdated(false);
           }}
+          onSelectedStageChange={(selectedStage) => setPresentation((current) => ({ ...current, selectedStage }))}
+          onAutoRotateChange={(autoRotate) => setPresentation((current) => ({ ...current, autoRotate }))}
           onAction={triggerTeachingAction}
           onRetry={() => { void loadDynamics(); runtime.reconnect(); }}
         />
@@ -465,7 +477,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         placeholder={direct ? '例如：结合当前对话，帮我拟一条专业回复…' : '告诉 TeachBuddy 你想完成什么…'}
         submitLabel="发送给 TeachBuddy"
         canSubmit={canSend}
-        tools={<button type="button" aria-label="打开教学协作" title="教学协作" onClick={() => { setPresentation({ expanded: true }); setDynamicsUpdated(false); timelineRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' }); }}><Sparkles aria-hidden="true" size={17} /><span>教学协作</span></button>}
+        tools={<button type="button" aria-label="打开教学协作" title="教学协作" onClick={() => { setPresentation((current) => ({ ...current, expanded: true })); setDynamicsUpdated(false); timelineRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' }); }}><Sparkles aria-hidden="true" size={17} /><span>教学协作</span></button>}
         secondaryActions={running && sessionRef ? <button type="button" aria-label="停止生成" title="停止生成" disabled={pending} onClick={() => void runtime.execute(sessionRef, { kind: 'cancel' })}><Square aria-hidden="true" size={14} />停止</button> : undefined}
         value={composerDraft}
       />

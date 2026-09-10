@@ -145,6 +145,7 @@ test('teacher starts a governed recap from Teaching Dynamics without a configura
   await expect(sidecar.getByRole('combobox')).toHaveCount(0);
   const accessibility = await new AxeBuilder({ page }).include('#workbuddy-im-sidecar').analyze();
   expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
+  await sidecar.getByRole('tab', { name: /总结/ }).click();
   await sidecar.getByRole('button', { name: /制作解析：/ }).first().click();
 
   await expect(sidecar.getByText(/介质不变，所以波速不变/)).toBeVisible();
@@ -182,6 +183,7 @@ test('DW-derived class context creates a private learning summary for its mapped
 
   await expect(page.getByRole('region', { name: '表达与思辨体验班会话' })).toContainText('真实数据 · 已脱敏');
   const sidecar = page.getByRole('complementary', { name: 'TeachBuddy 私密协作窗口' });
+  await sidecar.getByRole('tab', { name: /总结/ }).click();
   await sidecar.getByRole('button', { name: /生成总结：/ }).click();
   await expect(sidecar.getByRole('combobox')).toHaveCount(0);
   await expect(sidecar.getByText('林悦的个人学情总结文稿已生成，请教师审阅。')).toBeVisible();
@@ -201,6 +203,7 @@ test('rich Agent response stays contained in the compact Sidecar', async ({ page
   await enterTeacherMessages(page, 'class-physics-3');
 
   const sidecar = page.getByRole('complementary', { name: 'TeachBuddy 私密协作窗口' });
+  await sidecar.getByRole('tab', { name: /总结/ }).click();
   await sidecar.getByRole('button', { name: /制作解析：/ }).first().click();
   await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
   await expect(sidecar.getByRole('table')).toBeVisible();

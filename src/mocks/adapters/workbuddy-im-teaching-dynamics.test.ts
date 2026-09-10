@@ -14,7 +14,8 @@ describe('FixedWorkBuddyImTeachingDynamicsAdapter', () => {
 
     const during = await new FixedWorkBuddyImTeachingDynamicsAdapter(() => new Date('2026-08-09T14:40:00+08:00')).list(request);
     expect(during.currentStage).toBe('during');
-    expect(during.stages.find(({ id }) => id === 'before')?.items).toHaveLength(0);
+    expect(during.stages.find(({ id }) => id === 'before')?.items.some(({ id }) => id === 'physics-upcoming-momentum-class')).toBe(false);
+    expect(during.stages.find(({ id }) => id === 'before')?.items.some(({ id }) => id === 'physics-upcoming-induction-class')).toBe(true);
     expect(during.stages.find(({ id }) => id === 'during')?.items[0]?.title).toContain('3 人迟到');
   });
 

@@ -47,12 +47,27 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
     });
   }
 
+  if (!direct && timestamp < CORRECTION_DUE) {
+    items.push({
+      id: 'physics-upcoming-induction-class', stage: 'before', kind: 'attention', priority: 75,
+      contextLabel: `${classLabel} · 电磁感应 · 明天 19:00 在线课堂`,
+      title: '3 人还没确认预习安排', detail: '周然、陈晨等 3 人尚未回复，可提醒预习并确认到课',
+      courseRef: 'physics-induction', objectRef: 'lesson-induction-0810',
+      action: action('提醒预习', '请为明天 19:00 的电磁感应课生成一条课前提醒，说明预习内容，并请尚未回复的 3 位学生确认是否能按时到课。'),
+    });
+    items.push({
+      id: 'physics-induction-materials-ready', stage: 'before', kind: 'confirmation', priority: 25,
+      contextLabel: `${classLabel} · 电磁感应 · 明天 19:00 在线课堂`,
+      title: '讲义和预习单已同步', detail: '全班均可查看，当前无需处理', courseRef: 'physics-induction',
+    });
+  }
+
   if (timestamp >= PHYSICS_LESSON_START && timestamp < PHYSICS_LESSON_END) {
     items.push({
       id: 'physics-live-attendance', stage: 'during', kind: direct ? 'confirmation' : 'attention', priority: 110,
       contextLabel: direct ? '李明 · 动量守恒模型 · 在线课堂' : `${classLabel} · 动量守恒模型 · 在线课堂`,
       title: direct ? '李明已进入课堂' : '已开课 10 分钟，3 人迟到',
-      detail: direct ? '当前无需发送到课提醒' : '3 人尚未进入课堂，可发送一条尊重、不责备的提醒',
+      detail: direct ? '当前无需发送到课提醒' : '李明、周然、陈晨尚未进入课堂，可发送一条尊重、不责备的提醒',
       courseRef: 'physics-momentum', objectRef: 'lesson-momentum-0809',
       ...(!direct ? { action: action('提醒学生', '当前动量守恒模型课已经开始 10 分钟，仍有 3 人尚未进入。请生成一条尊重、不责备的到课提醒。', {
         capability: 'personalized-reminder', studentRef: 'all-pending', reminderReasonRef: 'attendance',
@@ -70,7 +85,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
       id: 'physics-new-homework', stage: 'after', kind: 'attention', priority: 105,
       contextLabel: direct ? '李明 · 动量守恒作业 A 组 · 私聊' : `${classLabel} · 动量守恒作业 A 组`,
       title: direct ? '李明尚未提交，明天 18:00 截止' : '6 人还没交，明天 18:00 截止',
-      detail: direct ? '可提醒李明按时提交，有困难可以先反馈' : '可向尚未提交的学生发送一条作业提醒',
+      detail: direct ? '可提醒李明按时提交，有困难可以先反馈' : '李明、周然等 6 人尚未提交，可发送一条作业提醒',
       courseRef: 'physics-momentum', objectRef: 'homework-momentum-a',
       action: action('提醒交作业', direct ? '请提醒李明在明天 18:00 前提交动量守恒作业 A 组，并说明有困难可以先反馈。' : '请提醒本班尚未提交的 6 位学生在明天 18:00 前完成动量守恒作业 A 组，语气简洁且不责备。', {
         capability: 'personalized-reminder', studentRef, assignmentRef: 'homework-momentum-a', reminderReasonRef: 'homework-submission',
@@ -93,7 +108,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
     items.push({
       id: 'physics-review-one-submission', stage: 'after', kind: 'teacher-task', priority: 45,
       contextLabel: `${classLabel} · 机械波错题订正`,
-      title: '8 人在第 5 题出错', detail: '可查看学生错因和作答情况', objectRef: 'homework-correction',
+      title: '8 人在第 5 题出错', detail: '正负号方向是主要错因，可查看学生作答情况', objectRef: 'homework-correction',
       action: action('查看错题', '请结合机械波错题订正的现有作答，整理第 5 题的学生错因和典型答案；如果信息不足，请在对话里向我补问。'),
     });
   }
