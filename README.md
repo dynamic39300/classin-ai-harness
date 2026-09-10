@@ -4,6 +4,8 @@
 
 接入边界和本地启动方式见 [DeepSeek Harness 接入边界](./docs/06-architecture/DEEPSEEK-HARNESS-INTEGRATION.md)。
 
+线上演示的 Docker 封装、运行时密钥配置和模拟数据范围见 [TeachBuddy 线上演示部署](./docs/05-engineering/ONLINE-DEMO-DEPLOYMENT.md)。
+
 这是 ClassIn PC 教师/学生产品基座与教师 AI 教学搭档 **ClassIn TeachBuddy** 的统一设计、研究和实现仓库。产品界面简称 **TeachBuddy**；内部工程标识继续使用 `workbuddy`，既有 `WorkBuddyRun`、路由和存储键不随品牌展示名迁移。当前代码保留既有 ClassIn PC Demo 的完整业务背景，并在教师端增加 AI Agent 工作台；首条纵向切片是“课程目标到课程对象”。
 
 ## 当前入口

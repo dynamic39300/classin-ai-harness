@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "dev:ui": "vite",
+    "start": "node scripts/start-online-demo.mjs",
     "harness:teachbuddy": "node scripts/start-harness.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",

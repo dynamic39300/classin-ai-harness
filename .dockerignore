@@ -1,0 +1,17 @@
+.git
+.gitmodules
+.env
+.env.*
+!.env.example
+.DS_Store
+node_modules
+dist
+.runtime
+.scratch
+.codex-tmp
+coverage
+playwright-report
+test-results
+*.log
+prototype/exports
+vendor/deepseek-harness
