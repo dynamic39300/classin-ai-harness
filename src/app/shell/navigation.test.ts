@@ -40,6 +40,14 @@ describe('teacher navigation architecture', () => {
     expect(getNavigation('student-family').some(({ id }) => id.includes('ai-agent'))).toBe(false);
   });
 
+  it('opens the enriched physics conversation from the teacher message entry', () => {
+    expect(getNavigation('teacher').find(({ id }) => id === 'teacher-messages')).toMatchObject({
+      kind: 'item',
+      to: '/teacher/messages?category=class&thread=class-physics-3',
+    });
+    expect(findActiveNavigationItem('teacher', '/teacher/messages')?.id).toBe('teacher-messages');
+  });
+
   it.each([
     ['/teacher/classes', 'teacher-classes'],
     ['/teacher/classes/physics-3/settings', 'teacher-classes'],

@@ -1,7 +1,7 @@
 ---
 title: TeachBuddy 教学阶段导航方案（二）
 status: IMPLEMENTED_PENDING_USER_REVIEW
-version: v0.7
+version: v0.8
 branch: codex/copilot-stage-nav-v2
 base_branch: codex/copilot-prompt-grid-v1
 updated: 2026-09-10
@@ -81,6 +81,8 @@ updated: 2026-09-10
 - 整班阶段指标、共性优势、共性问题、下一步，以及一名学生的个人课堂、作业和互动证据。
 
 `FixedWorkBuddyImBusinessContextAdapter`在老师点击建议或自由提问时，依据建议携带的稳定业务引用或教师问题，选择对应课程、课次、作业、测验及学情证据，投影为带来源、权限、时效、版本和`fixed-demo`真值标签的`BusinessContextSnapshot`，再通过隐藏的 Context Envelope 传给 Runtime。它不会把三门课的全部明细无差别塞进同一次生成，既避免业务串线，也保持在 Runtime 单次输入限制内。老师时间线只显示自然语言 Prompt，不显示内部数据结构。演示快照和教学动态使用同一个固定时钟`2026-08-09 14:40`，避免页面说“已上课10分钟”而上下文仍处于上午。未来接入业务系统时继续使用同一`BusinessContextAdapter` Interface，只替换固定 Scenario Adapter。
+
+当前可运行 Demo 的教师一级`消息`导航和`高二物理 3 班`课程详情群聊都默认落到`class-physics-3`线程，以便对照验收同一套 10 项教学建议和生成上下文；老师主动切换会话后，Copilot 随当前会话重新投影该班级自己的数据。生产入口仍应恢复老师最近使用或系统选定的默认会话，不依赖固定 Demo 线程。
 
 ## 4. 切换、收起与滚动
 

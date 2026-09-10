@@ -44,6 +44,7 @@ export type NavigationNode =
   };
 
 const item = (navigationItem: Omit<NavigationItem, 'kind'>): NavigationItem => ({ kind: 'item', ...navigationItem });
+const TEACHER_MESSAGE_ENTRY = '/teacher/messages?category=class&thread=class-physics-3';
 
 function taskBadge(role: AppRole): string | undefined {
   const count = getActionableTaskBadgeCount(role, TASK_ITEMS, TASK_NOW);
@@ -69,7 +70,7 @@ const TEACHER_NAVIGATION: readonly NavigationNode[] = [
   item({ id: 'teacher-tasks', label: '待办', to: '/teacher/tasks', icon: CircleCheckBig, group: 'business', badge: taskBadge('teacher') }),
   item({ id: 'teacher-insights', label: '教学洞察', to: '/teacher/insights', icon: BarChart3, group: 'business' }),
   item({ id: 'teacher-space', label: '空间', to: '/teacher/space', icon: LibraryBig, group: 'business' }),
-  item({ id: 'teacher-messages', label: '消息', to: '/teacher/messages', icon: MessageSquareText, group: 'global' }),
+  item({ id: 'teacher-messages', label: '消息', to: TEACHER_MESSAGE_ENTRY, icon: MessageSquareText, group: 'global' }),
   item({ id: 'teacher-blackboard', label: '黑板', to: '/teacher/blackboard', icon: PenTool, group: 'instant-tool' }),
   item({ id: 'teacher-casting', label: '投屏', to: '/teacher/casting', icon: MonitorUp, group: 'instant-tool' }),
 ];
@@ -104,7 +105,8 @@ function getItems(navigation: readonly NavigationNode[]): readonly NavigationIte
 }
 
 function routeMatches(pathname: string, target: string): boolean {
-  return pathname === target || pathname.startsWith(`${target}/`);
+  const targetPathname = target.split('?')[0] ?? target;
+  return pathname === targetPathname || pathname.startsWith(`${targetPathname}/`);
 }
 
 export function findActiveNavigationItem(role: AppRole, pathname: string): NavigationItem | undefined {
