@@ -1,7 +1,7 @@
 ---
 title: ClassIn IM 班级公告与消息提醒 Implementation Review
 status: SELF_REVIEWED
-version: v1.0
+version: v1.1
 date: 2026-09-09
 spec: IM-ANNOUNCEMENTS-AND-ATTENTION-FEATURE-SPEC.md
 tickets: IM-ATTN-T01—T05
@@ -20,9 +20,9 @@ review_gate: PASSED_BY_DELEGATED_AUTHORITY_2026-09-09
 
 | 审阅 | Review ID | Feature | 可观察结果 | 对应基线 |
 | --- | --- | --- | --- | --- |
-| ✅ | `IR-ATTN-01` | 班级公告固定条 | “高二物理 3 班”在消息流上方展示公告标题、摘要与查看/管理动作；公告、重要提醒和普通置顶有独立标签。 | `ON-IA-13`、`ON-BUS-01` |
+| ✅ | `IR-ATTN-01` | 班级公告固定条 | “高二物理 3 班”在消息流上方展示公告标题、摘要与查看/管理动作；公告与重要提醒使用独立、可读的业务标签；普通消息置顶已按 `D-148` 移除。 | `ON-IA-13`、`ON-BUS-01` |
 | ✅ | `IR-ATTN-02` | 公告事实与权限 | 公告通过 `ClassMessageBridge` 读取 Class Workspace 同一事实；教师进入管理路径，学生只能查看。 | `ON-GOV-01/06` |
-| ✅ | `IR-ATTN-03` | 重要提醒 | 固定提醒展示发布者、`@所有人`、正文和原消息入口；关闭后只对当前 Actor 隐藏，普通置顶继续保留。 | `ON-IA-14` |
+| ✅ | `IR-ATTN-03` | 重要提醒 | 固定提醒展示发布者、`@所有人`、正文和原消息入口；关闭后只对当前 Actor 隐藏，不改变公告或来源消息。 | `ON-IA-14` |
 | ✅ | `IR-ATTN-04` | `@我的` 聚合 | 班级消息区域显示未读数，Focus Surface 区分“提到你”与“@所有人”，显示班级、发送者、时间与安全摘要。 | `ON-BUS-02` |
 | ✅ | `IR-ATTN-05` | 逐项已读与定位 | 打开面板不清空；点击具体项后进入稳定 Thread、定位并短暂高亮原消息，该项才变为已读。 | `ON-BUS-02` |
 | ✅ | `IR-ATTN-06` | 新消息边界 | 普通班级群用进入前最后已读 Message Reference 显示“以下为新消息”，不依赖 DOM 下标。 | `ON-IA-15` |
@@ -59,9 +59,9 @@ review_gate: PASSED_BY_DELEGATED_AUTHORITY_2026-09-09
 | Domain / Adapter / Integration | `PASS` | 3 个文件、34 项 Vitest；覆盖公告/提醒分离、Mention、阅读边界、通知路由、dismiss、定位和设备设置。 |
 | 浏览器关键链路与 Axe | `PASS` | Playwright `class announcements, important reminders and @mine stay distinct and locatable @a11y`。 |
 | Production build | `PASS_WITH_WARNING` | `npm run build`；2402 modules，仅保留既有 Vite chunk-size warning。 |
-| 1440 × 900 | `PASS` | 公告、重要提醒、置顶、阅读边界和 TeachBuddy 同屏，无文档溢出。截图：[desktop-attention](../../../../prototype/exports/im-announcements-attention/desktop-attention.png)。 |
+| 1440 × 900 | `PASS` | 公告、重要提醒、阅读边界和 TeachBuddy 同屏，无文档溢出。截图：[desktop-attention](../../../../prototype/exports/im-announcements-attention/desktop-attention.png)。 |
 | 900 × 720 | `PASS` | `@我的` 使用内容区 Focus Surface，辅助面临时收起，不形成第四栏或页面溢出。截图：[compact-mentions](../../../../prototype/exports/im-announcements-attention/compact-mentions.png)。 |
-| 390 × 844 | `PASS` | 学生固定班级入口中的公告、提醒、置顶和 Composer 均可达，无横向/纵向页面溢出。截图：[narrow-student-attention](../../../../prototype/exports/im-announcements-attention/narrow-student-attention.png)。 |
+| 390 × 844 | `PASS` | 学生固定班级入口中的公告、提醒和 Composer 均可达，无横向/纵向页面溢出。截图：[narrow-student-attention](../../../../prototype/exports/im-announcements-attention/narrow-student-attention.png)。 |
 
 Playwright 启动器仍会尝试启动已在 `127.0.0.1:3080` 运行的 DeepSeek Harness，并输出 `EADDRINUSE`；消息关键用例使用复用的前端服务并通过。该日志不影响本阶段普通 IM 能力，但应在最终全量测试基础设施收口时消除。
 

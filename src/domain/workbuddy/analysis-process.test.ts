@@ -20,7 +20,7 @@ describe('projectAnalysisProcess', () => {
     expect(projection).toMatchObject({ status: 'running', elapsedMs: 5000, defaultExpanded: true });
     expect(projection?.steps.map(({ label, state }) => ({ label, state }))).toEqual([
       { label: '已接收要求', state: 'completed' },
-      { label: '正在等待运行事件', state: 'running' },
+      { label: '正在理解你的要求', state: 'running' },
     ]);
   });
 

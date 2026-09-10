@@ -130,6 +130,8 @@ test('class announcements, important reminders and @mine stay distinct and locat
   await expect(conversation.getByRole('region', { name: '班级公告' })).toContainText('课前练习单提醒');
   const reminder = conversation.getByRole('region', { name: '重要提醒' });
   await expect(reminder).toContainText('@所有人');
+  await expect(conversation.getByText('置顶', { exact: true })).toHaveCount(0);
+  await expect(conversation.getByRole('button', { name: /^(取消)?置顶$/ })).toHaveCount(0);
   await expect(conversation.getByText('以下为新消息')).toBeVisible();
   await reminder.getByRole('button', { name: '关闭重要提醒' }).click();
   await expect(conversation.getByRole('region', { name: '重要提醒' })).toHaveCount(0);
@@ -233,11 +235,11 @@ test('teacher sends and manages a class message @a11y', async ({ page }) => {
   expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
 
   const sentMessage = sentMessageBody.locator('xpath=ancestor::article');
+  await sentMessage.hover();
   await sentMessage.getByRole('button', { name: '撤回' }).click();
   await expect(page.getByText('消息已撤回', { exact: true }).last()).toBeVisible();
 
-  await page.getByRole('button', { name: '取消置顶' }).click();
-  await expect(page.getByText('已取消置顶消息。')).toBeVisible();
+  await expect(page.getByRole('button', { name: /^(取消)?置顶$/ })).toHaveCount(0);
   await page.getByRole('button', { name: '会话管理', exact: true }).click();
   await page.getByRole('menuitem', { name: '全体禁言' }).click();
   await page.getByRole('button', { name: '会话管理', exact: true }).click();
@@ -1005,7 +1007,7 @@ test('teacher resizes the WorkBuddy auxiliary workspace with an accessible separ
   await page.keyboard.press('Enter');
   await expect(page.getByLabel('AI 消息助手私密协作窗口')).toBeVisible();
   await expect(separator).toBeFocused();
-  await expect(page.getByRole('button', { name: 'AI 消息助手' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'AI 消息助手', exact: true })).toHaveCount(0);
 });
 
 test('compact immersive messaging keeps WorkBuddy as an overlay without a splitter', async ({ page }) => {
@@ -1017,7 +1019,7 @@ test('compact immersive messaging keeps WorkBuddy as an overlay without a splitt
   const sidecar = page.getByLabel('AI 消息助手私密协作窗口');
   await expect(sidecar).toBeVisible();
   await expect(sidecar.getByRole('button', { name: '关闭 AI 消息助手' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'AI 消息助手' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'AI 消息助手', exact: true })).toHaveCount(0);
   await expect(page.getByRole('separator', { name: '调整AI 消息助手宽度' })).not.toBeVisible();
   await expect(page.getByRole('region', { name: '消息通信主工作台' })).toBeVisible();
 });
@@ -1026,7 +1028,7 @@ test('student cannot discover the teacher WorkBuddy sidecar', async ({ page }) =
   await page.goto('/');
   await page.getByRole('button', { name: /学生视角/ }).click();
   await page.getByRole('link', { name: /消息/ }).click();
-  await expect(page.getByRole('button', { name: 'AI 消息助手' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'AI 消息助手', exact: true })).toHaveCount(0);
   await expect(page.getByLabel('AI 消息助手私密协作窗口')).toHaveCount(0);
 });
 
@@ -1222,6 +1224,33 @@ test('typed @ searches Agents and members while the direct directory switches is
     .toHaveValue('保留在物理助手会话里的草稿');
 });
 
+test('message hover toolbar stays reachable across its visual gap', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/select-role');
+  await page.getByRole('button', { name: /老师视角/ }).click();
+  await page.goto('/teacher/messages?category=class&thread=class-physics-3');
+
+  for (const messageId of ['cp3-2', 'cp3-3']) {
+    const target = page.locator(`[data-message-id="${messageId}"]`);
+    await target.scrollIntoViewIfNeeded();
+    await target.hover();
+
+    const pickerTrigger = target.getByRole('button', { name: '添加表情回应' });
+    await expect(pickerTrigger).toBeVisible();
+    const actionBarBounds = await pickerTrigger.locator('..').boundingBox();
+    expect(actionBarBounds).not.toBeNull();
+
+    await page.mouse.move(
+      (actionBarBounds?.x ?? 0) + (actionBarBounds?.width ?? 0) / 2,
+      (actionBarBounds?.y ?? 0) + (actionBarBounds?.height ?? 0) + 2,
+    );
+    await expect(pickerTrigger).toBeVisible();
+  }
+
+  await page.locator('[data-message-id="cp3-3"]').getByRole('button', { name: '添加表情回应' }).click();
+  await expect(page.getByRole('dialog', { name: '添加表情回应' })).toBeVisible();
+});
+
 test('IM 2.0 basic actions keep message context, search, resources and translation in one workspace', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/select-role');
@@ -1241,6 +1270,14 @@ test('IM 2.0 basic actions keep message context, search, resources and translati
   await target.hover();
   await target.getByRole('button', { name: '添加 👍 Reaction' }).click();
   await expect(target.getByRole('button', { name: /取消 👍 Reaction，当前 1 人/ })).toHaveAttribute('aria-pressed', 'true');
+  await expect(target.getByRole('button', { name: /取消 👍 消息回应，当前 1 人/ })).toBeVisible();
+
+  await target.getByRole('button', { name: '添加表情回应' }).click();
+  const reactionPicker = page.getByRole('dialog', { name: '添加表情回应' });
+  await expect(reactionPicker.getByRole('textbox')).toHaveCount(0);
+  await expect(reactionPicker.getByRole('tab')).toHaveCount(0);
+  await reactionPicker.getByRole('button', { name: '用 🎉 回应' }).click();
+  await expect(target.getByRole('button', { name: /取消 🎉 消息回应，当前 1 人/ })).toBeVisible();
 
   await conversation.getByRole('button', { name: '搜索聊天记录' }).click();
   const history = conversation.getByRole('complementary', { name: '搜索聊天记录' });
@@ -1263,6 +1300,38 @@ test('IM 2.0 basic actions keep message context, search, resources and translati
   await target.getByRole('button', { name: '翻译' }).click();
   await expect(conversation.getByText('The practice worksheet is ready.')).toBeVisible();
   await expect(conversation.getByText('译文 · SIMULATED')).toBeVisible();
+});
+
+test('touch messaging reveals one compact action surface and a simple bottom emoji panel', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  const page = await context.newPage();
+  await page.goto('/select-role');
+  await page.getByRole('button', { name: /老师视角/ }).click();
+  await page.goto('/teacher/messages?category=class&thread=class-physics-3');
+
+  const target = page.locator('[data-message-id="cp3-3"]');
+  await target.scrollIntoViewIfNeeded();
+  const actionTrigger = target.getByRole('button', { name: '显示消息操作' });
+  await expect(actionTrigger).toBeVisible();
+  await expect(target.getByRole('button', { name: '添加表情回应' })).not.toBeVisible();
+
+  await actionTrigger.click();
+  const pickerTrigger = target.getByRole('button', { name: '添加表情回应' });
+  await expect(pickerTrigger).toBeVisible();
+  await pickerTrigger.click();
+  const picker = page.getByRole('dialog', { name: '添加表情回应' });
+  await expect(picker).toBeVisible();
+  await expect(picker.getByRole('textbox')).toHaveCount(0);
+  await expect(picker.getByRole('tab')).toHaveCount(0);
+  const bounds = await picker.boundingBox();
+  expect(bounds).not.toBeNull();
+  expect((bounds?.x ?? -1) >= 0).toBe(true);
+  expect((bounds?.y ?? -1) + (bounds?.height ?? 0) <= 844).toBe(true);
+
+  await page.keyboard.press('Escape');
+  await expect(picker).toHaveCount(0);
+  await expect(pickerTrigger).toBeFocused();
+  await context.close();
 });
 
 test('public-course notices and official ClassIn content stay in the approved four-category model @a11y', async ({ page }) => {

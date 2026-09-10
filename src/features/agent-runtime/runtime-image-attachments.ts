@@ -1,4 +1,5 @@
 import type { RuntimeImageInput, RuntimeImageMediaType } from '@contracts/workbuddy/agent-runtime';
+import { createClientId } from '@shared/client-id';
 
 export const RUNTIME_IMAGE_ACCEPT = 'image/png,image/jpeg,image/webp,image/gif';
 export const RUNTIME_IMAGE_MAX_COUNT = 4;
@@ -50,7 +51,7 @@ export function appendRuntimeImageDrafts(
     }
     const previewUrl = typeof URL.createObjectURL === 'function' ? URL.createObjectURL(file) : '';
     attachments.push({
-      id: crypto.randomUUID(),
+      id: createClientId(),
       file,
       name: file.name || `粘贴的图片.${file.type.split('/')[1] ?? 'png'}`,
       mediaType: file.type as RuntimeImageMediaType,

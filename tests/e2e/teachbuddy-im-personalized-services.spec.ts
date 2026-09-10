@@ -78,7 +78,11 @@ async function mockRuntime(page: Page, messageBodies: Record<string, unknown>[] 
         ? '林悦的个人学情总结文稿已生成，请教师审阅。'
         : `## 课堂回顾建议
 
-> 李明你好！机械波课堂要先明确“介质不变，所以波速不变”，再用 v=fλ 判断频率和波长。
+我已结合课堂目标整理了回顾内容。
+
+<!--TEACHBUDDY_MESSAGE_BODY_START-->
+李明你好！机械波课堂要先明确“介质不变，所以波速不变”，再用 v=fλ 判断频率和波长。
+<!--TEACHBUDDY_MESSAGE_BODY_END-->
 
 | 下一步 | 完成方式 |
 | --- | --- |
@@ -176,9 +180,13 @@ test('IM Sidecar can stop a pending generation and continue in the same conversa
 
   const stop = sidecar.getByRole('button', { name: '停止生成' });
   await expect(stop).toBeVisible();
+  await expect(composer).toBeEnabled();
+  await expect(sidecar.getByRole('button', { name: '发送给 AI 消息助手' })).toBeDisabled();
+  await composer.fill('这句话先保留');
   await stop.click();
   await expect(sidecar.getByText('生成已停止，你可以继续发送要求。')).toBeVisible();
   await expect(composer).toBeEnabled();
+  await expect(composer).toHaveValue('这句话先保留');
 
   await composer.fill('改成一句更简短的提醒');
   await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
@@ -211,6 +219,44 @@ test('IM Sidecar transparently replaces a stale binding without exposing session
   await expect(sidecar.getByText('继续整理当前班级的消息', { exact: true })).toBeVisible();
   expect(calls.filter((call) => call === 'POST /api/teachbuddy/sessions')).toHaveLength(1);
   expect(calls).toContain('POST /api/teachbuddy/sessions/im-learning-session-1/messages');
+});
+
+test('demo reset URL starts with an empty AI conversation after every page refresh', async ({ page }) => {
+  const priorSession: RuntimeSession = {
+    id: 'demo-history-session',
+    title: '历史演示消息',
+    status: 'idle',
+    updatedAt: timestamp,
+    artifacts: [],
+    events: [{
+      id: 'demo-history-event', runRef: 'demo-history-session', sequence: 1,
+      occurredAt: timestamp, updatedAt: timestamp, actor: 'agent', kind: 'process', state: 'completed',
+      title: 'TeachBuddy', summary: '这条历史 AI 对话不应出现在刷新后的演示页面。', objectRefs: [], allowedCommands: [],
+    }],
+  };
+  await page.addInitScript(() => {
+    window.localStorage.setItem('classin:teachbuddy:im-session-bindings:v1', JSON.stringify({
+      'ideal-full|classin-demo-school|teacher-001|class-physics-3': {
+        sessionRef: 'demo-history-session',
+        updatedAt: '2026-09-10T10:00:00.000Z',
+      },
+    }));
+  });
+  const calls = await mockRuntime(page, [], { initialSessions: [priorSession] });
+  await page.goto('/');
+  await page.getByRole('button', { name: /老师视角/ }).click();
+  await page.goto('/teacher/messages?category=class&thread=class-physics-3&resetCopilotOnReload=1');
+
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  await expect(sidecar.getByText('这条历史 AI 对话不应出现在刷新后的演示页面。')).toHaveCount(0);
+  const composer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
+  await composer.fill('生成一条消息，提醒大家明天上课');
+  await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
+  await expect(sidecar.getByText('生成一条消息，提醒大家明天上课', { exact: true })).toBeVisible();
+  expect(calls.filter((call) => call === 'POST /api/teachbuddy/sessions')).toHaveLength(1);
+
+  await page.reload();
+  await expect(sidecar.getByText('生成一条消息，提醒大家明天上课', { exact: true })).toHaveCount(0);
 });
 
 test('a failed stale-binding replacement preserves earlier readable history', async ({ page }) => {
@@ -248,6 +294,53 @@ test('a failed stale-binding replacement preserves earlier readable history', as
   expect(calls).toContain('POST /api/teachbuddy/sessions/prior-session/messages');
 });
 
+test('review edits the current AI reply instead of an artifact left by an earlier turn', async ({ page }) => {
+  const session: RuntimeSession = {
+    id: 'restored-review-session',
+    title: '班级消息',
+    status: 'idle',
+    updatedAt: '2026-09-10T06:50:20.000Z',
+    events: [
+      {
+        id: 'teacher-current', runRef: 'restored-review-session', sequence: 1,
+        occurredAt: '2026-09-10T06:50:07.000Z', updatedAt: '2026-09-10T06:50:07.000Z',
+        actor: 'teacher', kind: 'teacher_message', state: 'completed', title: '教师',
+        summary: '请生成一条消息，针对李明第 5 题的正负号问题直接讲解。', objectRefs: [], allowedCommands: [],
+      },
+      {
+        id: 'agent-current', runRef: 'restored-review-session', sequence: 2,
+        occurredAt: '2026-09-10T06:50:20.000Z', updatedAt: '2026-09-10T06:50:20.000Z',
+        actor: 'agent', kind: 'process', state: 'completed', title: 'TeachBuddy',
+        summary: '<!--TEACHBUDDY_MESSAGE_BODY_START-->\n@李明 第5题先约定向右为正，再带着正负号代入动量守恒方程。\n<!--TEACHBUDDY_MESSAGE_BODY_END-->', objectRefs: [], allowedCommands: [],
+      },
+    ],
+    artifacts: [{
+      id: 'artifact-earlier', title: '电磁感应课前提醒',
+      content: '各位同学：明天 19:00 我们将进行电磁感应课程，请提前完成预习。',
+      fileRef: 'sessions/restored-review-session/earlier.md', fileName: 'earlier.md', format: 'markdown', mediaType: 'text/markdown', byteSize: 96,
+      createdAt: '2026-09-10T06:41:31.000Z', version: 1, status: 'draft',
+    }],
+  };
+  await page.addInitScript(() => {
+    window.localStorage.setItem('classin:teachbuddy:im-session-bindings:v1', JSON.stringify({
+      'ideal-full|classin-demo-school|teacher-001|class-physics-3': {
+        sessionRef: 'restored-review-session',
+        updatedAt: '2026-09-10T06:50:20.000Z',
+      },
+    }));
+  });
+  await mockRuntime(page, [], { initialSessions: [session] });
+  await enterTeacherMessages(page, 'class-physics-3');
+
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  await expect(sidecar.getByText(/@李明 第5题先约定向右为正/)).toBeVisible();
+  await sidecar.getByRole('button', { name: '审阅并发送' }).click();
+
+  const editor = sidecar.getByRole('textbox', { name: '消息草稿正文' });
+  await expect(editor).toHaveValue('@李明 第5题先约定向右为正，再带着正负号代入动量守恒方程。');
+  await expect(editor).not.toHaveValue(/电磁感应/);
+});
+
 async function enterTeacherMessages(page: Page, target: 'class-physics-3' | 'class-dw-expression-lab' | 'direct-teacher-zhang') {
   await page.goto('/');
   await page.getByRole('button', { name: /老师视角/ }).click();
@@ -259,6 +352,24 @@ async function enterTeacherMessages(page: Page, target: 'class-physics-3' | 'cla
     await page.locator('[data-thread-id="direct-teacher-zhang"]').click();
   }
 }
+
+test('Teaching Dynamics starts an AI task when randomUUID is unavailable on an HTTP LAN origin', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(globalThis.crypto, 'randomUUID', { configurable: true, value: undefined });
+  });
+  const messageBodies: Record<string, unknown>[] = [];
+  await mockRuntime(page, messageBodies);
+  await enterTeacherMessages(page, 'class-physics-3');
+
+  const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  await sidecar.getByRole('tab', { name: /课前/ }).click();
+  await sidecar.getByRole('button', { name: /提醒上课：电磁感应/ }).click();
+
+  await expect.poll(() => messageBodies.length).toBe(1);
+  expect(messageBodies[0]?.commandId).toEqual(expect.any(String));
+  await expect(sidecar.getByText('请为明天 19:00 的电磁感应课生成一条群提醒，提醒同学们准时进入课堂，并准备好讲义和预习单。', { exact: true })).toBeVisible();
+  await expect(sidecar.getByText(/课堂回顾建议/).first()).toBeVisible();
+});
 
 test('teacher starts a governed recap from Teaching Dynamics without a configuration page', async ({ page }) => {
   const messageBodies: Record<string, unknown>[] = [];
@@ -278,27 +389,39 @@ test('teacher starts a governed recap from Teaching Dynamics without a configura
   const accessibility = await new AxeBuilder({ page }).include('#workbuddy-im-sidecar').analyze();
   expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
   await sidecar.getByRole('tab', { name: /总结/ }).click();
-  await sidecar.getByRole('button', { name: /个人总结：李明/ }).first().click();
+  await sidecar.getByRole('button', { name: /个人总结：李明/ }).click();
 
   await expect.poll(() => messageBodies.length).toBe(1);
   const visibleRequest = '请根据李明在动量守恒单元的课堂、作业和互动证据，整理个人学习进展、困难和下一步建议；只陈述可核验事实。';
   expect(String(messageBodies[0]?.text)).toContain('请执行“个人学情总结”');
   expect(String(messageBodies[0]?.text)).toContain(visibleRequest);
+  expect(String(messageBodies[0]?.text)).toContain('TEACHBUDDY_MESSAGE_BODY_START');
   await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' }).getByText(visibleRequest, { exact: true })).toBeVisible();
   await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' })).not.toContainText('请执行“个人学情总结”');
+  await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' })).not.toContainText('TEACHBUDDY_MESSAGE_BODY_START');
   await expect(sidecar.getByText(/介质不变，所以波速不变/)).toBeVisible();
   await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
+  await expect(sidecar.getByRole('article', { name: '你的消息' })).toBeVisible();
+  await expect(sidecar.getByText('您', { exact: true })).toHaveCount(0);
   await expect(sidecar.getByRole('table')).toContainText('巩固练习');
   await expect(sidecar).not.toContainText('| --- | --- |');
   const analysis = sidecar.getByRole('region', { name: 'AI 消息助手 分析过程' });
-  await expect(analysis.getByRole('button', { name: /已完成分析 · 2 个步骤/ })).toHaveAttribute('aria-expanded', 'false');
-  await analysis.getByRole('button', { name: /已完成分析/ }).click();
+  await expect(analysis).not.toContainText('个步骤');
+  const analysisToggle = analysis.getByRole('button', { name: /展开处理过程：已整理好/ });
+  await expect(analysisToggle).toHaveAttribute('aria-expanded', 'false');
+  await analysisToggle.click();
   await expect(analysis.getByText('已核对当前会话上下文', { exact: true })).toHaveCount(0);
-  await sidecar.getByRole('button', { name: '审阅沟通内容' }).click();
+  await sidecar.getByRole('button', { name: '审阅并发送' }).click();
   const artifact = sidecar.getByRole('region', { name: '个性化沟通草稿' });
   await expect(artifact).toContainText('接收对象李明');
   await expect(artifact).toContainText('学生私聊 · 插入输入框');
   await expect(artifact).not.toContainText('使用依据');
+  await expect(artifact.getByRole('textbox', { name: '消息草稿正文' })).toHaveValue('李明你好！机械波课堂要先明确“介质不变，所以波速不变”，再用 v=fλ 判断频率和波长。');
+  await artifact.getByRole('button', { name: '取消' }).click();
+  await expect(artifact).toHaveCount(0);
+  await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
+  await sidecar.getByRole('button', { name: '审阅并发送' }).click();
+  await expect(artifact).toBeVisible();
   await artifact.getByRole('button', { name: '转到李明私聊并插入' }).click();
 
   await expect(page).toHaveURL(/category=direct&thread=direct-wang-li/);
@@ -399,7 +522,7 @@ test('DW-derived class context creates a private learning summary for its mapped
   await sidecar.getByRole('button', { name: /生成总结：/ }).click();
   await expect(sidecar.getByRole('combobox')).toHaveCount(0);
   await expect(sidecar.getByText('林悦的个人学情总结文稿已生成，请教师审阅。')).toBeVisible();
-  await sidecar.getByRole('button', { name: '审阅沟通内容' }).click();
+  await sidecar.getByRole('button', { name: '审阅并发送' }).click();
   const artifact = sidecar.getByRole('region', { name: '个性化沟通草稿' });
   await expect(artifact).toContainText('接收对象林悦');
   await expect(artifact).not.toContainText('使用依据');
@@ -416,7 +539,7 @@ test('rich Agent response stays contained in the compact Sidecar', async ({ page
 
   const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
   await sidecar.getByRole('tab', { name: /总结/ }).click();
-  await sidecar.getByRole('button', { name: /个人总结：李明/ }).first().click();
+  await sidecar.getByRole('button', { name: /个人总结：李明/ }).click();
   await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
   await expect(sidecar.getByRole('table')).toBeVisible();
   await expect(sidecar.getByRole('region', { name: 'AI 消息助手 分析过程' })).toBeVisible();

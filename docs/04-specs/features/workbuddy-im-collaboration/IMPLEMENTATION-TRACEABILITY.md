@@ -1,7 +1,7 @@
 ---
 title: WorkBuddy IM 人机协作 Implementation Traceability
-status: MERGED_TEACHBUDDY_GUIDE_V22_PASS
-version: v0.22
+status: MERGED_TEACHBUDDY_GUIDE_V23_PASS
+version: v0.23
 date: 2026-09-10
 ---
 
@@ -51,6 +51,10 @@ date: 2026-09-10
 | IM-PRD-146—149 | Feature Spec §6.19、§7 | IM-031、IM-033 | 稳定业务引用、时钟过滤、确认/未知语义与事项按钮一键提交教师可读请求；业务生命周期与 AI Run 解耦 | Domain + Adapter + E2E | PASS |
 | IM-PRD-150—153 | Feature Spec §6.19、§7 | IM-032—IM-034 | `TeachBuddy · 仅你可见`、自由输入与`教学协作`、无正常连接/工程身份/上下文计数、无二级配置页、键盘与窄宽适配 | Component + E2E + axe + 1440×900 self-review | PASS |
 | IM-PRD-141、143—145、150—155 | Feature Spec §6.17—§6.19、§7 | IM-036 | 身份、能力说明、四阶段和事项合并为一个顶部 Surface；卡片自然语言 Prompt 与内部结构化上下文分离；Binding Trail 聚合内部 Session 轮换，stale 404 透明替换；新建/历史/跨工作台 Session 控件移除；停止失败保持发送锁定并可重试；滚动阈值、320ms 收起、焦点迁移与历史阅读位置保护 | focused Vitest 7 文件 20 项 + Chromium E2E 10 项 + 动效并发重复 10 次 + axe + manual visual | PASS |
+| D-151 | Copilot Conversation Run UX Feature Spec | IM-CRUX-01—03 | Sidecar 连续对话回合、无步骤计数的 compact 过程、无标题教师气泡、无卡片 Agent 正文、结果原位审阅、发送后自然结束和生成中输入保留 | 20 focused Vitest + 10 Chromium E2E + 1440×900 result/review visual | PASS |
+| D-152 | Copilot Conversation Run UX Feature Spec v1.1 | IM-CRUX-04 | 普通回答、沟通建议与消息草稿按意图分流；编辑可取消且不发送 | 17 focused Vitest + 829 full Vitest + 10 Chromium IM E2E | PASS |
+| D-153 | Copilot Conversation Run UX Feature Spec v1.2 | IM-CRUX-05 | 消息生成附加不可见正文边界；审阅区精确提取正文并兼容清洗旧回答 | 24 focused Vitest + 833 full Vitest + 10 Chromium IM E2E + live visual | PASS |
+| IM-RXN-001—009 | IM Message Reaction Interaction Feature Spec | IM-RXN-01—04 | 共享 Unicode Emoji 目录、三个快捷 Reaction、简洁扩展面板、常驻计数胶囊、桌面浮动工具条与触屏底部承载 | 836 full Vitest + 3 focused Chromium/a11y paths + 3 manual visual sizes/states | PASS_SCOPED |
 
 ## 代码证据
 

@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, LoaderCircle, RefreshCw, Sparkles, Square } from 'lucide-react';
+import { AlertTriangle, LoaderCircle, RefreshCw, Sparkles, Square } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { BusinessContextSnapshot, ImSidecarAgentServices, LearningContextCatalog, LearningContextSelection, MessageDraftArtifact, PersonalizedLearningArtifact, SendMessageReceipt } from '@contracts/workbuddy/business-context';
 import type { WorkBuddyImTarget } from '@contracts/workbuddy/im-conversation-run';
@@ -6,10 +6,12 @@ import type { TeachingDynamicAction, TeachingDynamicsSnapshot, TeachingStageId }
 import { TEACHBUDDY_IM_ASSISTANT_LABEL } from '@contracts/workbuddy/product-brand';
 import { WorkspaceComposer } from '@design-system/WorkspaceComposer';
 import { AgentRichResponse } from '@design-system/AgentRichResponse';
-import { approveMessageSend, createMessageDraft, proposeMessageSend, reviseMessageDraft, validateMessageContext } from '@domain/workbuddy/im-message-draft';
+import { approveMessageSend, buildMessageDraftRuntimeRequest, createMessageDraft, extractMessageDraftBody, hasMarkedMessageDraftBody, proposeMessageSend, reviseMessageDraft, validateMessageContext } from '@domain/workbuddy/im-message-draft';
+import { projectImMessageDeliveryIntent, type ImMessageDeliveryIntent, type ImMessageRequestSource } from '@domain/workbuddy/im-message-delivery-intent';
 import { buildLearningTeacherRequest, createPersonalizedLearningArtifact, deliveryTarget, revisePersonalizedLearningArtifact, validateLearningSelectionAgainstCatalog } from '@domain/workbuddy/personalized-learning-service';
 import { createRuntimeContextEnvelope, teacherVisibleRuntimeText } from '@domain/workbuddy/runtime-context-envelope';
 import { splitAnalysisProcessTurns } from '@domain/workbuddy/analysis-process';
+import { createClientId } from '@shared/client-id';
 import { AnalysisProcess, appendRuntimeImageDrafts, encodeRuntimeImageDrafts, needsFreshTextSession, releaseRuntimeImageDrafts, RUNTIME_IMAGE_ACCEPT, type RuntimeImageDraft, useAgentRuntime } from '@features/agent-runtime';
 import { getImAgentSessionTrail, removeImAgentSessionBinding, replaceMissingImAgentSessionBinding, rotateImAgentSessionBinding, saveImAgentSessionBinding } from './im-agent-session-binding';
 import { TeachingDynamics } from './TeachingDynamics';
@@ -35,6 +37,15 @@ type TeachingDynamicsPresentation = Readonly<{
   selectedStage: TeachingStageId | null;
 }>;
 
+type DeliveryIntentProjection = Readonly<{
+  sessionRef: string;
+  baselineAgentEventId: string | null;
+  intent: ImMessageDeliveryIntent;
+}>;
+
+const DEMO_RESET_QUERY = 'resetCopilotOnReload';
+const DEMO_RESET_PAGE_MARKER = 'classin:teachbuddy:demo-reset-page:v1';
+
 function presentationStorageKey(threadRef: string) {
   return `teachbuddy:teaching-dynamics:${threadRef}`;
 }
@@ -57,6 +68,19 @@ function savePresentation(threadRef: string, presentation: TeachingDynamicsPrese
   try { window.sessionStorage.setItem(presentationStorageKey(threadRef), JSON.stringify({ selectedStage: presentation.selectedStage })); } catch { /* Keep the surface usable without storage. */ }
 }
 
+function loadInitialSessionTrail(target: Parameters<typeof getImAgentSessionTrail>[0]) {
+  try {
+    const resetForDemo = new URLSearchParams(window.location.search).get(DEMO_RESET_QUERY) === '1';
+    const pageMarker = String(window.performance.timeOrigin);
+    if (resetForDemo && window.sessionStorage.getItem(DEMO_RESET_PAGE_MARKER) !== pageMarker) {
+      window.sessionStorage.setItem(DEMO_RESET_PAGE_MARKER, pageMarker);
+      removeImAgentSessionBinding(target);
+      return [];
+    }
+  } catch { /* Demo reset must never block the normal conversation surface. */ }
+  return getImAgentSessionTrail(target);
+}
+
 export function ImSidecarAgentSurface({ services, target, onLocateMessage, onInsertDirectReply, onClose }: Props) {
   const bindingTarget = useMemo(() => ({
     actorRef: services.actor.id,
@@ -64,7 +88,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     threadRef: target.threadId,
     scope: services.scope,
   }), [services.actor.id, services.scope, services.tenantRef, target.threadId]);
-  const initialSessionTrail = useMemo(() => getImAgentSessionTrail(bindingTarget), [bindingTarget]);
+  const initialSessionTrail = useMemo(() => loadInitialSessionTrail(bindingTarget), [bindingTarget]);
   const initialBinding = initialSessionTrail.at(-1) ?? null;
   const [sessionRef, setSessionRef] = useState(initialBinding);
   const [sessionTrail, setSessionTrail] = useState<readonly string[]>(initialSessionTrail);
@@ -77,6 +101,8 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
   const [messageDraft, setMessageDraft] = useState<MessageDraftArtifact | null>(null);
   const [learningArtifact, setLearningArtifact] = useState<PersonalizedLearningArtifact | null>(null);
   const [delivery, setDelivery] = useState<DeliveryState>({ status: 'idle' });
+  const [acceptedAgentEventId, setAcceptedAgentEventId] = useState<string | null>(null);
+  const [deliveryIntentProjection, setDeliveryIntentProjection] = useState<DeliveryIntentProjection | null>(null);
   const [contextError, setContextError] = useState('');
   const [catalog, setCatalog] = useState<LearningContextCatalog | null>(null);
   const [catalogError, setCatalogError] = useState('');
@@ -108,6 +134,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
   const running = runtime.session?.status === 'running';
   const canStop = Boolean(sessionRef) && (running || runtime.locked || sendingRequest || stopping);
   const lastAgentEvent = runtime.session ? [...runtime.session.events].reverse().find((event) => event.actor === 'agent' && event.summary.trim()) : undefined;
+  const lastTeacherEvent = runtime.session ? [...runtime.session.events].reverse().find((event) => event.actor === 'teacher' && event.kind === 'teacher_message') : undefined;
   const canSend = runtime.health?.status === 'ready' && !running && !pending && !runtime.locked && !recoveringBinding && runtime.creation !== 'pending'
     && (!sessionRef || Boolean(runtime.session)) && !runtime.readError && delivery.status !== 'sending';
 
@@ -226,9 +253,10 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     setSessionRef(id);
   }
 
-  async function submit(teacherRequestOverride?: string, contextRefs: readonly string[] = []) {
+  async function submit(teacherRequestOverride?: string, requestSource: ImMessageRequestSource = 'freeform', contextRefs: readonly string[] = []) {
     const teacherRequest = teacherRequestOverride?.trim() || composerDraft.trim() || (imageDrafts.length ? '请结合我附上的图片完成这项教学工作。' : '');
     if (!teacherRequest || !canSend) return;
+    const deliveryIntent = projectImMessageDeliveryIntent(teacherRequest, requestSource);
     let images;
     try { images = await encodeRuntimeImageDrafts(imageDrafts); } catch {
       setImageError('图片读取失败，请移除后重新添加。');
@@ -267,17 +295,23 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     setMessageDraft(null);
     setLearningArtifact(null);
     setDelivery({ status: 'idle' });
+    setDeliveryIntentProjection({
+      sessionRef: id,
+      baselineAgentEventId: lastAgentEvent?.id ?? null,
+      intent: deliveryIntent,
+    });
     followLatestMessageRef.current = true;
     if (imageDrafts.length) pendingImageSubmission.current = { images: imageDrafts, beforeTeacherEventId: recoveringTextSession ? undefined : activeSession ? [...activeSession.events].reverse().find(({ kind }) => kind === 'teacher_message')?.id : undefined };
+    if (!teacherRequestOverride?.trim()) setComposerDraft('');
     const completed = await runtime.execute(id, {
       kind: 'send',
-      text: createRuntimeContextEnvelope(captured, teacherRequest),
-      commandId: crypto.randomUUID(),
+      text: deliveryIntent === 'draft'
+        ? createRuntimeContextEnvelope(captured, buildMessageDraftRuntimeRequest(teacherRequest), teacherRequest)
+        : createRuntimeContextEnvelope(captured, teacherRequest),
+      commandId: createClientId(),
       ...(images.length ? { images } : {}),
     });
-    if (completed) {
-      setComposerDraft('');
-    }
+    if (!completed) return;
   }
 
   async function generateLearningArtifact(nextSelection: LearningContextSelection, teacherRequest: string, contextRefs: readonly string[] = []) {
@@ -312,19 +346,21 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     setMessageDraft(null);
     setLearningArtifact(null);
     setDelivery({ status: 'idle' });
+    setDeliveryIntentProjection({
+      sessionRef: id,
+      baselineAgentEventId: lastAgentEvent?.id ?? null,
+      intent: projectImMessageDeliveryIntent(teacherRequest, 'teaching-dynamic'),
+    });
     followLatestMessageRef.current = true;
     setRuntimeArtifactBaselineIds(runtime.session?.artifacts.map(({ id: artifactId }) => artifactId) ?? []);
     if (imageDrafts.length) pendingImageSubmission.current = { images: imageDrafts, beforeTeacherEventId: recoveringTextSession ? undefined : activeSession ? [...activeSession.events].reverse().find(({ kind }) => kind === 'teacher_message')?.id : undefined };
-    const completed = await runtime.execute(id, { kind: 'send', text: createRuntimeContextEnvelope(captured, buildLearningTeacherRequest(nextSelection, catalog, teacherRequest), teacherRequest), commandId: crypto.randomUUID(), ...(images.length ? { images } : {}) });
+    const completed = await runtime.execute(id, { kind: 'send', text: createRuntimeContextEnvelope(captured, buildMessageDraftRuntimeRequest(buildLearningTeacherRequest(nextSelection, catalog, teacherRequest)), teacherRequest), commandId: createClientId(), ...(images.length ? { images } : {}) });
     setLearningResultReady(completed);
-    if (completed) {
-      setComposerDraft('');
-    }
   }
 
   function triggerTeachingAction(action: TeachingDynamicAction) {
     if (action.learningSelection) void generateLearningArtifact(action.learningSelection, action.teacherRequest, action.contextRefs);
-    else void submit(action.teacherRequest, action.contextRefs);
+    else void submit(action.teacherRequest, 'teaching-dynamic', action.contextRefs);
   }
 
   function addImages(files: readonly File[]) {
@@ -360,8 +396,20 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         return;
       }
     }
-    const generatedRuntimeArtifact = [...runtime.session.artifacts].reverse().find(({ id: artifactId, format, content }) => !runtimeArtifactBaselineIds.includes(artifactId) && (format === 'markdown' || format === 'text') && content.trim());
-    const draftBody = generatedRuntimeArtifact?.content ?? lastAgentEvent.summary;
+    const currentTurnStartedAt = lastTeacherEvent ? Date.parse(lastTeacherEvent.occurredAt) : Number.NaN;
+    const generatedRuntimeArtifact = [...runtime.session.artifacts].reverse().find(({ id: artifactId, format, content, createdAt }) => {
+      const artifactCreatedAt = Date.parse(createdAt);
+      return !runtimeArtifactBaselineIds.includes(artifactId)
+        && (format === 'markdown' || format === 'text')
+        && content.trim()
+        && Number.isFinite(currentTurnStartedAt)
+        && Number.isFinite(artifactCreatedAt)
+        && artifactCreatedAt >= currentTurnStartedAt;
+    });
+    const draftSource = hasMarkedMessageDraftBody(lastAgentEvent.summary)
+      ? lastAgentEvent.summary
+      : generatedRuntimeArtifact?.content ?? lastAgentEvent.summary;
+    const draftBody = extractMessageDraftBody(draftSource);
     const draft = createMessageDraft({ sessionRef: runtime.session.id, snapshot: draftContext, body: draftBody });
     setMessageDraft(draft);
     setLearningArtifact(selection && catalog ? createPersonalizedLearningArtifact({ sessionRef: runtime.session.id, snapshot: draftContext, selection, catalog, body: draftBody }) : null);
@@ -374,6 +422,9 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     if (direct || learningDelivery?.kind === 'direct-composer') {
       onInsertDirectReply?.(messageDraft.body, learningDelivery?.kind === 'direct-composer' ? learningDelivery.threadRef : undefined);
       setDelivery({ status: 'inserted' });
+      setAcceptedAgentEventId(lastAgentEvent?.id ?? null);
+      setMessageDraft(null);
+      setLearningArtifact(null);
       return;
     }
     if (!snapshot) return;
@@ -406,15 +457,43 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     const approval = approveMessageSend(action, new Date().toISOString());
     try {
       const receipt = await services.messageDraft.execute(action, approval);
-      if (receipt.status === 'success') setDelivery({ status: 'sent', receipt });
-      else setDelivery({ status: 'failed', message: receipt.result });
+      if (receipt.status === 'success') {
+        setDelivery({ status: 'sent', receipt });
+        setAcceptedAgentEventId(lastAgentEvent?.id ?? null);
+        setMessageDraft(null);
+        setLearningArtifact(null);
+        if (receipt.messageId) onLocateMessage(receipt.messageId);
+      } else setDelivery({ status: 'failed', message: receipt.result });
     } catch (error) {
       setDelivery({ status: 'failed', message: error instanceof Error ? error.message : '消息暂时无法发送，请重试。' });
     }
   }
 
+  function cancelMessageReview() {
+    if (delivery.status === 'sending') return;
+    setMessageDraft(null);
+    setLearningArtifact(null);
+    setDelivery({ status: 'idle' });
+  }
+
+  function convertAdviceToMessage() {
+    const request = direct
+      ? '请根据刚才的建议，整理成一条可以直接回复给对方的消息。'
+      : '请根据刚才的建议，整理成一条可以直接发送到当前班级群的消息。';
+    void submit(request);
+  }
+
   const plannedDelivery = selection && catalog ? deliveryTarget(selection, catalog, direct ? 'direct' : 'class') : null;
   const personalDelivery = direct || plannedDelivery?.kind === 'direct-composer';
+  const restoredDeliveryIntent = lastTeacherEvent
+    ? projectImMessageDeliveryIntent(teacherVisibleRuntimeText(lastTeacherEvent.summary))
+    : 'none';
+  const activeDeliveryProjection = deliveryIntentProjection?.sessionRef === runtime.session?.id ? deliveryIntentProjection : null;
+  const currentDeliveryIntent = activeDeliveryProjection
+    ? lastAgentEvent && lastAgentEvent.id !== activeDeliveryProjection.baselineAgentEventId
+      ? activeDeliveryProjection.intent
+      : 'none'
+    : restoredDeliveryIntent;
   const connectionProblem = runtime.health && runtime.health.status !== 'ready'
     ? runtime.health.status === 'unconfigured' ? `${TEACHBUDDY_IM_ASSISTANT_LABEL}尚未配置完成` : `${TEACHBUDDY_IM_ASSISTANT_LABEL}暂时无法连接`
     : '';
@@ -464,35 +543,37 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
             const turnSession = { id: logicalSession.id, status: turnStatus, events: turn.events, updatedAt: logicalSession.updatedAt } as const;
             const messages = turn.events.filter((event) => event.actor === 'teacher' || (event.actor === 'agent' && event.kind === 'process') || event.kind === 'error');
             return <Fragment key={`${logicalSession.id}:${turn.id}`}>{messages.map((event) => {
+              if (messageDraft && logicalSession.id === runtime.session?.id && event.id === lastAgentEvent?.id) return null;
               const visible = event.actor === 'teacher' ? teacherVisibleRuntimeText(event.summary) : event.summary;
-              return <Fragment key={`${logicalSession.id}:${event.id}`}><li data-actor={event.actor}><article><header><strong>{event.actor === 'teacher' ? '您' : event.actor === 'agent' ? TEACHBUDDY_IM_ASSISTANT_LABEL : event.title}</strong></header>{event.actor === 'agent' ? <AgentRichResponse>{visible}</AgentRichResponse> : <p>{visible}</p>}</article></li>{event.id === turnTeacher?.id ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} mode="compact" context={null} assistantLabel={TEACHBUDDY_IM_ASSISTANT_LABEL} /></li> : null}</Fragment>;
+              return <Fragment key={`${logicalSession.id}:${event.id}`}><li data-actor={event.actor}><article aria-label={event.actor === 'teacher' ? '你的消息' : event.actor === 'agent' ? `${TEACHBUDDY_IM_ASSISTANT_LABEL}回复` : event.title}>{event.actor !== 'teacher' && event.actor !== 'agent' ? <header><strong>{event.title}</strong></header> : null}{event.actor === 'agent' ? <AgentRichResponse>{visible}</AgentRichResponse> : <p>{visible}</p>}</article></li>{event.id === turnTeacher?.id ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} mode="compact" context={null} assistantLabel={TEACHBUDDY_IM_ASSISTANT_LABEL} /></li> : null}</Fragment>;
             })}{!turnTeacher ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} mode="compact" context={null} assistantLabel={TEACHBUDDY_IM_ASSISTANT_LABEL} /></li> : null}</Fragment>;
           });
         })}</ol> : null}
         {activeSession?.status === 'running' && activeSession.events.length === 0 ? <AnalysisProcess session={activeSession} mode="compact" context={null} assistantLabel={TEACHBUDDY_IM_ASSISTANT_LABEL} /> : null}
 
-        {lastAgentEvent && runtime.session?.status === 'idle' && !messageDraft && (!selection || learningResultReady) ? (
+        {lastAgentEvent && runtime.session?.status === 'idle' && !pending && !messageDraft && acceptedAgentEventId !== lastAgentEvent.id && (!selection || learningResultReady) && currentDeliveryIntent !== 'none' ? (
           <div className={styles.agentResultActions}>
-            <button className={styles.secondaryButton} type="button" onClick={() => void reviewAsMessage()}>{selection ? '审阅沟通内容' : direct ? '作为回复草稿审阅' : '作为群消息草稿审阅'}</button>
+            {currentDeliveryIntent === 'draft'
+              ? <button className={styles.resultAction} type="button" onClick={() => void reviewAsMessage()}>{direct ? '编辑后插入' : '审阅并发送'}</button>
+              : <button className={styles.conversionAction} type="button" onClick={convertAdviceToMessage}>{direct ? '整理成回复' : '整理成群消息'}</button>}
           </div>
         ) : null}
 
         {messageDraft ? <section className={styles.directDraft} data-review-artifact="true" aria-label={personalDelivery ? '个性化沟通草稿' : '班级群消息草稿'}>
-          <header><span>{learningArtifact?.title ?? (personalDelivery ? '个性化沟通草稿' : '群消息草稿')}</span><strong>{delivery.status === 'sent' ? '已发送' : delivery.status === 'inserted' ? '已插入' : `v${learningArtifact?.version ?? messageDraft.version} · 待你审阅`}</strong></header>
+          <header><span>{learningArtifact?.title ?? (personalDelivery ? '可发送回复' : '可发送消息')}</span></header>
           {learningArtifact ? <dl className={styles.learningArtifactMeta}><div><dt>接收对象</dt><dd>{learningArtifact.recipientLabel}</dd></div><div><dt>交付方式</dt><dd>{learningArtifact.delivery === 'class-review' ? '当前班级群 · 确认后发送' : '学生私聊 · 插入输入框'}</dd></div></dl> : null}
           <label><span>确认或修改最终话术</span><textarea aria-label="消息草稿正文" value={messageDraft.body} disabled={delivery.status === 'sending' || delivery.status === 'sent'} onChange={(event) => { const body = event.target.value; setMessageDraft(reviseMessageDraft(messageDraft, body)); setLearningArtifact((current) => current ? revisePersonalizedLearningArtifact(current, body) : null); setDelivery({ status: 'idle' }); }} /></label>
           {delivery.status === 'failed' ? <p className={styles.inlineError} role="alert">{delivery.message}</p> : null}
-          <footer><span>{personalDelivery ? '插入后仍需由你手动发送' : `将以${services.actor.name}身份发送到${target.classLabel}`}</span><button className={styles.primaryButton} type="button" disabled={!messageDraft.body.trim() || delivery.status === 'sending' || delivery.status === 'sent'} onClick={() => void deliverDraft()}>{delivery.status === 'sending' ? '正在复核并发送…' : direct ? '插入回复框' : personalDelivery ? `转到${catalog?.students.find(({ ref }) => ref === selection?.studentRef)?.label ?? '学生'}私聊并插入` : `确认并发送至${target.classLabel}`}</button></footer>
-          {delivery.status === 'sent' && delivery.receipt.messageId ? <button className={styles.secondaryButton} type="button" onClick={() => onLocateMessage(delivery.receipt.messageId!)}><CheckCircle2 aria-hidden="true" size={14} />在群聊中查看</button> : null}
+          <footer><span>{personalDelivery ? '插入后仍需由你手动发送' : `将以${services.actor.name}身份发送到${target.classLabel}`}</span><div className={styles.draftActions}><button className={styles.draftCancel} type="button" disabled={delivery.status === 'sending'} onClick={cancelMessageReview}>取消</button><button className={styles.primaryButton} type="button" disabled={!messageDraft.body.trim() || delivery.status === 'sending'} onClick={() => void deliverDraft()}>{delivery.status === 'sending' ? '正在复核并发送…' : direct ? '插入回复框' : personalDelivery ? `转到${catalog?.students.find(({ ref }) => ref === selection?.studentRef)?.label ?? '学生'}私聊并插入` : '确认发送'}</button></div></footer>
         </section> : null}
 
         {runtime.creation === 'pending' ? <p className={styles.runtimeProgress} role="status"><LoaderCircle className={styles.spinner} aria-hidden="true" size={16} />正在准备{TEACHBUDDY_IM_ASSISTANT_LABEL}…</p> : null}
-        {sendingRequest ? <p className={styles.runtimeProgress} role="status"><LoaderCircle className={styles.spinner} aria-hidden="true" size={16} />{TEACHBUDDY_IM_ASSISTANT_LABEL}正在理解你的要求…</p> : null}
+        {sendingRequest && activeSession?.status !== 'running' ? <p className={styles.runtimeProgress} role="status"><LoaderCircle className={styles.spinner} aria-hidden="true" size={16} />{TEACHBUDDY_IM_ASSISTANT_LABEL}正在理解你的要求…</p> : null}
         {stopping ? <p className={styles.runtimeProgress} role="status"><LoaderCircle className={styles.spinner} aria-hidden="true" size={16} />正在停止当前生成…</p> : null}
         {runtime.session?.status === 'stopped' ? <p className={styles.runtimeNotice} role="status">{runtime.session.error || '生成已停止，你可以继续发送要求。'}</p> : null}
         {runtime.session?.status === 'failed' ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.session.error || '任务未完成，请重试或调整要求。'}</p></div> : null}
         {runtime.readError && runtime.readErrorStatus !== 404 ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.readError}</p><button type="button" onClick={runtime.reconnect}>重试恢复</button></div> : null}
-        {runtime.operation?.status === 'failed' ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.operation.error}</p><button type="button" onClick={() => { if (!sessionRef || runtime.operation?.status !== 'failed') return; const command = runtime.operation.command; if (command.kind === 'send' && command.images?.length) pendingImageSubmission.current = { images: imageDrafts, beforeTeacherEventId: activeSession ? [...activeSession.events].reverse().find(({ kind }) => kind === 'teacher_message')?.id : undefined }; void runtime.execute(sessionRef, command).then((completed) => { if (selection) setLearningResultReady(completed); if (completed && command.kind === 'send') setComposerDraft(''); }); }}>{runtime.operation.command.kind === 'cancel' ? '重试停止' : '重试原请求'}</button></div> : null}
+        {runtime.operation?.status === 'failed' ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.operation.error}</p><button type="button" onClick={() => { if (!sessionRef || runtime.operation?.status !== 'failed') return; const command = runtime.operation.command; if (command.kind === 'send' && command.images?.length) pendingImageSubmission.current = { images: imageDrafts, beforeTeacherEventId: activeSession ? [...activeSession.events].reverse().find(({ kind }) => kind === 'teacher_message')?.id : undefined }; void runtime.execute(sessionRef, command).then((completed) => { if (selection) setLearningResultReady(completed); }); }}>{runtime.operation.command.kind === 'cancel' ? '重试停止' : '重试原请求'}</button></div> : null}
         {runtime.createError ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{runtime.createError}</p></div> : null}
         {contextError ? <div className={styles.runtimeError} role="alert"><AlertTriangle aria-hidden="true" size={16} /><p>{contextError}</p></div> : null}
       </div>
@@ -501,7 +582,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         ariaLabel={`向 ${TEACHBUDDY_IM_ASSISTANT_LABEL}输入要求`}
         className={styles.runComposerDock}
         countThreshold={3_200}
-        disabled={delivery.status === 'sending' || pending || running}
+        disabled={delivery.status === 'sending'}
         hint={direct ? '可直接说你想如何回复或继续处理' : '可直接说你想提醒谁、说明什么'}
         imageAccept={RUNTIME_IMAGE_ACCEPT}
         imageAttachments={imageDrafts}

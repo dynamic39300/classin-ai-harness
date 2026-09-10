@@ -5,7 +5,6 @@ import {
   markThreadRead,
   prependMessageHistoryPage,
   recallClassMessage,
-  togglePinnedMessage,
   updateMessageDelivery,
   type MessageThread,
 } from '@domain/message/message';
@@ -339,12 +338,6 @@ export function MessageWorkspaceProvider({
     return next;
   }, [activeLifecyclePort]);
 
-  const togglePin = useCallback<MessageWorkspaceActions['togglePin']>((threadId, messageId) => {
-    setThreads((current) => current.map((thread) => (
-      thread.id === threadId ? togglePinnedMessage(thread, messageId) : thread
-    )));
-  }, []);
-
   const recallMessage = useCallback<MessageWorkspaceActions['recallMessage']>((role, threadId, messageId, recalledAt) => {
     setThreads((current) => current.map((thread) => (
       thread.id === threadId ? recallClassMessage(role, thread, messageId, recalledAt) : thread
@@ -442,7 +435,6 @@ export function MessageWorkspaceProvider({
     retryMessage,
     syncAndRetryMessage,
     reconnect,
-    togglePin,
     recallMessage,
     toggleMute,
     toggleReaction,
@@ -454,7 +446,7 @@ export function MessageWorkspaceProvider({
     readMentionItem,
     requestDesktopNotificationPermission,
     sendTestDesktopNotification,
-  }), [appendMessage, clearTranslation, dismissReminder, loadOlderMessages, readCategory, readMentionItem, readThread, recallMessage, reconnect, requestDesktopNotificationPermission, retryMessage, searchMessages, searchResources, sendTestDesktopNotification, submitMessage, syncAndRetryMessage, toggleMute, togglePin, toggleReaction, translateMessage]);
+  }), [appendMessage, clearTranslation, dismissReminder, loadOlderMessages, readCategory, readMentionItem, readThread, recallMessage, reconnect, requestDesktopNotificationPermission, retryMessage, searchMessages, searchResources, sendTestDesktopNotification, submitMessage, syncAndRetryMessage, toggleMute, toggleReaction, translateMessage]);
 
   return <MessageWorkspaceContext.Provider value={{ state, actions, mediaAdapter: activeMediaAdapter, directoryAdapter: activeDirectoryAdapter, temporaryClassroomAdapter: activeTemporaryClassroomAdapter, lifecyclePort: activeLifecyclePort }}>{children}</MessageWorkspaceContext.Provider>;
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { MessageThread } from './message';
+import { MESSAGE_UNICODE_EMOJI } from './message-emoji';
 import {
   addMessageResourceDraft,
   createReplyReference,
@@ -35,6 +36,22 @@ describe('IM 2.0 basic message domain', () => {
     expect(selected.entries[0]?.reactions).toEqual([{ emoji: '👍', actorIds: ['teacher'] }]);
     const cleared = toggleMessageReaction(selected, 'message-1', 'teacher', '👍');
     expect(cleared.entries[0]?.reactions).toEqual([]);
+
+    expect(MESSAGE_UNICODE_EMOJI).toContain('🎉');
+    const extended = toggleMessageReaction(THREAD, 'message-1', 'teacher', '🎉');
+    expect(extended.entries[0]?.reactions).toEqual([{ emoji: '🎉', actorIds: ['teacher'] }]);
+  });
+
+  it('does not add reactions to system or retracted messages', () => {
+    const restricted = {
+      ...THREAD,
+      entries: [
+        { ...THREAD.entries[0]!, id: 'system', kind: 'system' as const },
+        { ...THREAD.entries[1]!, id: 'retracted', kind: 'retracted' as const },
+      ],
+    };
+    expect(toggleMessageReaction(restricted, 'system', 'teacher', '🎉')).toBe(restricted);
+    expect(toggleMessageReaction(restricted, 'retracted', 'teacher', '🎉')).toBe(restricted);
   });
 
   it('combines keyword, sender and date filters across loaded and older entries', () => {

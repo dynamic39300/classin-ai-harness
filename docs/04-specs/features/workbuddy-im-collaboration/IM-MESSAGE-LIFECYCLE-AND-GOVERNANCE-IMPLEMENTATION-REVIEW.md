@@ -1,7 +1,7 @@
 ---
 title: ClassIn IM 消息生产生命周期与治理收口 Implementation Review
 status: SELF_REVIEWED
-version: v1.0
+version: v1.1
 date: 2026-09-09
 spec: IM-MESSAGE-LIFECYCLE-AND-GOVERNANCE-FEATURE-SPEC.md
 tickets: IM-LIFE-T01—T06
@@ -24,7 +24,7 @@ review_gate: PASSED_BY_DELEGATED_AUTHORITY_2026-09-09
 | `IR-LIFE-02` | 幂等与恢复 | 同一失败消息复用原 `clientRequestId`；offline/transient 就地重试，conflict 先同步，重复成功不生成第二条消息。 |
 | `IR-LIFE-03` | 连接状态 | 离线、重连中和恢复结果在会话内可见；重连不会自动重复发送失败消息。 |
 | `IR-LIFE-04` | Cursor 历史 | loading/error/retry/exhausted 可观察，prepend 按 ID 去重并保持阅读锚点。 |
-| `IR-LIFE-05` | 只读保留 | 教师结课群与学生已退出群均保留历史、群资料和群文件；发送、回复、Reaction、置顶和撤回关闭。 |
+| `IR-LIFE-05` | 只读保留 | 教师结课群与学生已退出群均保留历史、群资料和群文件；发送、回复、Reaction 和撤回关闭。 |
 | `IR-LIFE-06` | 治理事件 | 好友通过、成员加入和班级改名使用系统消息身份。 |
 | `IR-LIFE-07` | 跨消息类型 | 文本、Emoji、媒体、资源、回复、Mention 和名片继续使用同一原子 Snapshot。 |
 | `IR-LIFE-08` | Agent 隔离 | 普通消息交付只由 Message Module 拥有，班级 Agent 与 TeachBuddy 的授权、运行和失败状态未并入本 Port。 |

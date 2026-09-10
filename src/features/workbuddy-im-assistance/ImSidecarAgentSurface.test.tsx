@@ -21,6 +21,39 @@ function OpenSidecar() {
   return null;
 }
 
+async function renderRestoredConversation(request: string, response: string) {
+  const session: RuntimeSession = {
+    id: 'tb-session-restored', title: '教学咨询', status: 'idle', updatedAt: '2026-09-08T00:00:01.000Z', artifacts: [], events: [
+      { id: 'teacher-restored', runRef: 'tb-session-restored', sequence: 1, occurredAt: '2026-09-08T00:00:00.000Z', updatedAt: '2026-09-08T00:00:00.000Z', actor: 'teacher', kind: 'teacher_message', state: 'completed', title: '教师', summary: request, objectRefs: [], allowedCommands: [] },
+      { id: 'agent-restored', runRef: 'tb-session-restored', sequence: 2, occurredAt: '2026-09-08T00:00:01.000Z', updatedAt: '2026-09-08T00:00:01.000Z', actor: 'agent', kind: 'process', state: 'completed', title: 'TeachBuddy', summary: response, objectRefs: [], allowedCommands: [] },
+    ],
+  };
+  const runtime: AgentRuntimeAdapter = {
+    health: async () => ({ status: 'ready', message: 'ready' }),
+    list: async () => [session],
+    create: async () => session,
+    read: async () => session,
+    send: async () => session,
+    cancel: async () => session,
+    approve: async () => session,
+  };
+  const now = () => new Date('2026-08-09T10:00:00+08:00');
+  const legacy = createHomeworkScenario();
+  const append = vi.fn();
+  const homework = new MockWorkBuddyImHomeworkReminderAdapter({ readSnapshot: () => ({ ...legacy, classId: 'class-1', classLabel: '高二物理 3 班' }), appendTeacherMessage: append });
+  const guided = new MockGuidedExplanationDistributionAdapter({ appendTeacherMessage: append });
+  const messageDraft = new MockWorkBuddyImMessageDraftAdapter({ now, appendTeacherMessage: append });
+  saveImAgentSessionBinding({ actorRef: 'teacher-1', tenantRef: 'school-1', threadRef: 'class-physics-3', scope: 'ideal-full' }, session.id);
+
+  function Tree() {
+    const services = useMemo(() => ({ runtime, businessContext: new FixedWorkBuddyImBusinessContextAdapter(now), teachingDynamics: new FixedWorkBuddyImTeachingDynamicsAdapter(now), messageDraft, actor: { id: 'teacher-1', name: '王老师' }, tenantRef: 'school-1', scope: 'ideal-full' as const }), []);
+    return <WorkBuddyImProvider adapter={homework} guidedExplanationAdapter={guided} teacher={{ id: 'teacher-1', name: '王老师' }} now={now} agentServices={services}><OpenSidecar /><WorkBuddyImSidecar onLocateMessage={() => undefined} /></WorkBuddyImProvider>;
+  }
+
+  render(<MemoryRouter><Tree /></MemoryRouter>);
+  return screen.findByLabelText('AI 消息助手私密协作窗口');
+}
+
 describe('ImSidecarAgentSurface', () => {
   beforeEach(() => {
     window.localStorage.clear();
@@ -38,7 +71,7 @@ describe('ImSidecarAgentSurface', () => {
       send: async (_scope, id, text) => {
         session = { id, title: '实验提醒', status: 'idle', updatedAt: '2026-09-08T00:00:01.000Z', artifacts: [], events: [
           { id: 'teacher-1', runRef: id, sequence: 1, occurredAt: '2026-09-08T00:00:00.000Z', updatedAt: '2026-09-08T00:00:00.000Z', actor: 'teacher', kind: 'teacher_message', state: 'completed', title: '教师', summary: text, objectRefs: [], allowedCommands: [] },
-          { id: 'agent-1', runRef: id, sequence: 2, occurredAt: '2026-09-08T00:00:01.000Z', updatedAt: '2026-09-08T00:00:01.000Z', actor: 'agent', kind: 'process', state: 'completed', title: 'TeachBuddy', summary: '同学们，请明天带上实验报告。', objectRefs: [], allowedCommands: [] },
+          { id: 'agent-1', runRef: id, sequence: 2, occurredAt: '2026-09-08T00:00:01.000Z', updatedAt: '2026-09-08T00:00:01.000Z', actor: 'agent', kind: 'process', state: 'completed', title: 'TeachBuddy', summary: '好的，王老师！以下是可直接发送的提醒。\n\n---\n\n同学们，请明天带上实验报告。\n\n---\n\n提醒要点说明：语气简洁，并明确了下一步。\n\n如果需要调整语气，请告诉我。', objectRefs: [], allowedCommands: [] },
         ] };
         return session;
       },
@@ -88,7 +121,6 @@ describe('ImSidecarAgentSurface', () => {
     expect(compactDynamics).toHaveFocus();
     expect(guide.querySelector('#teaching-dynamics-content')).toHaveAttribute('aria-hidden', 'true');
     expect(guide.querySelector('#teaching-dynamics-content')).toHaveAttribute('inert');
-    expect(within(guide).getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
     await user.click(compactDynamics);
     expect(within(guide).getByRole('button', { name: '收起 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'true');
     const composer = within(sidecar).getByRole('textbox', { name: '向 AI 消息助手输入要求' });
@@ -98,13 +130,54 @@ describe('ImSidecarAgentSurface', () => {
     expect(await within(sidecar).findByText('拟一条实验提醒')).toBeInTheDocument();
     expect(within(sidecar).queryByText(/TEACHBUDDY_CONTEXT_V1/)).not.toBeInTheDocument();
     expect(within(sidecar).getByText('同学们，请明天带上实验报告。')).toBeInTheDocument();
+    expect(within(sidecar).queryByText('您')).not.toBeInTheDocument();
+    const process = within(sidecar).getByRole('region', { name: 'AI 消息助手 分析过程' });
+    expect(within(process).getByText('已整理好')).toBeVisible();
+    expect(within(process).queryByText(/个步骤/)).not.toBeInTheDocument();
+    await user.click(within(process).getByRole('button', { name: '展开处理过程：已整理好' }));
+    expect(within(process).getByRole('list', { name: '分析步骤' })).toBeVisible();
     expect(within(guide).getByRole('button', { name: '收起 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'true');
-    await user.click(within(sidecar).getByRole('button', { name: '作为群消息草稿审阅' }));
+    await user.click(within(sidecar).getByRole('button', { name: '审阅并发送' }));
     expect(within(sidecar).queryByRole('link', { name: /在 TeachBuddy 中继续/ })).not.toBeInTheDocument();
+    const draftEditor = within(sidecar).getByRole('textbox', { name: '消息草稿正文' });
+    expect(draftEditor).toHaveValue('同学们，请明天带上实验报告。');
+    expect(within(sidecar).queryByRole('article', { name: 'AI 消息助手回复' })).not.toBeInTheDocument();
     expect(append).not.toHaveBeenCalled();
-    await user.click(within(sidecar).getByRole('button', { name: '确认并发送至高二物理 3 班' }));
+    await user.type(draftEditor, ' 临时修改');
+    await user.click(within(sidecar).getByRole('button', { name: '取消' }));
+    expect(within(sidecar).queryByRole('textbox', { name: '消息草稿正文' })).not.toBeInTheDocument();
+    expect(within(sidecar).getByText('同学们，请明天带上实验报告。')).toBeVisible();
+    expect(within(sidecar).getByRole('button', { name: '审阅并发送' })).toBeVisible();
+    expect(append).not.toHaveBeenCalled();
+    await user.click(within(sidecar).getByRole('button', { name: '审阅并发送' }));
+    expect(within(sidecar).getByRole('textbox', { name: '消息草稿正文' })).toHaveValue('同学们，请明天带上实验报告。');
+    await user.click(within(sidecar).getByRole('button', { name: '确认发送' }));
     await waitFor(() => expect(append).toHaveBeenCalledTimes(1));
     expect(append.mock.calls[0]?.[0]).toMatchObject({ threadId: 'class-physics-3', authorName: '王老师', body: '同学们，请明天带上实验报告。' });
+    expect(within(sidecar).queryByLabelText('班级群消息草稿')).not.toBeInTheDocument();
+    expect(within(sidecar).queryByText('已发送')).not.toBeInTheDocument();
+  });
+
+  it('keeps informational answers in the conversation without offering message delivery', async () => {
+    const sidecar = await renderRestoredConversation(
+      '我们接下来要上的课程都有什么？分别列出课程名称和时间。',
+      '接下来有两节课：周一物理和周三数学。',
+    );
+
+    expect(within(sidecar).getByText('接下来有两节课：周一物理和周三数学。')).toBeVisible();
+    expect(within(sidecar).queryByRole('button', { name: '审阅并发送' })).not.toBeInTheDocument();
+    expect(within(sidecar).queryByRole('button', { name: '整理成群消息' })).not.toBeInTheDocument();
+  });
+
+  it('offers a lightweight conversion for advice without opening an editor', async () => {
+    const sidecar = await renderRestoredConversation(
+      '这个情况怎么提醒学生更合适？',
+      '建议先说明课堂已经开始，再友好询问是否遇到了进入问题。',
+    );
+
+    expect(within(sidecar).getByRole('button', { name: '整理成群消息' })).toBeVisible();
+    expect(within(sidecar).queryByRole('button', { name: '审阅并发送' })).not.toBeInTheDocument();
+    expect(within(sidecar).queryByRole('textbox', { name: '消息草稿正文' })).not.toBeInTheDocument();
   });
 
   it('stops the current task from the composer and continues in the same conversation', async () => {
@@ -151,6 +224,7 @@ describe('ImSidecarAgentSurface', () => {
     const sidecar = await screen.findByLabelText('AI 消息助手私密协作窗口');
     const composer = sidecar.querySelector<HTMLElement>('[data-workspace-composer="true"]');
     expect(composer).not.toBeNull();
+    expect(within(sidecar).getByRole('button', { name: '展开处理过程：正在生成回答' })).toHaveAttribute('aria-expanded', 'false');
     const conversation = within(sidecar).getByRole('region', { name: 'AI 消息助手对话' });
     Object.defineProperty(conversation, 'scrollHeight', { configurable: true, value: 1_000 });
     Object.defineProperty(conversation, 'clientHeight', { configurable: true, value: 240 });
@@ -159,6 +233,10 @@ describe('ImSidecarAgentSurface', () => {
     conversation.scrollTo = scrollTo;
     fireEvent.scroll(conversation);
     scrollTo.mockClear();
+    const textbox = within(composer!).getByRole('textbox', { name: '向 AI 消息助手输入要求' });
+    expect(textbox).toBeEnabled();
+    expect(within(composer!).getByRole('button', { name: '发送给 AI 消息助手' })).toBeDisabled();
+    await user.type(textbox, '这句话先保留');
     const stop = await within(composer!).findByRole('button', { name: '停止生成' });
     await user.click(stop);
     await within(sidecar).findByText('生成已停止，你可以继续发送要求。');
@@ -166,8 +244,9 @@ describe('ImSidecarAgentSurface', () => {
     expect(create).not.toHaveBeenCalled();
     expect(scrollTo).not.toHaveBeenCalled();
 
-    const textbox = within(composer!).getByRole('textbox', { name: '向 AI 消息助手输入要求' });
     expect(textbox).toBeEnabled();
+    expect(textbox).toHaveValue('这句话先保留');
+    await user.clear(textbox);
     await user.type(textbox, '换一种简短说法');
     await user.click(within(composer!).getByRole('button', { name: '发送给 AI 消息助手' }));
     await waitFor(() => expect(send).toHaveBeenCalledTimes(1));

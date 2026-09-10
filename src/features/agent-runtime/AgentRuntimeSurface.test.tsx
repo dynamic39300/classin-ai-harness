@@ -101,7 +101,7 @@ describe('runtime workspace', () => {
     const view = setup(adapter);
     await act(async () => {});
     expect(screen.getByRole('region', { name: 'TeachBuddy 分析过程' })).toBeVisible();
-    expect(screen.getByText('正在等待运行事件')).toBeVisible();
+    expect(screen.getByText('正在理解你的要求')).toBeVisible();
     expect(screen.getByRole('button', { name: '发送给 TeachBuddy' })).toBeDisabled();
     await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
     expect(adapter.read).toHaveBeenCalledTimes(2);

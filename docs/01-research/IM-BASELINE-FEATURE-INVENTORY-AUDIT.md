@@ -131,7 +131,7 @@ date: 2026-09-09
 | ⬜ | `ON-IA-10` | 时间/状态摘要 | `PARTIAL` | `MATCHED · MOCK_CLOSED_LOOP` | 列表时间、未读和公开课待开始/直播中/已结束状态摘要均可见（`CUR-BUS`） | 线上 L122；差异 L118 |
 | ⬜✅ | `ON-IA-11` | 当前选择与详情切换 | `MATCHED` | `MATCHED · LOCAL_OPERATIONAL` | 分类/线程选择可切换并写入 URL（`CUR-IA`） | 线上 L123；差异 L119 |
 | ⬜ | `ON-IA-12` | 班级群多 Tab | `PARTIAL` | `ADAPTED · LOCAL_OPERATIONAL` | 经 PC-06/07 审阅改用群文件/群资料 Focus Surface 与班级返回路径，不恢复常驻三 Tab（`CUR-IA`、`CUR-BUS`） | 线上 L124；差异 L120 |
-| ✅ | `ON-IA-13` | 班级公告固定条 | `NOT_IMPLEMENTED` | `MATCHED · LOCAL_OPERATIONAL` | 班级群顶部从 Class Domain 投影当前公告，且与普通置顶独立（`CUR-ATTN`） | 线上 L125；差异 L121 |
+| ✅ | `ON-IA-13` | 班级公告固定条 | `NOT_IMPLEMENTED` | `MATCHED · LOCAL_OPERATIONAL` | 班级群顶部从 Class Domain 投影当前公告，且与重要提醒独立（`CUR-ATTN`） | 线上 L125；差异 L121 |
 | ✅ | `ON-IA-14` | 群级重要提醒条 | `NOT_IMPLEMENTED` | `MATCHED · MOCK_CLOSED_LOOP` | 固定提醒展示发布者、@所有人、正文、来源与按 Actor 关闭，并与公告/置顶分离（`CUR-ATTN`） | 线上 L126；差异 L122 |
 | ✅ | `ON-IA-15` | 新消息分隔 | `PARTIAL` | `MATCHED · LOCAL_OPERATIONAL` | 普通班级群按进入前稳定 Message Reference 显示“以下为新消息”（`CUR-ATTN`） | 线上 L127；差异 L123 |
 | ⬜✅ | `ON-IA-16` | 系统事件 | `MATCHED` | `MATCHED · LOCAL_OPERATIONAL` | 已有居中系统事件投影（`CUR-IA`） | 线上 L128；差异 L124 |
@@ -255,14 +255,14 @@ date: 2026-09-09
 
 | 审阅 | Online ID | 真实截图负向事实 | 2026-09-09 当前项目处理 |
 | --- | --- | --- | --- |
-| ⬜ | `ON-NEG-01` | 无通用单条消息操作菜单 | 已新增低噪内联动作条（回复、Reaction、翻译、置顶、撤回），属于显式升级，见 `CUR-MSG`。 |
+| ⬜ | `ON-NEG-01` | 无通用单条消息操作菜单 | 已新增低噪内联动作条（回复、Reaction、翻译、撤回），属于显式升级；单条消息置顶已按 `D-148` 移除，见 `CUR-MSG`。 |
 | ⬜ | `ON-NEG-02` | 无回复/引用回复 | `IM2-P2-003` 已显式新增。 |
 | ⬜ | `ON-NEG-03` | 无 Thread 子会话 | 仍未进入范围；引用回复不等于 Thread。 |
 | ⬜ | `ON-NEG-04` | 无 Reaction | `IM2-P2-004` 已显式新增。 |
 | ⬜ | `ON-NEG-05` | 无点赞 | 👍 已作为 Reaction 选项显式新增。 |
 | ⬜ | `ON-NEG-06` | 无投票 | 当前仍未实现。 |
 | ⬜ | `ON-NEG-07` | 无 Slack 式 Channel | 当前仍未实现；班级群继续作为 Thread。 |
-| ⬜ | `ON-NEG-08` | 无会话置顶/免打扰 | 当前有消息置顶和私聊免打扰，是旧 Demo 已有升级资产；要继续区分“消息置顶”和“会话置顶”。 |
+| ⬜ | `ON-NEG-08` | 无会话置顶/免打扰 | 单条消息置顶已按 `D-148` 从 Domain、Store、UI 与 Mock 中移除；私聊免打扰仍是显式升级能力，会话置顶仍未实现。 |
 | ⬜ | `ON-NEG-10` | 当前版本无消息撤回 | 当前有本地撤回，是旧 Demo 已有升级资产；生产时限和角色规则仍待接入。 |
 
 ## 7 项当前增量

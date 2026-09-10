@@ -35,6 +35,18 @@ function statusLabel(status: NonNullable<ReturnType<typeof projectAnalysisProces
   return '已完成分析';
 }
 
+function compactActivityLabel(
+  status: NonNullable<ReturnType<typeof projectAnalysisProcess>>['status'],
+  currentStep?: AnalysisProcessStep,
+): string {
+  if (status === 'completed') return '已整理好';
+  if (status === 'needs_information') return '等你补充信息';
+  if (status === 'failed') return '处理未完成';
+  if (status === 'stopped') return '已停止';
+  if (!currentStep || currentStep.label === '已接收要求') return '正在理解你的要求';
+  return currentStep.label;
+}
+
 function StepIcon({ state }: Readonly<{ state: AnalysisProcessStep['state'] }>) {
   if (state === 'completed') return <Check size={13} aria-hidden="true" />;
   if (state === 'running') return <LoaderCircle className={styles.spinner} size={13} aria-hidden="true" />;
@@ -55,16 +67,21 @@ export function AnalysisProcess({ session, mode = 'full', context, assistantLabe
   }, [session.status]);
 
   if (!projection) return null;
-  const expanded = preference?.runRef === projection.runRef && preference.status === projection.status ? preference.expanded : projection.defaultExpanded;
+  const defaultExpanded = mode === 'compact'
+    ? projection.status === 'needs_information' || projection.status === 'failed'
+    : projection.defaultExpanded;
+  const expanded = preference?.runRef === projection.runRef && preference.status === projection.status ? preference.expanded : defaultExpanded;
   const visibleSteps = mode === 'compact' && projection.steps.length > 3 ? projection.steps.slice(-3) : projection.steps;
   const currentStep = [...visibleSteps].reverse().find(({ state }) => state === 'running' || state === 'needs_information' || state === 'failed' || state === 'stopped');
   const heading = `${statusLabel(projection.status)} · ${projection.steps.length} 个步骤 · ${elapsedLabel(projection.elapsedMs)}`;
+  const compactHeading = compactActivityLabel(projection.status, currentStep);
+  const toggleAction = expanded ? '收起处理过程' : '展开处理过程';
 
   return (
     <section className={styles.process} data-mode={mode} data-status={projection.status} aria-label={`${assistantLabel} 分析过程`}>
-      <button className={styles.summary} type="button" aria-expanded={expanded} onClick={() => setPreference({ runRef: projection.runRef, status: projection.status, expanded: !expanded })}>
-        <span className={styles.summaryState}><span className={styles.summaryIcon}><StepIcon state={projection.status === 'completed' ? 'completed' : projection.status === 'failed' ? 'failed' : projection.status === 'stopped' ? 'stopped' : 'running'} /></span><strong>{heading}</strong></span>
-        <span className={styles.toggleLabel}>{expanded ? '收起' : '展开'}<ChevronDown size={14} aria-hidden="true" /></span>
+      <button className={styles.summary} type="button" aria-expanded={expanded} aria-label={mode === 'compact' ? `${toggleAction}：${compactHeading}` : undefined} onClick={() => setPreference({ runRef: projection.runRef, status: projection.status, expanded: !expanded })}>
+        <span className={styles.summaryState}><span className={styles.summaryIcon}><StepIcon state={projection.status === 'completed' ? 'completed' : projection.status === 'failed' ? 'failed' : projection.status === 'stopped' ? 'stopped' : 'running'} /></span>{mode === 'compact' ? <><strong>{assistantLabel}</strong><span className={styles.summaryActivity}>{compactHeading}</span><span className={styles.duration}>· {elapsedLabel(projection.elapsedMs)}</span></> : <strong>{heading}</strong>}</span>
+        <span className={styles.toggleLabel}>{mode === 'compact' ? '处理过程' : expanded ? '收起' : '展开'}<ChevronDown size={14} aria-hidden="true" /></span>
       </button>
       {expanded ? <ol className={styles.steps} aria-label="分析步骤">
         {visibleSteps.map((step) => <li key={step.id} data-state={step.state}>

@@ -72,7 +72,6 @@ export type MessageThread = {
   entries: MessageEntry[];
   olderEntries?: MessageEntry[];
   notice?: MessageNotice;
-  pinnedMessageId?: string | null;
 };
 
 export function prependOlderMessagePage(thread: MessageThread, pageSize = 6): MessageThread {
@@ -286,17 +285,6 @@ export function appendLocalMessage(
   };
 }
 
-export function togglePinnedMessage(
-  thread: MessageThread,
-  messageId: string,
-): MessageThread {
-  if (thread.category !== 'class' || !thread.entries.some(({ id, kind }) => id === messageId && kind !== 'retracted' && kind !== 'system')) return thread;
-  return {
-    ...thread,
-    pinnedMessageId: thread.pinnedMessageId === messageId ? null : messageId,
-  };
-}
-
 export function canRecallClassMessage(role: AppRole, entry: MessageEntry, now: Date): boolean {
   if (entry.authorRole !== role || entry.kind === 'system' || entry.kind === 'retracted') return false;
   if (role === 'teacher') return true;
@@ -316,7 +304,6 @@ export function recallClassMessage(
   if (!target || !canRecallClassMessage(role, target, now)) return thread;
   return {
     ...thread,
-    pinnedMessageId: thread.pinnedMessageId === messageId ? null : thread.pinnedMessageId,
     entries: thread.entries.map((entry) => entry.id === messageId
       ? { ...entry, body: '消息已撤回', kind: 'retracted', retractedAt: recalledAt, attachments: undefined, objectCards: undefined }
       : entry),

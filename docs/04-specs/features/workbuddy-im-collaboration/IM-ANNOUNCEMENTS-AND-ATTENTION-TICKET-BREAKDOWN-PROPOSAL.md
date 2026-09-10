@@ -1,7 +1,7 @@
 ---
 title: ClassIn IM 班级公告与消息提醒 Ticket Breakdown Proposal
 status: IMPLEMENTED_SELF_REVIEWED
-version: v1.0
+version: v1.1
 date: 2026-09-09
 review_gate: PASSED_BY_DELEGATED_AUTHORITY_2026-09-09
 publication_status: PUBLISHED_LOCAL_SELF_REVIEWED
@@ -41,7 +41,7 @@ T02 + T03 + T04
 
 **Write Set:** `src/domain/message/message-attention.ts`、`src/contracts/message/message-attention.ts`、Browser/Memory Notification Adapter 和单元测试。
 
-- [x] 公告、重要提醒、具体成员提及、`@所有人` 和普通置顶具有独立类型与投影规则。
+- [x] 公告、重要提醒、具体成员提及和 `@所有人` 具有独立类型与投影规则；普通消息置顶已按 `D-148` 从当前模型移除。
 - [x] Mention 去重、优先级、未读数、稳定阅读边界和通知路由均由纯 Domain 函数计算。
 - [x] 浏览器设备能力与未来 PC Native/Push 通过同一 Adapter 契约隔离。
 
@@ -52,7 +52,7 @@ T02 + T03 + T04
 **Write Set:** Class Domain 到 Message Workspace 的公告桥接、固定提醒 Fixture、Provider 状态、时间线上方注意力 UI。
 
 - [x] 当前有效 Class 公告显示为独立固定条，教师可进入既有公告管理，学生只读查看。
-- [x] 重要提醒显示发布者、`@所有人`、正文、来源和关闭动作，并与公告、普通置顶明确区分。
+- [x] 重要提醒显示发布者、`@所有人`、正文、来源和关闭动作，并与公告、普通消息明确区分。
 - [x] 关闭提醒只记录当前 Actor 的 dismissal，不改变原消息或其他用户状态。
 
 ## IM-ATTN-T03 — `@我的` 与阅读边界

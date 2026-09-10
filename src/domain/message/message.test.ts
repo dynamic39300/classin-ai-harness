@@ -11,7 +11,6 @@ import {
   markThreadRead,
   prependOlderMessagePage,
   recallClassMessage,
-  togglePinnedMessage,
   type MessageThread,
 } from './message';
 
@@ -110,15 +109,7 @@ describe('message mutations', () => {
     expect(next.olderEntries?.map(({ id }) => id)).toEqual(['old-0', 'old-1', 'old-2', 'old-3', 'old-4']);
   });
 
-  it('pins one valid class message and toggles it off', () => {
-    const thread = makeThread({ category: 'class', classId: 'class-1' });
-    const pinned = togglePinnedMessage(thread, 'm1');
-    expect(pinned.pinnedMessageId).toBe('m1');
-    expect(togglePinnedMessage(pinned, 'm1').pinnedMessageId).toBeNull();
-    expect(togglePinnedMessage(makeThread(), 'missing').pinnedMessageId).toBeUndefined();
-  });
-
-  it('applies role and 24-hour recall rules and clears a recalled pin', () => {
+  it('applies role and 24-hour recall rules', () => {
     const oldStudent = { id: 'old', authorRole: 'student-family' as const, authorName: '李明', body: '旧消息', sentAt: '2026-08-07T14:15:00+08:00', kind: 'text' as const };
     const recentStudent = { ...oldStudent, id: 'recent', sentAt: '2026-08-08T14:14:00+08:00' };
     const oldTeacher = { ...oldStudent, id: 'teacher-old', authorRole: 'teacher' as const };
@@ -127,9 +118,8 @@ describe('message mutations', () => {
     expect(canRecallClassMessage('student-family', recentStudent, now)).toBe(true);
     expect(canRecallClassMessage('teacher', oldTeacher, now)).toBe(true);
 
-    const thread = makeThread({ category: 'class', entries: [recentStudent], pinnedMessageId: recentStudent.id });
+    const thread = makeThread({ category: 'class', entries: [recentStudent] });
     const recalled = recallClassMessage('student-family', thread, recentStudent.id, now.toISOString());
     expect(recalled.entries[0]).toMatchObject({ kind: 'retracted', body: '消息已撤回' });
-    expect(recalled.pinnedMessageId).toBeNull();
   });
 });

@@ -7,6 +7,7 @@ import { WorkspaceComposer } from '@design-system/WorkspaceComposer';
 import { createHttpAgentRuntime } from './http-agent-runtime';
 import { useAgentRuntime } from './use-agent-runtime';
 import { teacherVisibleRuntimeText } from '@domain/workbuddy/runtime-context-envelope';
+import { createClientId } from '@shared/client-id';
 import { splitAnalysisProcessTurns } from '@domain/workbuddy/analysis-process';
 import { AnalysisProcess } from './AnalysisProcess';
 import { appendRuntimeImageDrafts, encodeRuntimeImageDrafts, releaseRuntimeImageDrafts, RUNTIME_IMAGE_ACCEPT, type RuntimeImageDraft } from './runtime-image-attachments';
@@ -102,7 +103,7 @@ function RuntimeWorkspace({ scope, newTaskPath, returnTarget, adapter = httpRunt
       return;
     }
     const version = navigationVersion.current;
-    const commandId = crypto.randomUUID();
+    const commandId = createClientId();
     const recoveringTextSession = needsFreshTextSession(session, attachedImages.length);
     let id = recoveringTextSession ? null : activeId;
     if (!id) {
@@ -206,7 +207,7 @@ function RuntimeWorkspace({ scope, newTaskPath, returnTarget, adapter = httpRunt
             {pending && operation.command.kind === 'send' ? <p className={styles.operationStatus} role="status">正在提交要求，等待 TeachBuddy 确认…</p> : null}
             {runtime.creation === 'pending' ? <p className={styles.operationStatus} role="status">正在创建会话…</p> : null}
             {session?.status === 'stopped' ? <p role="status">{session.error || '生成已停止，您可以继续发送要求。'}</p> : null}
-            {session?.status === 'failed' ? <div className={styles.error} role="alert"><p>{session.error || '任务未完成，请重试或调整要求。'}</p>{attachedImages.length ? <button type="button" disabled={!canSend} onClick={() => void submit()}>使用保留图片重试</button> : lastTeacherMessage?.state === 'completed' ? <button type="button" disabled={!canSend} onClick={() => void runtime.execute(session.id, { kind: 'send', text: lastTeacherMessage.summary, commandId: crypto.randomUUID() })}>重新发送上一条</button> : <button type="button" onClick={runtime.reconnect}>重新核对会话</button>}</div> : null}
+            {session?.status === 'failed' ? <div className={styles.error} role="alert"><p>{session.error || '任务未完成，请重试或调整要求。'}</p>{attachedImages.length ? <button type="button" disabled={!canSend} onClick={() => void submit()}>使用保留图片重试</button> : lastTeacherMessage?.state === 'completed' ? <button type="button" disabled={!canSend} onClick={() => void runtime.execute(session.id, { kind: 'send', text: lastTeacherMessage.summary, commandId: createClientId() })}>重新发送上一条</button> : <button type="button" onClick={runtime.reconnect}>重新核对会话</button>}</div> : null}
             {runtime.readError ? <div className={styles.error} role="alert"><p>{runtime.readError}</p><button type="button" onClick={runtime.reconnect}>重试恢复会话</button></div> : null}
             {operation?.status === 'failed' && activeId ? <div className={styles.error} role="alert"><p>{operation.error}</p>{operation.command.kind === 'send' ? <p className={styles.plainText}>待确认的消息：{operation.command.text || `已附 ${operation.command.images?.length ?? 0} 张图片`}</p> : null}<button type="button" onClick={() => {
               const command = operation.command;
@@ -227,7 +228,7 @@ function RuntimeWorkspace({ scope, newTaskPath, returnTarget, adapter = httpRunt
           <header><div><h2>{artifact.title}</h2><span>v{artifact.version} · {artifact.status === 'saved' ? '已保存到本机' : '待审阅'}</span></div><button type="button" aria-label="关闭产物" title="关闭产物" onClick={() => setReview(null)}><X size={16} aria-hidden="true" /></button></header>
           <div className={styles.document} tabIndex={0} role="region" aria-label="产物正文"><pre>{artifact.content}</pre></div>
           <footer><p>保存位置：本机个人产物存储；不代表 ClassIn 正式发布。</p>{artifact.receipt ? <p>本机保存回执：{artifact.receipt.id}<br /><time dateTime={artifact.receipt.savedAt}>{artifact.receipt.savedAt}</time></p> : null}
-            <div className={styles.actions}><button type="button" disabled={artifact.status === 'saved' || pending || running || Boolean(runtime.readError) || operation?.status === 'failed'} onClick={() => void runtime.execute(session.id, { kind: 'approve', artifactId: artifact.id, version: artifact.version, commandId: crypto.randomUUID() })}><Save size={15} aria-hidden="true" />{artifact.status === 'saved' ? '已保存' : '确认并保存到本机'}</button><button type="button" onClick={() => download(artifact)}><Download size={15} aria-hidden="true" />下载 {artifact.fileName.split('.').pop()?.toLocaleUpperCase('en-US')}</button></div>
+            <div className={styles.actions}><button type="button" disabled={artifact.status === 'saved' || pending || running || Boolean(runtime.readError) || operation?.status === 'failed'} onClick={() => void runtime.execute(session.id, { kind: 'approve', artifactId: artifact.id, version: artifact.version, commandId: createClientId() })}><Save size={15} aria-hidden="true" />{artifact.status === 'saved' ? '已保存' : '确认并保存到本机'}</button><button type="button" onClick={() => download(artifact)}><Download size={15} aria-hidden="true" />下载 {artifact.fileName.split('.').pop()?.toLocaleUpperCase('en-US')}</button></div>
             {downloadError ? <p role="alert">{downloadError}</p> : null}
           </footer>
         </aside> : null}

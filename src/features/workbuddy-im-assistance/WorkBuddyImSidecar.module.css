@@ -202,14 +202,30 @@
 .agentEvents .analysisItem > * { max-width: 100%; }
 .agentEvents article { display: grid; min-width: 0; max-width: 84%; gap: var(--space-xs); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-object); background: var(--color-surface-muted); }
 .agentEvents li[data-actor='agent'] article { width: 100%; max-width: 100%; padding: 0 0 var(--space-md) 1.75rem; border-bottom: var(--rule-thin) solid var(--color-line-faint); border-radius: 0; background: transparent; }
-.agentEvents li[data-actor='teacher'] article { background: var(--color-action-soft); }
+.agentEvents li[data-actor='teacher'] article {
+  width: fit-content;
+  max-width: min(84%, 26rem);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--rule-thin) solid var(--color-line-faint);
+  border-radius: var(--radius-workbench) var(--radius-object) var(--radius-workbench) var(--radius-workbench);
+  background: var(--color-surface-muted);
+}
+.agentEvents li[data-actor='teacher'] article > p { color: var(--color-ink); }
 .agentEvents article header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); font-size: var(--text-xs); }
 .agentEvents article header span { color: var(--color-ink-muted); }
 .agentEvents article > p { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; color: var(--color-ink-secondary); font-size: var(--text-sm); line-height: 1.6; }
 .agentResultActions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-xs); margin: 0 0 var(--space-md); }
 .agentResultActions a { display: inline-flex; align-items: center; gap: var(--space-3xs); color: var(--color-action-strong); font-size: var(--text-xs); font-weight: var(--font-weight-semibold); }
 .resultAction { min-height: 2.25rem; padding: 0 var(--space-md); border-radius: var(--radius-control); background: var(--color-action-strong); color: var(--color-on-action); cursor: pointer; font-size: var(--text-xs); font-weight: var(--font-weight-semibold); }
-.resultAction:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.conversionAction { min-height: 2.25rem; padding: 0 var(--space-sm); border: var(--rule-thin) solid var(--color-line-control); border-radius: var(--radius-control); background: var(--color-surface); color: var(--color-action-strong); cursor: pointer; font-size: var(--text-xs); font-weight: var(--font-weight-semibold); }
+.resultAction:hover { background: var(--color-action-strong-hover); }
+.conversionAction:hover { background: var(--color-surface-hover); }
+.resultAction:focus-visible, .conversionAction:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.draftActions { display: flex; flex: 0 0 auto; align-items: center; gap: var(--space-xs); }
+.draftCancel { min-height: 2.25rem; padding: 0 var(--space-sm); border: var(--rule-thin) solid var(--color-line-subtle); border-radius: var(--radius-control); background: var(--color-surface); color: var(--color-ink-secondary); cursor: pointer; font-size: var(--text-xs); }
+.draftCancel:hover:not(:disabled) { background: var(--color-surface-hover); }
+.draftCancel:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.draftCancel:disabled { cursor: default; opacity: .45; }
 .runtimeProgress, .runtimeNotice { display: flex; align-items: center; gap: var(--space-xs); margin: var(--space-md) 0; color: var(--color-ink-muted); font-size: var(--text-xs); }
 .runtimeError { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); margin: var(--space-md) 0; padding: var(--space-sm); border-radius: var(--radius-control); background: var(--color-danger-soft); color: var(--color-danger-ink); font-size: var(--text-xs); }
 .runtimeError p { flex: 1 1 12rem; margin: 0; }

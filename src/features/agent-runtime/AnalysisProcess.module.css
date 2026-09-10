@@ -41,6 +41,22 @@
   white-space: nowrap;
 }
 
+.summaryActivity,
+.duration {
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+}
+
+.summaryActivity {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.duration { flex: 0 0 auto; }
+
 .summaryIcon {
   display: inline-grid;
   width: 1.375rem;
@@ -118,8 +134,36 @@
 .details ul { display: grid; gap: var(--space-3xs); margin: var(--space-xs) 0 0; padding-left: var(--space-md); }
 .details li { overflow-wrap: anywhere; }
 
-.process[data-mode='compact'] .summary { min-height: 2.75rem; padding: var(--space-xs) var(--space-sm); }
-.process[data-mode='compact'] .steps { max-height: 12rem; padding: 0 var(--space-sm) var(--space-sm); }
+.process[data-mode='compact'] {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.process[data-mode='compact'] .summary {
+  min-height: 2.25rem;
+  padding: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+}
+
+.process[data-mode='compact'] .summary:hover { background: transparent; }
+.process[data-mode='compact'] .summaryState { flex: 1 1 auto; }
+.process[data-mode='compact'] .summaryState strong { flex: 0 0 auto; color: var(--color-action-strong); }
+.process[data-mode='compact'] .summaryIcon { width: 1.25rem; height: 1.25rem; background: transparent; }
+.process[data-mode='compact'] .toggleLabel { margin-left: var(--space-xs); }
+.process[data-mode='compact'] .steps {
+  max-height: 9rem;
+  margin: var(--space-3xs) 0 0 .625rem;
+  padding: var(--space-2xs) 0 var(--space-2xs) var(--space-md);
+  overflow-y: auto;
+  border-left: var(--rule-thin) solid var(--color-line-control);
+}
+.process[data-mode='compact'] .steps > li { display: block; padding: var(--space-xs) var(--space-xs) var(--space-xs) 0; }
+.process[data-mode='compact'] .steps > li::before,
+.process[data-mode='compact'] .node { display: none; }
+.process[data-mode='compact'] .stepBody header span { display: none; }
 .process[data-mode='compact'] .stepBody p { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .process[data-status='failed'],
 .process[data-status='needs_information'] { border-color: color-mix(in srgb, var(--color-warning) 35%, var(--color-line-subtle)); }

@@ -1,7 +1,7 @@
 ---
 title: ClassIn IM 消息生产生命周期与治理收口 Feature Spec
 status: IMPLEMENTED_SELF_REVIEWED
-version: v1.1
+version: v1.2
 date: 2026-09-09
 parent: IM-2-0-BASELINE-AND-INCREMENT-COVERAGE.md
 baseline_ids: ON-IA-09, ON-MSG-01—15, ON-BUS-03, ON-GOV-01—11, INCREMENT_MESSAGE_DELIVERY
@@ -42,7 +42,7 @@ review_gate: PASSED_BY_DELEGATED_AUTHORITY_2026-09-09
 | `IM-LIFE-009` | Cursor 历史 | 更早消息经不透明 Cursor 加载，支持 loading/error/retry/exhausted 和 ID 去重。 |
 | `IM-LIFE-010` | 阅读锚点 | prepend 历史后保持当前阅读位置；正在看历史时新消息不抢滚动。 |
 | `IM-LIFE-011` | 会话访问 | UI 使用 Port 的 `write/read-only/unavailable`，不能只根据角色字符串推断。 |
-| `IM-LIFE-012` | 被移出后保留 | 固定历史群以“已退出班级”只读显示，历史、群资料和群文件仍可查看，发送/回复/Reaction/置顶/撤回关闭。 |
+| `IM-LIFE-012` | 被移出后保留 | 固定历史群以“已退出班级”只读显示，历史、群资料和群文件仍可查看，发送/回复/Reaction/撤回关闭。 |
 | `IM-LIFE-013` | 治理系统事件 | 好友通过、成员加入和班级改名用系统消息表达，不占用教师/学生消息身份。 |
 | `IM-LIFE-014` | 跨消息类型 | 文本、表情、图片、资源、回复、Mention、名片在同一提交流程中保持原子 Snapshot。 |
 | `IM-LIFE-015` | Agent 隔离 | 班级/私聊 Agent 的授权和回复状态继续由 Agent Module 拥有；用户消息交付状态不吞掉 Agent 失败。 |

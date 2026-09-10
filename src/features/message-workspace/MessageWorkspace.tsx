@@ -19,12 +19,12 @@ import {
   Mic,
   MoreHorizontal,
   Paperclip,
-  Pin,
   Play,
   Presentation,
   Search,
   ScanLine,
   Smile,
+  SmilePlus,
   Sparkles,
   WifiOff,
   UserRoundPlus,
@@ -104,6 +104,7 @@ import styles from './MessageWorkspace.module.css';
 import { createMessageMediaInput } from '@features/message-media/message-media-adapter';
 import { MessageEmojiPicker, type MessageEmojiAsset } from './MessageEmojiPicker';
 import { MessageMediaViewer } from './MessageMediaViewer';
+import { MessageReactionPicker } from './MessageReactionPicker';
 import { MessageScreenCaptureDialog } from './MessageScreenCaptureDialog';
 import type { MessageCaptureFrame, MessageScreenSelection } from '@contracts/message/message-media';
 import {
@@ -218,6 +219,12 @@ type MediaViewerState = Readonly<{
   returnFocusTarget: HTMLButtonElement;
 }>;
 
+type ReactionPickerTarget = Readonly<{
+  threadId: string;
+  messageId: string;
+  returnFocusTarget: HTMLButtonElement;
+}>;
+
 let nextMessageSurfaceId = 1;
 
 function createMessageSurfaceId(prefix: string): string {
@@ -318,6 +325,8 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
   const [recentEmojiIds, setRecentEmojiIds] = useState<readonly string[]>([]);
   const [favoriteEmojiIds, setFavoriteEmojiIds] = useState<readonly string[]>([]);
   const [emojiOpen, setEmojiOpen] = useState(false);
+  const [reactionPickerTarget, setReactionPickerTarget] = useState<ReactionPickerTarget | null>(null);
+  const [touchActionMessageId, setTouchActionMessageId] = useState<string | null>(null);
   const [captureFrame, setCaptureFrame] = useState<MessageCaptureFrame | null>(null);
   const [captureBusy, setCaptureBusy] = useState(false);
   const [mediaViewer, setMediaViewer] = useState<MediaViewerState | null>(null);
@@ -476,6 +485,15 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     setHasUnreadArrival(false);
     latestEntryIdByThread.current.set(selectedId, latestSelectedEntry?.id ?? '');
   }, [latestSelectedEntry?.id, selectedId]);
+
+  useEffect(() => {
+    if (!reactionPickerTarget) return;
+    const targetStillAvailable = reactionPickerTarget.threadId === selectedId
+      && selectedThread?.entries.some(({ id, kind }) => id === reactionPickerTarget.messageId && kind !== 'retracted');
+    if (targetStillAvailable) return;
+    const timer = window.setTimeout(() => setReactionPickerTarget((current) => current === reactionPickerTarget ? null : current), 0);
+    return () => window.clearTimeout(timer);
+  }, [reactionPickerTarget, selectedId, selectedThread?.entries]);
 
   useLayoutEffect(() => {
     if (!selectedId || !timelineRef.current) return;
@@ -758,6 +776,8 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     setContextMenuOpen(false);
     setAttachmentOpen(false);
     setEmojiOpen(false);
+    setTouchActionMessageId(null);
+    setReactionPickerTarget(null);
     setUtilitySurface(null);
     setHasUnreadArrival(false);
     actions.readThread(role, thread.id);
@@ -776,6 +796,8 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     setContextMenuOpen(false);
     setAttachmentOpen(false);
     setEmojiOpen(false);
+    setTouchActionMessageId(null);
+    setReactionPickerTarget(null);
     setUtilitySurface(null);
     if (nextThread) actions.readThread(role, nextThread.id);
     setSearchParams(nextThread
@@ -913,6 +935,13 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     window.requestAnimationFrame(() => returnFocusTarget?.focus());
   };
 
+  const dismissReactionPicker = (restoreFocus: boolean) => {
+    const returnFocusTarget = reactionPickerTarget?.returnFocusTarget;
+    if (restoreFocus && reactionPickerTarget) setTouchActionMessageId(reactionPickerTarget.messageId);
+    setReactionPickerTarget(null);
+    if (restoreFocus) window.requestAnimationFrame(() => returnFocusTarget?.focus({ preventScroll: true }));
+  };
+
   const sendMessage = async () => {
     if (selectedReadOnly || !selectedThread || (!composer.trim() && selectedResources.length === 0 && selectedMedia.length === 0 && selectedObjectCards.length === 0)) return;
     const authorName = role === 'teacher' ? '王老师' : '李明';
@@ -1007,13 +1036,6 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
     setFeedback(agentResult?.status === 'accepted'
       ? CLASS_AGENT_PENDING_FEEDBACK
       : '消息已在本地 Demo 中发送。');
-  };
-
-  const togglePin = (targetId: string) => {
-    if (selectedReadOnly || !selectedThread) return;
-    const wasPinned = selectedThread.pinnedMessageId === targetId;
-    actions.togglePin(selectedThread.id, targetId);
-    setFeedback(wasPinned ? '已取消置顶消息。' : '消息已置顶，仅在本地 Demo 中生效。');
   };
 
   const recallMessage = (targetId: string) => {
@@ -1176,7 +1198,6 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
   };
 
   const renderChat = (thread: MessageThread, { detachAssistant = false }: RenderChatOptions = {}) => {
-    const pinned = thread.entries.find(({ id }) => id === thread.pinnedMessageId);
     const announcement = projectClassAnnouncement(role, thread, classRecords);
     const importantReminder = projectActiveImportantReminder(
       thread.id,
@@ -1627,13 +1648,6 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
           </section>
         ) : null}
 
-        {pinned ? (
-          <div className={styles.pinnedBanner}>
-            <Pin aria-hidden="true" size={14} />
-            <span><strong>置顶</strong>{getMessageEntryPreview(pinned)}</span>
-          </div>
-        ) : null}
-
         <div
           className={styles.timeline}
           aria-label="消息记录"
@@ -1675,7 +1689,6 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
             const own = entry.authorRole === role;
             const isClassAgentEntry = entry.authorRole === 'class-agent' && entry.classAgent !== undefined;
             const canRecall = !threadReadOnly && thread.category === 'class' && canRecallClassMessage(role, entry, MESSAGE_NOW);
-            const canPin = !threadReadOnly && role === 'teacher' && thread.category === 'class' && entry.kind !== 'retracted';
             const translationState = translationByMessageId[entry.id];
             return (
               <Fragment key={entry.id}>
@@ -1728,6 +1741,12 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
                   {translationState?.status === 'error' ? <div className={styles.translationPanel} role="alert"><span>{translationState.message}</span><button type="button" onClick={() => void actions.translateMessage(entry.id, entry.body, translationState.targetLocale)}>重试</button></div> : null}
                   {translationState?.status === 'ready' ? <div className={styles.translationPanel}><span className={styles.translationLabel}><Languages aria-hidden="true" size={13} />译文 · {translationState.translation.truthLabel}</span><p>{translationState.translation.translatedBody}</p><button type="button" onClick={() => actions.clearTranslation(entry.id)}>收起译文</button></div> : null}
                   {entry.classAgent?.channel === 'public-class' ? <small className={styles.classAgentMessageMeta}>{entry.classAgent.visibilityLabel}</small> : null}
+                  {entry.reactions?.length ? <div className={styles.reactionSummary} role="group" aria-label="消息回应">
+                    {entry.reactions.map((reaction) => {
+                      const selected = reaction.actorIds.includes(role);
+                      return <button className={styles.reactionChip} data-selected={selected} type="button" aria-label={`${selected ? '取消' : '添加'} ${reaction.emoji} 消息回应，当前 ${reaction.actorIds.length} 人`} aria-pressed={selected} key={reaction.emoji} onClick={() => actions.toggleReaction(thread.id, entry.id, role, reaction.emoji)}><span aria-hidden="true">{reaction.emoji}</span><em>{reaction.actorIds.length}</em></button>;
+                    })}
+                  </div> : null}
                   {own && entry.delivery ? <div className={styles.deliveryState} data-status={entry.delivery.status} role={entry.delivery.status === 'failed' ? 'alert' : undefined}>
                     {entry.delivery.status === 'read' ? <CheckCheck aria-hidden="true" size={13} /> : null}
                     <span>{getMessageDeliveryLabel(entry.delivery)}</span>
@@ -1735,12 +1754,36 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
                     {getMessageDeliveryRecoveryAction(entry.delivery) === 'retry' ? <button type="button" onClick={() => void actions.retryMessage(role, thread.id, entry.id)}>重新发送</button> : null}
                     {getMessageDeliveryRecoveryAction(entry.delivery) === 'sync-and-retry' ? <button type="button" onClick={() => void actions.syncAndRetryMessage(role, thread.id, entry.id)}>同步并重试</button> : null}
                   </div> : null}
-                  {!threadReadOnly && entry.kind !== 'retracted' ? <div className={styles.messageActions}>
-                    <button type="button" onClick={() => { const reference = createReplyReference(entry); if (reference) { setReplyByThread((current) => ({ ...current, [thread.id]: reference })); window.requestAnimationFrame(() => document.querySelector<HTMLTextAreaElement>('textarea[aria-label="输入消息"]')?.focus()); } }}><MessageSquareReply aria-hidden="true" size={13} />回复</button>
-                    {MESSAGE_REACTION_OPTIONS.map((emoji) => { const reaction = entry.reactions?.find((item) => item.emoji === emoji); const selected = reaction?.actorIds.includes(role) ?? false; return <button className={styles.reactionButton} data-selected={selected} type="button" aria-label={`${selected ? '取消' : '添加'} ${emoji} Reaction${reaction?.actorIds.length ? `，当前 ${reaction.actorIds.length} 人` : ''}`} aria-pressed={selected} key={emoji} onClick={() => actions.toggleReaction(thread.id, entry.id, role, emoji)}><span aria-hidden="true">{emoji}</span>{reaction?.actorIds.length ? <em>{reaction.actorIds.length}</em> : null}</button>; })}
-                    {entry.body ? <button type="button" onClick={() => void actions.translateMessage(entry.id, entry.body, /[\u4e00-\u9fff]/u.test(entry.body) ? 'en' : 'zh-CN')}><Languages aria-hidden="true" size={13} />翻译</button> : null}
-                    {canPin ? <button type="button" onClick={() => togglePin(entry.id)}><Pin aria-hidden="true" size={13} />{thread.pinnedMessageId === entry.id ? '取消置顶' : '置顶'}</button> : null}
-                    {canRecall ? <button type="button" onClick={() => recallMessage(entry.id)}><Undo2 aria-hidden="true" size={13} />撤回</button> : null}
+                  {!threadReadOnly && entry.kind !== 'retracted' ? <button
+                    className={styles.messageActionTouchTrigger}
+                    type="button"
+                    aria-label="显示消息操作"
+                    aria-expanded={touchActionMessageId === entry.id}
+                    onClick={() => setTouchActionMessageId((current) => current === entry.id ? null : entry.id)}
+                  ><MoreHorizontal aria-hidden="true" size={15} /></button> : null}
+                  {!threadReadOnly && entry.kind !== 'retracted' ? <div className={styles.messageActions} data-open={reactionPickerTarget?.threadId === thread.id && reactionPickerTarget.messageId === entry.id} data-touch-open={touchActionMessageId === entry.id}>
+                    {MESSAGE_REACTION_OPTIONS.map((emoji) => { const reaction = entry.reactions?.find((item) => item.emoji === emoji); const selected = reaction?.actorIds.includes(role) ?? false; return <button className={styles.reactionButton} data-selected={selected} type="button" aria-label={`${selected ? '取消' : '添加'} ${emoji} Reaction${reaction?.actorIds.length ? `，当前 ${reaction.actorIds.length} 人` : ''}`} aria-pressed={selected} title={`${emoji} 回应`} key={emoji} onClick={() => actions.toggleReaction(thread.id, entry.id, role, emoji)}><span aria-hidden="true">{emoji}</span></button>; })}
+                    <button
+                      className={styles.reactionPickerTrigger}
+                      type="button"
+                      aria-label="添加表情回应"
+                      aria-expanded={reactionPickerTarget?.threadId === thread.id && reactionPickerTarget.messageId === entry.id}
+                      title="添加表情回应"
+                      onClick={(event) => {
+                        const isCurrentTarget = reactionPickerTarget?.threadId === thread.id && reactionPickerTarget.messageId === entry.id;
+                        if (isCurrentTarget) dismissReactionPicker(true);
+                        else setReactionPickerTarget({ threadId: thread.id, messageId: entry.id, returnFocusTarget: event.currentTarget });
+                      }}
+                    ><SmilePlus aria-hidden="true" size={15} /></button>
+                    <button type="button" aria-label="回复" title="回复" onClick={() => { const reference = createReplyReference(entry); if (reference) { setReplyByThread((current) => ({ ...current, [thread.id]: reference })); window.requestAnimationFrame(() => document.querySelector<HTMLTextAreaElement>('textarea[aria-label="输入消息"]')?.focus()); } }}><MessageSquareReply aria-hidden="true" size={13} /><span className={styles.messageActionLabel}>回复</span></button>
+                    {entry.body ? <button type="button" aria-label="翻译" title="翻译" onClick={() => void actions.translateMessage(entry.id, entry.body, /[\u4e00-\u9fff]/u.test(entry.body) ? 'en' : 'zh-CN')}><Languages aria-hidden="true" size={13} /><span className={styles.messageActionLabel}>翻译</span></button> : null}
+                    {canRecall ? <button type="button" aria-label="撤回" title="撤回" onClick={() => recallMessage(entry.id)}><Undo2 aria-hidden="true" size={13} /><span className={styles.messageActionLabel}>撤回</span></button> : null}
+                    {reactionPickerTarget?.threadId === thread.id && reactionPickerTarget.messageId === entry.id ? <MessageReactionPicker
+                      anchor={reactionPickerTarget.returnFocusTarget}
+                      selectedEmoji={new Set(entry.reactions?.filter(({ actorIds }) => actorIds.includes(role)).map(({ emoji }) => emoji) ?? [])}
+                      onSelect={(emoji) => { actions.toggleReaction(thread.id, entry.id, role, emoji); dismissReactionPicker(true); }}
+                      onDismiss={dismissReactionPicker}
+                    /> : null}
                   </div> : null}
                 </div>
               </article>

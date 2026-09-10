@@ -222,7 +222,6 @@ export const MESSAGE_THREADS: ReadonlyArray<MessageThread> = [
     unreadByRole: { teacher: 1 },
     classId: 'dw-expression-lab',
     memberCount: 14,
-    pinnedMessageId: 'dw-class-1',
     entries: [
       { id: 'dw-class-0', authorRole: 'system', authorName: '数据说明', body: '[真实数据 · 已脱敏] 场景来自一组近期客户 IM 行级记录，经过去标识化与业务事实压缩。', sentAt: '2026-09-07T18:40:00+08:00', kind: 'system' },
       { id: 'dw-class-1', authorRole: 'teacher', authorName: '王老师', body: '今晚的表达与思辨课按计划开始，请大家提前进入教室；如果可能迟到或需要请假，请在群里提前说明。', sentAt: '2026-09-07T18:45:00+08:00', kind: 'text' },
@@ -244,7 +243,6 @@ export const MESSAGE_THREADS: ReadonlyArray<MessageThread> = [
     classId: 'physics-3',
     memberCount: 30,
     classAgentBindings: PUBLIC_CLASS_AGENT_BINDINGS,
-    pinnedMessageId: 'cp3-2',
     entries: [
       { id: 'cp3-event-join', authorRole: 'system', authorName: '系统', body: '周然加入班级', sentAt: '2026-08-01T08:30:00+08:00', kind: 'system' },
       { id: 'cp3-event-rename', authorRole: 'system', authorName: '系统', body: '班级名称已更新为“高二物理 3 班”', sentAt: '2026-08-02T09:10:00+08:00', kind: 'system' },

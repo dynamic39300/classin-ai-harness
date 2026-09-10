@@ -1,8 +1,9 @@
 import { getMessageEntryPreview, type MessageEntry, type MessageThread } from './message';
+import type { MessageUnicodeEmoji } from './message-emoji';
 
-export const MESSAGE_REACTION_OPTIONS = ['👍', '❤️', '👏'] as const;
+export const MESSAGE_REACTION_OPTIONS = ['👍', '❤️', '👏'] as const satisfies readonly MessageReactionEmoji[];
 
-export type MessageReactionEmoji = typeof MESSAGE_REACTION_OPTIONS[number];
+export type MessageReactionEmoji = MessageUnicodeEmoji | '❤️';
 
 export type MessageReplyReference = Readonly<{
   messageId: string;

@@ -1,5 +1,6 @@
 import { ImagePlus, Star, X } from 'lucide-react';
 import { useRef, useState, type ChangeEvent } from 'react';
+import { MESSAGE_UNICODE_EMOJI } from '@domain/message/message-emoji';
 import type { MessageMediaDraft } from '@domain/message/message-media';
 import styles from './MessageMediaSurfaces.module.css';
 
@@ -11,7 +12,7 @@ export type MessageEmojiAsset = Readonly<{
   mimeType?: 'image/svg+xml';
 }>;
 
-const EMOJI: readonly MessageEmojiAsset[] = ['😀', '😊', '😂', '🥰', '😎', '🤔', '👏', '👍', '💪', '🎉', '✨', '🔥', '✅', '📚', '✏️', '💡', '🧪', '🚀']
+const EMOJI: readonly MessageEmojiAsset[] = MESSAGE_UNICODE_EMOJI
   .map((glyph, index) => Object.freeze({ id: `emoji-${index}`, label: glyph, glyph }));
 const RESPONSES: readonly MessageEmojiAsset[] = ['收到', '谢谢', '赞同', '稍等', '已完成', '有疑问']
   .map((label, index) => Object.freeze({ id: `response-${index}`, label, glyph: ['👌', '🙏', '👍', '⏳', '✅', '🙋'][index] }));

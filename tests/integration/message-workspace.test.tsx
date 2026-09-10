@@ -58,7 +58,7 @@ function LocationProbe() {
 }
 
 describe('message workspace', () => {
-  it('keeps Class announcements, important reminders and pinned messages as separate attention surfaces', async () => {
+  it('keeps Class announcements and important reminders while omitting single-message pinning', async () => {
     const user = userEvent.setup();
     renderWorkspace('teacher', '/teacher/messages?category=class&thread=class-physics-3');
 
@@ -67,11 +67,12 @@ describe('message workspace', () => {
     expect(within(announcement).getByRole('button', { name: '管理公告' })).toBeInTheDocument();
     const reminder = screen.getByRole('region', { name: '重要提醒' });
     expect(within(reminder).getByText(/@所有人/)).toBeInTheDocument();
-    expect(screen.getAllByText('置顶').length).toBeGreaterThan(0);
+    expect(screen.queryByText('置顶', { exact: true })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^(取消)?置顶$/ })).not.toBeInTheDocument();
 
     await user.click(within(reminder).getByRole('button', { name: '关闭重要提醒' }));
     expect(screen.queryByRole('region', { name: '重要提醒' })).not.toBeInTheDocument();
-    expect(screen.getAllByText('置顶').length).toBeGreaterThan(0);
+    expect(screen.getByRole('region', { name: '班级公告' })).toBeInTheDocument();
   });
 
   it('aggregates @mine, marks only the located item read and shows the stable new-message boundary', async () => {
@@ -169,8 +170,7 @@ describe('message workspace', () => {
     expect(screen.getAllByText('课前见')).toHaveLength(2);
     expect(screen.getByRole('status')).toHaveTextContent('本地 Demo 中发送');
 
-    await user.click(screen.getByRole('button', { name: '取消置顶' }));
-    expect(screen.getByRole('status')).toHaveTextContent('已取消置顶消息');
+    expect(screen.queryByRole('button', { name: /^(取消)?置顶$/ })).not.toBeInTheDocument();
     const contextTrigger = screen.getByRole('button', { name: '会话管理' });
     await user.click(contextTrigger);
     expect(within(screen.getByRole('menu', { name: '会话管理' })).getByRole('menuitem', { name: '管理公告' })).toHaveFocus();
@@ -459,7 +459,7 @@ describe('message workspace', () => {
     }
   });
 
-  it('sends a reply reference and toggles a per-message reaction', async () => {
+  it('sends a reply reference and supports quick plus expanded message reactions', async () => {
     const user = userEvent.setup();
     renderWorkspace('teacher', '/teacher/messages?category=class&thread=class-physics-3');
     const target = document.querySelector<HTMLElement>('[data-message-id="cp3-3"]');
@@ -473,8 +473,24 @@ describe('message workspace', () => {
 
     await user.click(within(target!).getByRole('button', { name: '添加 👍 Reaction' }));
     expect(within(target!).getByRole('button', { name: /取消 👍 Reaction，当前 1 人/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(target!).getByRole('button', { name: /取消 👍 消息回应，当前 1 人/ })).toBeVisible();
     await user.click(within(target!).getByRole('button', { name: /取消 👍 Reaction/ }));
     expect(within(target!).getByRole('button', { name: '添加 👍 Reaction' })).toHaveAttribute('aria-pressed', 'false');
+    expect(within(target!).queryByRole('button', { name: /👍 消息回应/ })).not.toBeInTheDocument();
+
+    const pickerTrigger = within(target!).getByRole('button', { name: '添加表情回应' });
+    await user.click(pickerTrigger);
+    const picker = screen.getByRole('dialog', { name: '添加表情回应' });
+    expect(within(picker).queryByRole('textbox')).not.toBeInTheDocument();
+    expect(within(picker).queryByRole('tab')).not.toBeInTheDocument();
+    expect(within(picker).queryByText('最近')).not.toBeInTheDocument();
+    await user.click(within(picker).getByRole('button', { name: '用 🎉 回应' }));
+    expect(screen.queryByRole('dialog', { name: '添加表情回应' })).not.toBeInTheDocument();
+    expect(within(target!).getByRole('button', { name: /取消 🎉 消息回应，当前 1 人/ })).toBeVisible();
+
+    await user.click(pickerTrigger);
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(pickerTrigger).toHaveFocus());
   });
 
   it('searches message history and locates the matching message', async () => {

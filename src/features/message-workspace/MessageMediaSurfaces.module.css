@@ -105,6 +105,25 @@
   object-fit: cover;
 }
 
+.reactionPopover {
+  position: fixed;
+  top: var(--reaction-picker-top);
+  bottom: auto;
+  left: var(--reaction-picker-left);
+  width: min(20rem, calc(100vw - 1.5rem));
+}
+
+.reactionAssetGrid {
+  min-height: 0;
+  max-height: none;
+}
+
+.reactionAssetGrid .assetButton[data-selected='true'] {
+  outline: var(--rule-thin) solid var(--color-action-strong);
+  background: var(--color-brand-soft);
+  color: var(--color-action-strong);
+}
+
 .favoriteButton {
   position: absolute;
   top: 0.125rem;
@@ -355,7 +374,25 @@
 @media (max-width: 48rem) {
   .backdrop { padding: var(--space-sm); }
   .assetGrid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .reactionPopover {
+    top: auto;
+    right: var(--space-sm);
+    bottom: var(--space-sm);
+    left: var(--space-sm);
+    width: auto;
+  }
+  .reactionAssetGrid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .viewerBody { padding-right: 3rem; padding-left: 3rem; }
+}
+
+@media (hover: none) {
+  .reactionPopover {
+    top: auto;
+    right: var(--space-sm);
+    bottom: var(--space-sm);
+    left: var(--space-sm);
+    width: auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

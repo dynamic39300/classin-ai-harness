@@ -141,7 +141,7 @@ export function projectAnalysisProcess({ session, now = Date.now(), context }: I
       startedAt: new Date(startedAt).toISOString(),
       elapsedMs: Math.max(0, now - startedAt),
       defaultExpanded: true,
-      steps: [{ id: `waiting-${session.id}`, sourceEventRefs: [], label: '正在等待运行事件', summary: 'Runtime 已记录任务运行中，正在等待第一个可验证阶段。', state: 'running', evidenceLabels: [], detailLines: [] }],
+      steps: [{ id: `waiting-${session.id}`, sourceEventRefs: [], label: '正在理解你的要求', summary: '请求已经收到，TeachBuddy 正在开始处理。', state: 'running', evidenceLabels: [], detailLines: [] }],
     };
   }
   const ordered = [...session.events].sort((left, right) => left.sequence - right.sequence);
@@ -190,8 +190,8 @@ export function projectAnalysisProcess({ session, now = Date.now(), context }: I
     steps.push({
       id: `waiting-${teacher?.id ?? session.id}`,
       sourceEventRefs: [],
-      label: '正在等待运行事件',
-      summary: '请求已接收，正在等待 TeachBuddy 返回第一个可验证阶段。',
+      label: '正在理解你的要求',
+      summary: '请求已经收到，TeachBuddy 正在开始处理。',
       state: 'running',
       evidenceLabels: [],
       detailLines: [],

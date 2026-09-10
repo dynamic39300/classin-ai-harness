@@ -83,7 +83,6 @@ export type MessageWorkspaceActions = {
   retryMessage: (role: AppRole, threadId: string, messageId: string) => Promise<MessageSubmitResult | null>;
   syncAndRetryMessage: (role: AppRole, threadId: string, messageId: string) => Promise<MessageSubmitResult | null>;
   reconnect: () => Promise<MessageConnectionSnapshot>;
-  togglePin: (threadId: string, messageId: string) => void;
   recallMessage: (role: AppRole, threadId: string, messageId: string, recalledAt: string) => void;
   toggleMute: (threadId: string) => void;
   toggleReaction: (threadId: string, messageId: string, actorId: string, emoji: MessageReactionEmoji) => void;
