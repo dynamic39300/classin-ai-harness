@@ -1,7 +1,7 @@
 ---
 title: TeachBuddy 教学阶段导航方案（二）实施验收
 status: AUTOMATION_PASS_PENDING_USER_REVIEW
-version: v0.4
+version: v0.5
 branch: codex/copilot-stage-nav-v2
 updated: 2026-09-10
 ---
@@ -17,6 +17,8 @@ updated: 2026-09-10
 右上角新建 Session、读取失败态中的新建 Session，以及`在 TeachBuddy 中继续`入口均已移除。当前 IM 对象只呈现一条连续的逻辑对话；内部 Runtime Session 因恢复发生轮换时，Binding Trail 会聚合各实例事件，老师仍通过向上滚动查看一条连续历史。已保存的 Binding 指向不存在的 Runtime Session 并返回 404 时，Sidecar 会透明创建替代实例并更新绑定，不出现新建入口。生成中可使用输入框旁的`停止生成`；停止成功后输入框恢复并继续沿用同一逻辑对话，停止失败则继续锁定输入并保留重试停止。
 
 阶段自动轮播与播放/暂停按钮保持取消。四个放大的圆形入口同时显示阶段名与`N条`短数量，老师通过鼠标或键盘手动切换。建议卡片不再重复当前班级名称，但完整班级上下文仍提交给 AI。
+
+建议事项的 Hover 与按下反馈已改为中性浅灰，主操作按钮、当前阶段和键盘焦点继续使用绿色。整行仍保留可点击反馈，同时避免大面积浅绿色与导航灰底形成颜色冲突。
 
 ## 收起与滚动
 

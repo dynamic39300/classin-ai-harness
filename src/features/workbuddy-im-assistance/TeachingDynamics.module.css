@@ -247,16 +247,17 @@
   background: transparent;
   color: inherit;
   text-align: left;
+  transition: background-color 120ms var(--ease-out);
 }
 
 .item:last-child { border-bottom: 0; }
 button.item { cursor: pointer; }
 
 button.item:hover {
-  background: color-mix(in srgb, var(--color-brand-soft) 42%, var(--color-surface));
+  background: var(--color-surface-hover);
 }
 
-button.item:active { background: var(--color-brand-soft); }
+button.item:active { background: var(--color-surface-selected); }
 button.item:disabled { cursor: default; opacity: .45; }
 
 .itemCopy {
