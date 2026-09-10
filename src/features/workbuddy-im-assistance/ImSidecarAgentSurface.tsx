@@ -226,7 +226,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     setSessionRef(id);
   }
 
-  async function submit(teacherRequestOverride?: string) {
+  async function submit(teacherRequestOverride?: string, contextRefs: readonly string[] = []) {
     const teacherRequest = teacherRequestOverride?.trim() || composerDraft.trim() || (imageDrafts.length ? '请结合我附上的图片完成这项教学工作。' : '');
     if (!teacherRequest || !canSend) return;
     let images;
@@ -244,6 +244,8 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         tenantRef: services.tenantRef,
         target,
         use: 'private-assistance',
+        focusRefs: contextRefs,
+        query: teacherRequest,
       });
       if (captured.threadRef !== target.threadId || captured.actorRef !== services.actor.id || captured.tenantRef !== services.tenantRef) {
         throw new Error('业务上下文与当前会话不匹配，请刷新后重试。');
@@ -278,7 +280,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     }
   }
 
-  async function generateLearningArtifact(nextSelection: LearningContextSelection, teacherRequest: string) {
+  async function generateLearningArtifact(nextSelection: LearningContextSelection, teacherRequest: string, contextRefs: readonly string[] = []) {
     if (!catalog || !canSend) return;
     const error = validateLearningSelectionAgainstCatalog(nextSelection, catalog);
     if (error) { setContextError(error); return; }
@@ -292,7 +294,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
     }
     let captured: BusinessContextSnapshot;
     try {
-      captured = await services.businessContext.captureLearningContext({ actorRef: services.actor.id, tenantRef: services.tenantRef, target, use: 'private-assistance', selection: nextSelection });
+      captured = await services.businessContext.captureLearningContext({ actorRef: services.actor.id, tenantRef: services.tenantRef, target, use: 'private-assistance', focusRefs: contextRefs, query: teacherRequest, selection: nextSelection });
       setSnapshot(captured);
     } catch (cause) {
       setContextError(cause instanceof Error ? cause.message : '所选学习上下文暂时无法读取，请重试。');
@@ -321,8 +323,8 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
   }
 
   function triggerTeachingAction(action: TeachingDynamicAction) {
-    if (action.learningSelection) void generateLearningArtifact(action.learningSelection, action.teacherRequest);
-    else void submit(action.teacherRequest);
+    if (action.learningSelection) void generateLearningArtifact(action.learningSelection, action.teacherRequest, action.contextRefs);
+    else void submit(action.teacherRequest, action.contextRefs);
   }
 
   function addImages(files: readonly File[]) {

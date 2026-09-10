@@ -1,4 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { buildLearningTeacherRequest } from '@domain/workbuddy/personalized-learning-service';
+import { createRuntimeContextEnvelope } from '@domain/workbuddy/runtime-context-envelope';
+import { WORKBUDDY_IM_LEARNING_CATALOG } from '@mocks/scenarios/workbuddy-im-learning-evidence';
+import { createTeachingDynamicsSnapshot, TEACHING_DYNAMICS_DEMO_NOW } from '@mocks/scenarios/workbuddy-im-teaching-dynamics';
 import { FixedWorkBuddyImBusinessContextAdapter } from './workbuddy-im-business-context';
 
 describe('fixed WorkBuddy IM business context adapter', () => {
@@ -28,6 +32,63 @@ describe('fixed WorkBuddy IM business context adapter', () => {
     expect(refreshed.sources[0]?.version).toBe(first.sources[0]?.version);
     expect(refreshed.sources[0]?.capturedAt).not.toBe(first.sources[0]?.capturedAt);
     expect(changed.sources[0]?.version).not.toBe(first.sources[0]?.version);
+  });
+
+  it('injects the resettable physics teaching fixture into the AI context', async () => {
+    const adapter = new FixedWorkBuddyImBusinessContextAdapter(() => new Date('2026-08-09T14:40:00+08:00'));
+    const snapshot = await adapter.capture({
+      actorRef: 'teacher-001', tenantRef: 'classin-demo-school', use: 'private-assistance',
+      target: { kind: 'class', classId: 'physics-3', classLabel: '高二物理 3 班', threadId: 'class-physics-3', memberCount: 30, recentMessages: [] },
+      focusRefs: ['lesson-wave-0808', 'task-plan-wave-0808', 'homework-momentum-a', 'wrong-question-set-physics-recent', 'period-this-week'],
+    });
+
+    expect(snapshot.truthLabel).toBe('fixed-demo');
+    expect(snapshot.sources).toContainEqual(expect.objectContaining({ sourceRef: 'fixed-teaching-context:physics-im-context-2026-08-09-v2', version: 'physics-im-context-2026-08-09-v2' }));
+    expect(snapshot.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ key: 'lesson-wave-0808:lesson-outline', value: expect.stringContaining('波速由介质决定') }),
+      expect.objectContaining({ key: 'task-plan-wave-0808:task-overview', value: expect.stringContaining('3 份作业和 1 次测验') }),
+      expect.objectContaining({ key: 'homework-momentum-a:homework-missing', value: expect.stringContaining('李明、周然、陈晨') }),
+      expect.objectContaining({ key: 'wrong-question-set-physics-recent:wrong-6', value: expect.stringContaining('新波长1m') }),
+      expect.objectContaining({ key: 'period-this-week:class-next', value: expect.stringContaining('错题卡') }),
+    ]));
+    expect(snapshot.items.every(({ value }) => value.length <= 240)).toBe(true);
+  });
+
+  it('keeps every physics suggestion within the runtime input limit while retaining scoped evidence', async () => {
+    const adapter = new FixedWorkBuddyImBusinessContextAdapter(() => TEACHING_DYNAMICS_DEMO_NOW);
+    const target = { kind: 'class' as const, classId: 'physics-3', classLabel: '高二物理 3 班', threadId: 'class-physics-3', memberCount: 30, recentMessages: [] };
+    const dynamics = createTeachingDynamicsSnapshot({ actorRef: 'teacher-001', tenantRef: 'classin-demo-school', target }, TEACHING_DYNAMICS_DEMO_NOW);
+    const actions = dynamics.stages.flatMap(({ items }) => items.flatMap(({ action }) => action ? [action] : []));
+
+    expect(actions).toHaveLength(10);
+    for (const dynamicAction of actions) {
+      const request = { actorRef: 'teacher-001', tenantRef: 'classin-demo-school', use: 'private-assistance' as const, target, focusRefs: dynamicAction.contextRefs, query: dynamicAction.teacherRequest };
+      const snapshot = dynamicAction.learningSelection
+        ? await adapter.captureLearningContext({ ...request, selection: dynamicAction.learningSelection })
+        : await adapter.capture(request);
+      const taskRequest = dynamicAction.learningSelection
+        ? buildLearningTeacherRequest(dynamicAction.learningSelection, WORKBUDDY_IM_LEARNING_CATALOG, dynamicAction.teacherRequest)
+        : dynamicAction.teacherRequest;
+      const envelope = createRuntimeContextEnvelope(snapshot, taskRequest, dynamicAction.teacherRequest);
+
+      expect(envelope.length, `${dynamicAction.label} should leave room for runtime generation instructions`).toBeLessThanOrEqual(3_800);
+      expect(envelope).toContain('fixed-teaching-context:physics-im-context-2026-08-09-v2');
+    }
+  });
+
+  it('retrieves a compact course-plan context for a freeform schedule question', async () => {
+    const adapter = new FixedWorkBuddyImBusinessContextAdapter(() => TEACHING_DYNAMICS_DEMO_NOW);
+    const teacherRequest = '我们接下来要上的课程都有什么？分别列出课程名称和时间。';
+    const snapshot = await adapter.capture({
+      actorRef: 'teacher-001', tenantRef: 'classin-demo-school', use: 'private-assistance', query: teacherRequest,
+      target: { kind: 'class', classId: 'physics-3', classLabel: '高二物理 3 班', threadId: 'class-physics-3', memberCount: 30, recentMessages: [] },
+    });
+    const envelope = createRuntimeContextEnvelope(snapshot, teacherRequest);
+
+    expect(envelope.length).toBeLessThanOrEqual(4_000);
+    expect(envelope).toContain('8月10日19:00电磁感应导入');
+    expect(envelope).toContain('8月16日15:00阶段复习与测评');
+    expect(envelope).not.toContain('wrong-question-set-physics-recent');
   });
 
   it('separates selector labels from selected learning evidence', async () => {

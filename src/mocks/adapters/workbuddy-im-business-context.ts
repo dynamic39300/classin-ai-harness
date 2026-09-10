@@ -1,10 +1,13 @@
 import type { BusinessContextAdapter, BusinessContextRequest, BusinessContextSnapshot } from '@contracts/workbuddy/business-context';
 import { validateLearningSelectionAgainstCatalog } from '@domain/workbuddy/personalized-learning-service';
 import { DW_DERIVED_IM_LEARNING_CATALOG, learningEvidence, WORKBUDDY_IM_LEARNING_CATALOG } from '@mocks/scenarios/workbuddy-im-learning-evidence';
+import { PHYSICS_IM_TEACHING_CONTEXT, physicsImTeachingContextItems } from '@mocks/scenarios/workbuddy-im-physics-context';
 import { loadPrivateImDemoContext } from './private-im-demo-context';
 
 const DW_DERIVED_CLASS_ID = 'dw-expression-lab';
 const DW_DERIVED_DIRECT_THREAD_ID = 'direct-dw-lin';
+const PHYSICS_CLASS_ID = 'physics-3';
+const PHYSICS_DIRECT_THREAD_ID = 'direct-wang-li';
 
 function learningCatalogFor(request: Omit<BusinessContextRequest, 'use'>) {
   return request.target.classId === DW_DERIVED_CLASS_ID || request.target.threadId === DW_DERIVED_DIRECT_THREAD_ID
@@ -14,6 +17,10 @@ function learningCatalogFor(request: Omit<BusinessContextRequest, 'use'>) {
 
 function isDwDerivedTarget(request: Pick<BusinessContextRequest, 'target'>) {
   return request.target.classId === DW_DERIVED_CLASS_ID || request.target.threadId === DW_DERIVED_DIRECT_THREAD_ID;
+}
+
+function isPhysicsTarget(request: Pick<BusinessContextRequest, 'target'>) {
+  return request.target.classId === PHYSICS_CLASS_ID || request.target.threadId === PHYSICS_DIRECT_THREAD_ID;
 }
 
 function stableVersion(value: string) {
@@ -35,11 +42,13 @@ export class FixedWorkBuddyImBusinessContextAdapter implements BusinessContextAd
       .filter((message) => message.authorRole === 'teacher' || message.authorRole === 'student-family' || message.authorRole === 'class-agent')
       .slice(-6)
       .map(({ authorRole, authorName, body }) => ({ authorRole: authorRole as 'teacher' | 'student-family' | 'class-agent', authorName, body }));
+    const physics = isPhysicsTarget(request);
     const version = stableVersion(JSON.stringify({
       threadRef: request.target.threadId,
       classLabel: request.target.classLabel,
       memberCount: request.target.memberCount,
       messages,
+      physicsContextVersion: physics ? PHYSICS_IM_TEACHING_CONTEXT.version : null,
     }));
     const dwDerived = isDwDerivedTarget(request);
     const privateSnapshot = dwDerived ? await loadPrivateImDemoContext() : null;
@@ -47,6 +56,7 @@ export class FixedWorkBuddyImBusinessContextAdapter implements BusinessContextAd
     const sourceRef = privateContext
       ? `dw-hunter:local-private:${privateContext.version}`
       : dwDerived ? 'dw-hunter:deidentified-im-pattern-2026-09-07-v1' : `message-thread:${request.target.threadId}`;
+    const physicsContextSourceRef = `fixed-teaching-context:${PHYSICS_IM_TEACHING_CONTEXT.version}`;
     return Object.freeze({
       id: `context-${request.target.threadId}-${capturedAt}`.replaceAll(/[^a-zA-Z0-9_-]/g, '-'),
       version,
@@ -55,18 +65,30 @@ export class FixedWorkBuddyImBusinessContextAdapter implements BusinessContextAd
       threadRef: request.target.threadId,
       channel,
       use: request.use,
-      sources: Object.freeze([Object.freeze({
-        kind: dwDerived ? 'dw-hunter' as const : 'fixed-demo' as const,
-        owner: 'ClassIn' as const,
-        sourceRef,
-        permissionScope: `teacher:${request.actorRef}:${request.target.threadId}`,
-        capturedAt,
-        freshness: 'current' as const,
-        version: privateContext?.version ?? (dwDerived ? DW_DERIVED_IM_LEARNING_CATALOG.version : version),
-      })]),
+      sources: Object.freeze([
+        Object.freeze({
+          kind: dwDerived ? 'dw-hunter' as const : 'fixed-demo' as const,
+          owner: 'ClassIn' as const,
+          sourceRef,
+          permissionScope: `teacher:${request.actorRef}:${request.target.threadId}`,
+          capturedAt,
+          freshness: 'current' as const,
+          version: privateContext?.version ?? (dwDerived ? DW_DERIVED_IM_LEARNING_CATALOG.version : version),
+        }),
+        ...(physics ? [Object.freeze({
+          kind: 'fixed-demo' as const,
+          owner: 'ClassIn' as const,
+          sourceRef: physicsContextSourceRef,
+          permissionScope: `teacher:${request.actorRef}:${request.target.threadId}:teaching-context`,
+          capturedAt: new Date(PHYSICS_IM_TEACHING_CONTEXT.capturedAt).toISOString(),
+          freshness: 'current' as const,
+          version: PHYSICS_IM_TEACHING_CONTEXT.version,
+        })] : []),
+      ]),
       items: Object.freeze([
         Object.freeze({ key: 'conversation-label', label: channel === 'class' ? '当前班级' : '当前私聊', value: request.target.classLabel, sourceRef, sensitivity: 'standard' as const }),
         ...(request.target.memberCount === undefined ? [] : [Object.freeze({ key: 'member-count', label: '成员数', value: String(request.target.memberCount), sourceRef, sensitivity: 'standard' as const })]),
+        ...(physics ? physicsImTeachingContextItems(physicsContextSourceRef, request.focusRefs, request.query) : []),
         ...(dwDerived ? [
           Object.freeze({ key: 'data-window', label: '数据窗口', value: privateContext?.dataWindow ?? (channel === 'class' ? '2026-09-01—2026-09-07（T-1）' : '2026-08-09—2026-09-07（T-1）'), sourceRef, sensitivity: 'standard' as const }),
           Object.freeze({ key: 'privacy-transform', label: '隐私处理', value: privateContext ? '消息原文仅存在本机私有快照；数据库标识已删除，发言者使用本机会话别名。' : '真实行级消息经过去标识化和业务事实压缩；原始姓名、UID、群ID与原文不进入 Demo。', sourceRef, sensitivity: 'standard' as const }),

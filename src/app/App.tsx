@@ -111,7 +111,7 @@ function WorkBuddyImBridge({ children }: { children: ReactNode }) {
   }), [messageActions]);
   const agentServices = useMemo(() => ({
     runtime: createHttpAgentRuntime(),
-    businessContext: new FixedWorkBuddyImBusinessContextAdapter(() => HOMEWORK_NOW),
+    businessContext: new FixedWorkBuddyImBusinessContextAdapter(() => TEACHING_DYNAMICS_DEMO_NOW),
     teachingDynamics: new FixedWorkBuddyImTeachingDynamicsAdapter(() => TEACHING_DYNAMICS_DEMO_NOW),
     messageDraft: new MockWorkBuddyImMessageDraftAdapter({
       now: () => new Date(),

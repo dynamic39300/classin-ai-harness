@@ -1,7 +1,7 @@
 ---
 title: TeachBuddy 教学阶段导航方案（二）
 status: IMPLEMENTED_PENDING_USER_REVIEW
-version: v0.6
+version: v0.7
 branch: codex/copilot-stage-nav-v2
 base_branch: codex/copilot-prompt-grid-v1
 updated: 2026-09-10
@@ -69,6 +69,18 @@ updated: 2026-09-10
 | 总结 | 可以整理李明的个人学情 | 课堂表现、作业情况和下一步建议 | 个人总结 |
 
 这些内容是基于课程、课次、作业、测验和学生事实生成的同步消息建议。建议卡不保存“老师已处理”状态；课程开始、课程结束和截止时间等业务事实变化后，相关事项自然出现或消失。满勤等闭环事实只提供确信感，固定显示`无需处理`，不要求老师回执。
+
+### 3.2 AI 生成使用的伪真实上下文
+
+建议标题只是页面投影，不能成为 AI 生成消息的全部输入。固定演示数据另由[`workbuddy-im-physics-context.ts`](../../../../src/mocks/scenarios/workbuddy-im-physics-context.ts)集中保存，包含同一班级下三门课程的以下证据：
+
+- 整体学习计划、课程顺序、已完成讲次和后续安排；
+- 每门课程的目标、具体课次时间、本讲知识点、课堂活动和教学材料；
+- 到课名单、作业与测验题量、完成要求、截止时间和未交学生；
+- 最近两次作业的七道高频错题、典型错因、标准答案与错题卡格式；
+- 整班阶段指标、共性优势、共性问题、下一步，以及一名学生的个人课堂、作业和互动证据。
+
+`FixedWorkBuddyImBusinessContextAdapter`在老师点击建议或自由提问时，依据建议携带的稳定业务引用或教师问题，选择对应课程、课次、作业、测验及学情证据，投影为带来源、权限、时效、版本和`fixed-demo`真值标签的`BusinessContextSnapshot`，再通过隐藏的 Context Envelope 传给 Runtime。它不会把三门课的全部明细无差别塞进同一次生成，既避免业务串线，也保持在 Runtime 单次输入限制内。老师时间线只显示自然语言 Prompt，不显示内部数据结构。演示快照和教学动态使用同一个固定时钟`2026-08-09 14:40`，避免页面说“已上课10分钟”而上下文仍处于上午。未来接入业务系统时继续使用同一`BusinessContextAdapter` Interface，只替换固定 Scenario Adapter。
 
 ## 4. 切换、收起与滚动
 

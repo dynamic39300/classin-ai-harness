@@ -13,6 +13,7 @@ export type TeachingDynamicKind =
 export type TeachingDynamicAction = Readonly<{
   label: string;
   teacherRequest: string;
+  contextRefs?: readonly string[];
   learningSelection?: LearningContextSelection;
 }>;
 

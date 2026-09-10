@@ -80,6 +80,10 @@ export type BusinessContextRequest = Readonly<{
   tenantRef: string;
   target: WorkBuddyImTarget;
   use: BusinessContextUse;
+  /** Stable business objects selected by the initiating teaching suggestion. */
+  focusRefs?: readonly string[];
+  /** Teacher wording used by a fixed or production Adapter to retrieve relevant evidence. */
+  query?: string;
 }>;
 
 export interface BusinessContextAdapter {

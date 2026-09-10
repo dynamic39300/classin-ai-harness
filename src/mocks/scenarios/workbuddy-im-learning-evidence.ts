@@ -9,7 +9,7 @@ export const WORKBUDDY_IM_LEARNING_CATALOG: LearningContextCatalog = Object.free
   ]),
   lessons: Object.freeze([
     Object.freeze({ ref: 'lesson-momentum-0808', label: '8月8日 · 动量守恒模型', description: '已结束 · 课堂互动与随堂回答可用', studentRefs: ['student-001'] }),
-    Object.freeze({ ref: 'lesson-wave-0807', label: '8月7日 · 机械波基础', description: '已结束 · 课堂报告可用', studentRefs: ['student-001'] }),
+    Object.freeze({ ref: 'lesson-wave-0808', label: '8月8日 · 机械波基础', description: '已结束 · 课堂报告可用', studentRefs: ['student-001'] }),
   ]),
   assignments: Object.freeze([
     Object.freeze({ ref: 'homework-momentum-a', label: '动量守恒作业 A 组', description: '8月10日 18:00 截止 · 6 人待提交', studentRefs: ['all-pending', 'student-001', 'student-002', 'student-003'], reminderReasonRefs: ['homework-submission'] }),
@@ -115,7 +115,9 @@ export function learningEvidence(selection: LearningContextSelection): readonly 
   ];
   if (selection.capability === 'personalized-reminder') {
     const reminderFact = selection.reminderReasonRef === 'attendance'
-      ? '李明缺席了8月7日机械波基础课堂；补课安排为8月10日 16:30，需提前准备错题订正。'
+      ? selection.studentRef === 'all-pending'
+        ? '动量守恒模型课于8月9日14:30开始；14:40应到30人、已进入27人，李明、周然、陈晨尚未进入。'
+        : '李明缺席了8月7日机械波基础课堂；补课安排为8月10日 16:30，需提前准备错题订正。'
       : selection.reminderReasonRef === 'schedule-change'
         ? '8月10日的物理课从14:30调整到16:30，教室改为B203，需携带实验报告。'
         : selection.assignmentRef === 'homework-correction'
@@ -126,7 +128,7 @@ export function learningEvidence(selection: LearningContextSelection): readonly 
     { label: '沟通要求', value: '说明原因、明确下一步和时间，不使用责备语气。', sensitivity: 'standard' },
   ];
   }
-  if (selection.capability === 'class-recap') return selection.lessonRef === 'lesson-wave-0807' ? [...common,
+  if (selection.capability === 'class-recap') return selection.lessonRef === 'lesson-wave-0808' ? [...common,
     { label: '课堂目标', value: '理解同一介质中波速稳定，能用v=fλ判断频率与波长的变化关系。', sensitivity: 'standard' },
     { label: '课堂参与', value: '李明能写出v=fλ，但解释介质不变时三个量关系时遗漏波速不变前提。', sensitivity: 'student-personal' },
     { label: '个人关注', value: '先写出“介质不变→波速不变”，再根据频率变化判断波长。', sensitivity: 'student-personal' },
