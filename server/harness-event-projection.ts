@@ -4,7 +4,7 @@ type Projection = {
   events: ConversationRunEvent[];
   status?: 'idle' | 'running' | 'stopped' | 'failed';
   error?: string;
-  failureCode?: 'vision-permission';
+  failureCode?: 'vision-permission' | 'model-history-invalid';
 };
 type RawEvent = { seq: number; time: number; type: string; data: Record<string, unknown> };
 type Step = {
@@ -57,11 +57,14 @@ function rawEvent(entry: unknown): RawEvent | undefined {
   return { seq: event.seq, time: event.time, type: event.type, data };
 }
 
-function generationError(raw: RawEvent): { error: string; failureCode?: 'vision-permission' } {
+function generationError(raw: RawEvent): { error: string; failureCode?: 'vision-permission' | 'model-history-invalid' } {
   const chunk = record(raw.data.chunk);
   const reason = record(chunk?.reason) ?? record(raw.data.reason);
   const failure = record(reason?.failure) ?? record(reason?.error);
   const message = typeof failure?.message === 'string' ? failure.message : '';
+  if (/missing.*thought_signature|thought_signature.*missing/iu.test(message)) {
+    return { error: '此前生成记录无法继续，请重新添加图片并发送，系统会自动开启新的处理记录。', failureCode: 'model-history-invalid' };
+  }
   return /not allowed to access model|does not support image input/iu.test(message) && /vision|image/iu.test(message)
     ? { error: VISION_PERMISSION_ERROR, failureCode: 'vision-permission' }
     : { error: GENERATION_ERROR };
@@ -152,7 +155,12 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
       } else if (reason === 'error') {
         fail(raw, turn);
         settle(raw, turn, 'failed');
-      } else if (reason === 'aborted' || reason === 'interrupted' || reason === 'blocked' || reason === 'max-tokens') {
+      } else if (reason === 'max-tokens') {
+        projection.status = 'failed';
+        projection.error = '本次生成达到长度限制，请缩短要求或让 AI 分步生成。';
+        delete projection.failureCode;
+        settle(raw, turn, 'failed');
+      } else if (reason === 'aborted' || reason === 'interrupted' || reason === 'blocked') {
         projection.status = 'stopped';
         delete projection.error;
         delete projection.failureCode;

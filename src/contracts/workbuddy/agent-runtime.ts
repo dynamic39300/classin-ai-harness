@@ -35,7 +35,7 @@ export type RuntimeSession = Readonly<{
   events: readonly ConversationRunEvent[];
   artifacts: readonly RuntimeArtifact[];
   error?: string;
-  failureCode?: 'vision-permission';
+  failureCode?: 'vision-permission' | 'model-history-invalid';
 }>;
 export interface AgentRuntimeAdapter {
   health(): Promise<RuntimeHealth>;

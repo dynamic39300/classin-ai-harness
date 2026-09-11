@@ -1,3 +1,4 @@
+import { isSolutionImage } from './solution-image';
 import { ArrowLeft, Download, FileText, History, MessageSquarePlus, RefreshCw, Save, Square, X } from 'lucide-react';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -12,6 +13,7 @@ import { splitAnalysisProcessTurns } from '@domain/workbuddy/analysis-process';
 import { AnalysisProcess } from './AnalysisProcess';
 import { appendRuntimeImageDrafts, encodeRuntimeImageDrafts, releaseRuntimeImageDrafts, RUNTIME_IMAGE_ACCEPT, type RuntimeImageDraft } from './runtime-image-attachments';
 import { needsFreshTextSession } from './runtime-session-recovery';
+import { SolutionImagePreview } from './SolutionImagePreview';
 import styles from './AgentRuntimeSurface.module.css';
 
 const httpRuntime = createHttpAgentRuntime();
@@ -226,9 +228,9 @@ function RuntimeWorkspace({ scope, newTaskPath, returnTarget, adapter = httpRunt
         </section>
         {artifact && session ? <aside className={styles.review} aria-label="审阅产物">
           <header><div><h2>{artifact.title}</h2><span>v{artifact.version} · {artifact.status === 'saved' ? '已保存到本机' : '待审阅'}</span></div><button type="button" aria-label="关闭产物" title="关闭产物" onClick={() => setReview(null)}><X size={16} aria-hidden="true" /></button></header>
-          <div className={styles.document} tabIndex={0} role="region" aria-label="产物正文"><pre>{artifact.content}</pre></div>
+          <div className={styles.document} tabIndex={0} role="region" aria-label="产物正文">{isSolutionImage(artifact) ? <SolutionImagePreview artifact={artifact} scope={scope} sessionId={session.id} /> : <pre>{artifact.content}</pre>}</div>
           <footer><p>保存位置：本机个人产物存储；不代表 ClassIn 正式发布。</p>{artifact.receipt ? <p>本机保存回执：{artifact.receipt.id}<br /><time dateTime={artifact.receipt.savedAt}>{artifact.receipt.savedAt}</time></p> : null}
-            <div className={styles.actions}><button type="button" disabled={artifact.status === 'saved' || pending || running || Boolean(runtime.readError) || operation?.status === 'failed'} onClick={() => void runtime.execute(session.id, { kind: 'approve', artifactId: artifact.id, version: artifact.version, commandId: createClientId() })}><Save size={15} aria-hidden="true" />{artifact.status === 'saved' ? '已保存' : '确认并保存到本机'}</button><button type="button" onClick={() => download(artifact)}><Download size={15} aria-hidden="true" />下载 {artifact.fileName.split('.').pop()?.toLocaleUpperCase('en-US')}</button></div>
+            <div className={styles.actions}><button type="button" disabled={artifact.status === 'saved' || pending || running || Boolean(runtime.readError) || operation?.status === 'failed'} onClick={() => void runtime.execute(session.id, { kind: 'approve', artifactId: artifact.id, version: artifact.version, commandId: createClientId() })}><Save size={15} aria-hidden="true" />{artifact.status === 'saved' ? '已保存' : '确认并保存到本机'}</button>{!isSolutionImage(artifact) ? <button type="button" onClick={() => download(artifact)}><Download size={15} aria-hidden="true" />下载 {artifact.fileName.split('.').pop()?.toLocaleUpperCase('en-US')}</button> : null}</div>
             {downloadError ? <p role="alert">{downloadError}</p> : null}
           </footer>
         </aside> : null}

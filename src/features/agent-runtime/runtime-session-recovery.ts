@@ -5,5 +5,6 @@ import type { RuntimeSession } from '@contracts/workbuddy/agent-runtime';
  * a text-only model can fail again, so text work resumes in a clean Session.
  */
 export function needsFreshTextSession(session: RuntimeSession | null | undefined, imageCount: number) {
-  return imageCount === 0 && session?.failureCode === 'vision-permission';
+  return session?.failureCode === 'model-history-invalid'
+    || (imageCount === 0 && session?.failureCode === 'vision-permission');
 }

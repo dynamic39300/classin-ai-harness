@@ -12,6 +12,8 @@ test('launcher reads .env privately, pins the package and passes isolated paths'
   const bin = join(root, 'bin');
   const originalHome = join(root, 'original-home');
   await mkdir(scripts);
+  await mkdir(join(root, 'runtime/harness'), { recursive: true });
+  await copyFile(new URL('./gateway-compat.mjs', import.meta.url), join(root, 'runtime/harness/gateway-compat.mjs'));
   await mkdir(bin);
   await mkdir(originalHome);
   await writeFile(join(originalHome, '.env'), 'DEEPSEEK_API_KEY=fixture-user-key\nUNRELATED_USER_VALUE=not-forwarded\n');
@@ -49,7 +51,7 @@ console.log(JSON.stringify({
     return JSON.parse(output);
   }
   const observed = await invoke();
-  assert.deepEqual(observed.args, ['--yes', 'pnpm@11.7.0', 'dlx', '@deepseek-ai/dsh@0.1.1-rc.2',
+  assert.deepEqual(observed.args, ['--yes', 'pnpm@11.7.0', 'dlx', ...['@deepseek-ai/dsh-subprocess-local', '@google/genai', 'koffi', 'node-pty', 'protobufjs'].map(name => `--allow-build=${name}`), '@deepseek-ai/dsh@0.1.1-rc.2',
     'web', '--patch', join(root, 'runtime/harness/cordis.patch.yml'), '--no-open', '--port', '3080']);
   assert.equal(observed.cwd, join(root, '.runtime/workspace'));
   assert.equal(observed.home, join(root, '.runtime/harness-home'));

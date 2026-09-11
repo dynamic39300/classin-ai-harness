@@ -28,3 +28,25 @@ describe('AgentRichResponse', () => {
     expect(container).toHaveTextContent('安全正文');
   });
 });
+
+it('typesets the reported inline and adjacent display equations, fractions and units', () => {
+  const { container } = render(<AgentRichResponse>{String.raw`每天 $420 \times 16 = 6720$ 本。
+
+$$960 + 420 \times 16$$ $$= 960 + 6720$$ $$= 7680 \text{(本)}$$
+
+分数 $\frac{1}{2}$ 和平方 $x^2$。`}</AgentRichResponse>);
+  expect(container.querySelectorAll('.katex').length).toBe(6);
+  expect(container.querySelectorAll('math').length).toBe(6);
+  expect(container.querySelector('.katex-error')).toBeNull();
+  expect(container.querySelector('.katex-html')).toHaveTextContent('×');
+});
+
+it('keeps code literal and survives invalid or unfinished streamed formulas', () => {
+  const { container } = render(<AgentRichResponse>{String.raw`代码：\`$x^2$\`
+
+$\unknowncommand{1}$
+
+未完成 $\frac{1}`.replaceAll('\\`', '`')}</AgentRichResponse>);
+  expect(container.querySelector('code')).toHaveTextContent('$x^2$');
+  expect(container).toHaveTextContent('未完成');
+});

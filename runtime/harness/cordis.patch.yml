@@ -47,3 +47,20 @@
     - id: teachbuddy-draft-tools
       # Names are literal and resolve from .runtime/harness-home/profiles/web.
       name: '../../../../runtime/harness/teaching-tools.mjs'
+
+# Company gateway exposes Gemini through the OpenAI-compatible chat protocol.
+- id: llm-pi-ai
+  config:
+    providers:
+      company-gateway:
+        displayName: Company Gateway
+        api: openai-completions
+        apiKeyEnv: DEEPSEEK_API_KEY
+        baseURL: !!js process.env.TEACHBUDDY_GATEWAY_BASE_URL
+        models:
+          - id: tokenhub/gemini-3.5-flash
+            name: Gemini 3.5 Flash
+            input: [text, image]
+            # Conservative local budgets, not claims about gateway capacity.
+            contextWindow: 32768
+            maxTokens: 4096

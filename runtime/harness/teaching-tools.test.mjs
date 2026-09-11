@@ -18,11 +18,11 @@ function execution(callId = 'call-1', sessionId = 'session-1', signal = new Abor
 
 const args = { title: 'Lesson draft', content: 'Goal: compare two fractions.\nPractice: 1/2 and 2/3.' };
 
-test('registers one tool and a guard that rejects unsupported names', () => {
+test('registers teaching tools and a guard that rejects unsupported names', () => {
   const definitions = [];
   const guards = [];
   apply({ tools: { guard: guard => guards.push(guard), register: tool => definitions.push(tool) } });
-  assert.deepEqual(definitions.map(tool => tool.name), [TOOL_NAME]);
+  assert.deepEqual(definitions.map(tool => tool.name), [TOOL_NAME, 'create_solution_image']);
   assert.equal(guards.length, 1);
   for (const tool of ['bash', 'read', 'write', 'subagent', 'run_code', 'todo_write', 'future_tool']) {
     assert.equal(typeof guards[0]({ name: tool }), 'string');
@@ -132,4 +132,17 @@ test('session directory and destination symlinks cannot redirect a draft write',
   await symlink(join(outside, 'target'), join(runtimeRoot, 'artifacts/session-2/call-1.json'));
   await assert.rejects(tool.execute(args, execution('call-1', 'session-2')));
   assert.deepEqual(await readdir(outside), []);
+});
+
+test('solution images keep a bounded structured source and are idempotent', async t => {
+  const { runtimeRoot } = await fixture(t);
+  const { createSolutionImageTool } = await import('./teaching-tools.mjs');
+  const tool = createSolutionImageTool(runtimeRoot);
+  const source = { title: '解题步骤', steps: [{title:'第一步',explanation:'确认题意',formula:'x=1'},{title:'第二步',explanation:'代入验证'}], conclusion:'结果为1' };
+  const first = await tool.execute(source, execution());
+  assert.equal(first.fileName, 'solution.solution.json');
+  assert.deepEqual(JSON.parse(first.content), source);
+  assert.deepEqual(await tool.execute(source, execution()), first);
+  await assert.rejects(tool.execute({...source,steps:[]}, execution('invalid')));
+  assert.equal(teachingToolGuard({name:'create_solution_image'}), undefined);
 });

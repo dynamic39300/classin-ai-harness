@@ -1,3 +1,4 @@
+import { isSolutionImage } from '@features/agent-runtime/solution-image';
 import { AlertTriangle, LoaderCircle, RefreshCw, Sparkles, Square } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { BusinessContextSnapshot, ImSidecarAgentServices, LearningContextCatalog, LearningContextSelection, MessageDraftArtifact, PersonalizedLearningArtifact, SendMessageReceipt } from '@contracts/workbuddy/business-context';
@@ -15,6 +16,7 @@ import { createClientId } from '@shared/client-id';
 import { AnalysisProcess, appendRuntimeImageDrafts, encodeRuntimeImageDrafts, needsFreshTextSession, releaseRuntimeImageDrafts, RUNTIME_IMAGE_ACCEPT, type RuntimeImageDraft, useAgentRuntime } from '@features/agent-runtime';
 import { getImAgentSessionTrail, removeImAgentSessionBinding, replaceMissingImAgentSessionBinding, rotateImAgentSessionBinding, saveImAgentSessionBinding } from './im-agent-session-binding';
 import { TeachingDynamics } from './TeachingDynamics';
+import { SolutionImagePreview } from '@features/agent-runtime/SolutionImagePreview';
 import styles from './WorkBuddyImSidecar.module.css';
 
 type Props = Readonly<{
@@ -549,6 +551,7 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
             })}{!turnTeacher ? <li className={styles.analysisItem}><AnalysisProcess session={turnSession} mode="compact" context={null} assistantLabel={TEACHBUDDY_IM_ASSISTANT_LABEL} /></li> : null}</Fragment>;
           });
         })}</ol> : null}
+        {logicalSessions.map(session => session.artifacts.filter(isSolutionImage).map(artifact => <SolutionImagePreview key={`${session.id}:${artifact.id}`} artifact={artifact} scope={services.scope} sessionId={session.id} />))}
         {activeSession?.status === 'running' && activeSession.events.length === 0 ? <AnalysisProcess session={activeSession} mode="compact" context={null} assistantLabel={TEACHBUDDY_IM_ASSISTANT_LABEL} /> : null}
 
         {lastAgentEvent && runtime.session?.status === 'idle' && !pending && !messageDraft && acceptedAgentEventId !== lastAgentEvent.id && (!selection || learningResultReady) && currentDeliveryIntent !== 'none' ? (
