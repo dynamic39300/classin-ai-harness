@@ -182,7 +182,7 @@ describe('projectHarnessEvents', () => {
     const projected = project([event(0, 'turn/start', { turn: 1 }), end(1, {
       kind, reason: { kind: 'user' }, error: { code: 'UNKNOWN', message: 'PRIVATE FAILURE' },
     })]);
-    expect(projected.status).toBe(kind === 'completed' ? 'idle' : kind === 'error' ? 'failed' : 'stopped');
+    expect(projected.status).toBe(kind === 'completed' ? 'idle' : (kind === 'error' || kind === 'max-tokens') ? 'failed' : 'stopped');
     expect(JSON.stringify(projected)).not.toContain('PRIVATE FAILURE');
   });
 

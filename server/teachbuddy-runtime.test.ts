@@ -57,7 +57,7 @@ function fixture() {
     if (method === 'credentials.describe') return { credentials: { DEEPSEEK_API_KEY: { configured } } };
     if (method === 'session.create') {
       const createdId = String(payload.sessionId);
-      if (createdId !== 'tb-model-default-restore') id = createdId;
+      if (!createdId.startsWith('tb-model-default-restore-')) id = createdId;
       return { sessionId: createdId };
     }
     if (method === 'session.history') return { events: structuredClone(events), hasMore: false };
@@ -65,9 +65,9 @@ function fixture() {
     if (method === 'session.models') return {
       current: { provider: 'deepseek-official', model: 'deepseek-v4-flash' }, routable: true,
       groups: [{ id: 'deepseek-official', name: 'DeepSeek', models: [
-        { id: 'deepseek-v4-flash', name: 'DeepSeek-V4-Flash', inputModalities: ['text'] },
-        { id: 'deepseek-v4-flash-vision-exp', name: 'DeepSeek Vision', inputModalities: ['text', 'image'] },
-      ] }], failures: [],
+        { id: 'deepseek-v4-flash', name: 'DeepSeek-V4-Flash' },
+        { id: 'deepseek-v4-flash-vision-exp', name: 'DeepSeek Vision' },
+      ] }, { id: 'company-gateway', name: 'Company gateway', models: [{ id: 'tokenhub/gemini-3.5-flash', name: 'Gemini' }] }], failures: [],
     };
     if (method === 'session.selectModel') return { selected: { provider: payload.provider, model: payload.model } };
     if (method === 'session.prompt') {
@@ -143,13 +143,33 @@ describe('TeachBuddy runtime governance', () => {
     expect(read.events.filter((event) => event.kind === 'teacher_message')).toHaveLength(1);
   });
 
-  it('validates image bytes, selects the DeepSeek vision route, and admits image-only prompts', async () => {
+  it('pins new text sessions independently of the host default', async () => {
+    const f = fixture();
+    const session = await f.adapter.create('ideal-full');
+    expect(f.calls.find(({ method }) => method === 'session.selectModel')?.payload).toEqual({
+      sessionId: session.id, provider: 'deepseek-official', model: 'deepseek-v4-flash',
+    });
+  });
+
+  it('refuses an absent configured image route before admitting the prompt', async () => {
+    const f = fixture();
+    const adapter = createTeachBuddyRuntime({ root: f.root, rpc: (method, payload, id) => method === 'session.models'
+      ? Promise.resolve({ current: { provider: 'deepseek-official', model: 'deepseek-v4-flash' }, groups: [] })
+      : f.rpc(method, payload, id) });
+    const session = await adapter.create('ideal-full');
+    const data = 'iVBORw0KGgo=';
+    await expect(adapter.send('ideal-full', session.id, '', 'missing-route', [{ name: 'test.png', mediaType: 'image/png', data, byteSize: 8 }])).rejects.toThrow('识图模型');
+    expect(f.calls.some(({ method }) => method === 'session.prompt')).toBe(false);
+    expect((await adapter.read('ideal-full', session.id)).error).toContain('识图模型');
+  });
+
+  it('validates image bytes, selects the configured Gemini route across providers without modality metadata, and admits image-only prompts', async () => {
     const f = fixture(); const session = await f.adapter.create('ideal-full');
     const data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZxQAAAABJRU5ErkJggg==';
     const image = { name: '../课堂板书.png', mediaType: 'image/png' as const, byteSize: Buffer.from(data, 'base64').length, data };
     await f.adapter.send('ideal-full', session.id, '', 'image-only', [image]);
-    expect(f.calls.find(({ method }) => method === 'session.selectModel')?.payload).toMatchObject({ provider: 'deepseek-official', model: 'deepseek-v4-flash-vision-exp' });
-    expect(f.calls.filter(({ method }) => method === 'session.selectModel').at(-1)?.payload).toMatchObject({ sessionId: 'tb-model-default-restore', model: 'deepseek-v4-flash' });
+    expect(f.calls.find(({ method, payload }) => method === 'session.selectModel' && payload.provider === 'company-gateway')?.payload).toMatchObject({ provider: 'company-gateway', model: 'tokenhub/gemini-3.5-flash' });
+    expect(f.calls.filter(({ method }) => method === 'session.selectModel').at(-1)?.payload).toMatchObject({ sessionId: expect.stringMatching(/^tb-model-default-restore-/), model: 'deepseek-v4-flash' });
     expect(f.calls.find(({ method }) => method === 'session.prompt')?.payload.content).toEqual([{ type: 'image', mediaType: 'image/png', data, name: '课堂板书.png' }]);
     expect((await f.adapter.read('ideal-full', session.id)).events).toContainEqual(expect.objectContaining({ kind: 'teacher_message', summary: '已附 1 张图片（课堂板书.png）' }));
     await expect(f.adapter.send('ideal-full', session.id, '', 'image-only', [{ ...image, name: '另一张.png' }])).rejects.toThrow('不一致');

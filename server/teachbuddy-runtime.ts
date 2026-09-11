@@ -1,3 +1,4 @@
+import { renderSolutionPng } from './solution-image-renderer.ts';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
@@ -44,7 +45,7 @@ const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const MAX_IMAGE_TOTAL_BYTES = 20 * 1024 * 1024;
 const MAX_MESSAGE_REQUEST_BYTES = 28 * 1024 * 1024;
-const MODEL_DEFAULT_RESTORE_SESSION = 'tb-model-default-restore';
+const MODEL_DEFAULT_RESTORE_SESSION = `tb-model-default-restore-${createHash('sha256').update(process.cwd()).digest('hex').slice(0, 12)}`;
 const now = () => new Date().toISOString();
 export function record(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -103,15 +104,16 @@ async function selectImageModel(rpc: Rpc, sessionId: string) {
     throw new RuntimeError('无法核对图片模型能力，请稍后重试。', 503);
   }
   const groups = directoryRecord.groups.filter(record);
-  const currentGroup = groups.find((group) => group.id === currentSelection.provider);
-  const models = currentGroup && Array.isArray(currentGroup.models) ? currentGroup.models.filter(record) : [];
-  const current = models.find((model) => model.id === currentSelection.model);
-  if (current?.id === 'deepseek-v4-flash-vision-exp'
-    || (current && Array.isArray(current.inputModalities) && current.inputModalities.includes('image'))) return;
-  const vision = models.find((model) => model.id === 'deepseek-v4-flash-vision-exp')
-    ?? models.find((model) => Array.isArray(model.inputModalities) && model.inputModalities.includes('image'));
-  if (!vision || typeof vision.id !== 'string') throw new RuntimeError('当前 DeepSeek 模型不支持图片理解，请联系服务管理员配置视觉模型。', 409);
-  await rpc('session.selectModel', { sessionId, provider: currentSelection.provider, model: vision.id });
+  // rc2 session.models omits modalities; use the explicitly configured, verified route.
+  const provider = 'company-gateway';
+  const model = 'tokenhub/gemini-3.5-flash';
+  const group = groups.find((entry) => entry.id === provider);
+  const models = group && Array.isArray(group.models) ? group.models.filter(record) : [];
+  if (!models.some((entry) => entry.id === model)) {
+    throw new RuntimeError('识图模型尚未配置或不可用，请检查运行服务配置后重试。', 409);
+  }
+  if (currentSelection.provider === provider && currentSelection.model === model) return;
+  await rpc('session.selectModel', { sessionId, provider, model });
   try {
     await rpc('session.create', { sessionId: MODEL_DEFAULT_RESTORE_SESSION, agentPreset: 'teachbuddy' });
     await rpc('session.selectModel', { sessionId: MODEL_DEFAULT_RESTORE_SESSION, provider: currentSelection.provider, model: currentSelection.model,
@@ -491,7 +493,11 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
       const health = await adapter.health();
       if (health.status !== 'ready') throw new RuntimeError(health.message, 503);
       const id = `tb-${randomUUID()}`;
-      const created = await modelExclusive(() => rpc('session.create', { sessionId: id, cwd: join(root, 'workspace'), agentPreset: 'teachbuddy' }));
+      const created = await modelExclusive(async () => {
+        const session = await rpc('session.create', { sessionId: id, cwd: join(root, 'workspace'), agentPreset: 'teachbuddy' });
+        await rpc('session.selectModel', { sessionId: id, provider: 'deepseek-official', model: 'deepseek-v4-flash' });
+        return session;
+      });
       if (!record(created) || created.sessionId !== id) throw new RuntimeError('无法创建运行会话。');
       const snapshot: RuntimeSession = { id, title: '新对话', status: 'idle', updatedAt: now(), events: [], artifacts: [] };
       save({ scope, snapshot, commands: {} });
@@ -689,6 +695,19 @@ export function runtimeMiddleware(adapter: AgentRuntimeAdapter & {
         return content;
       }
       if (url.pathname === '/api/teachbuddy/sessions') return method === 'GET' ? adapter.list(selectedScope) : adapter.create(selectedScope);
+      const solutionMatch = url.pathname.match(/^\/api\/teachbuddy\/sessions\/([a-zA-Z0-9_-]+)\/artifacts\/([a-zA-Z0-9_-]+)\/image$/);
+      if (method === 'GET' && solutionMatch) {
+        const session = await adapter.read(selectedScope, solutionMatch[1]!);
+        const artifact = session.artifacts.find(item => item.id === solutionMatch[2]);
+        if (!artifact || artifact.format !== 'json' || !artifact.fileName.endsWith('.solution.json')) throw new RuntimeError('解题图片不存在。', 404);
+        let png: Buffer;
+        try { png = await renderSolutionPng(artifact.content); }
+        catch { throw new RuntimeError('图片排版未完成，请重试；若内容过长，请让 AI 精简步骤后重新生成。', 422); }
+        response.writeHead(200, { 'Content-Type': 'image/png', 'Content-Length': png.length, 'Cache-Control': 'no-store',
+          'X-Content-Type-Options': 'nosniff', 'Content-Disposition': `${url.searchParams.get('download') === '1' ? 'attachment' : 'inline'}; filename="solution.png"` });
+        response.end(png);
+        return undefined;
+      }
       const match = url.pathname.match(/^\/api\/teachbuddy\/sessions\/([a-zA-Z0-9_-]+)(?:\/(messages|cancel|artifacts\/([a-zA-Z0-9_-]+)\/approve))?$/);
       if (!match) throw new RuntimeError('接口不存在。', 404);
       const [, id, action, artifactId] = match;

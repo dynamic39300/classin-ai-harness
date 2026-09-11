@@ -5,6 +5,7 @@ import { delimiter, dirname, join, resolve } from 'node:path';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { parseEnv } from 'node:util';
+import { startGatewayCompat } from '../runtime/harness/gateway-compat.mjs';
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const runtimeRoot = join(projectRoot, '.runtime');
@@ -17,8 +18,9 @@ function supportedNode(version) {
 }
 
 function launch(command, args, options) {
+  const { onExit, ...spawnOptions } = options;
   const processGroup = process.platform !== 'win32';
-  const child = spawn(command, args, { ...options, stdio: 'inherit', detached: processGroup });
+  const child = spawn(command, args, { ...spawnOptions, stdio: 'inherit', detached: processGroup });
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
     try {
       if (processGroup && child.pid) process.kill(-child.pid, signal);
@@ -28,10 +30,12 @@ function launch(command, args, options) {
     }
   });
   child.on('error', () => {
+    onExit?.();
     console.error('[teachbuddy-harness] Could not launch the pinned runtime process.');
     process.exitCode = 1;
   });
   child.on('exit', (code, signal) => {
+    onExit?.();
     process.exitCode = code ?? (signal === 'SIGINT' ? 130 : signal === 'SIGTERM' ? 143 : 1);
   });
 }
@@ -104,7 +108,13 @@ async function start() {
   const allowedBuilds = ['@deepseek-ai/dsh-subprocess-local', '@google/genai', 'koffi', 'node-pty', 'protobufjs'];
   const args = ['--yes', 'pnpm@11.7.0', 'dlx', ...allowedBuilds.map(name => `--allow-build=${name}`), `@deepseek-ai/dsh@${runtimeVersion}`, 'web', '--patch', join(configRoot, 'cordis.patch.yml')];
   args.push(...(extra.length ? ['--dump-config'] : ['--no-open', '--port', '3080']));
-  launch('npx', args, { cwd: env.DSH_CWD, env });
+  const bridge = env.DEEPSEEK_BASE_URL && !extra.length
+    ? await startGatewayCompat({ baseURL: env.DEEPSEEK_BASE_URL, apiKey: env.DEEPSEEK_API_KEY }) : undefined;
+  env.TEACHBUDDY_GATEWAY_BASE_URL = bridge?.baseURL ?? env.DEEPSEEK_BASE_URL;
+  if (bridge) {
+    for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, () => bridge.close());
+  }
+  launch('npx', args, { cwd: env.DSH_CWD, env, onExit: () => bridge?.close() });
 }
 
 start().catch(error => {

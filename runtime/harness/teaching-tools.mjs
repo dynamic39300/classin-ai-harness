@@ -4,6 +4,8 @@ import { link, lstat, mkdir, open, unlink } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { validateSolutionImage } from './solution-image.mjs';
+
 export const name = 'teachbuddy-draft-tools';
 export const inject = ['tools'];
 export const TOOL_NAME = 'create_teaching_draft';
@@ -29,7 +31,7 @@ export function draftFilename(callId) {
 }
 
 export function teachingToolGuard(exec) {
-  return exec.name === TOOL_NAME ? undefined : 'TeachBuddy permits only create_teaching_draft.';
+  return [TOOL_NAME, 'create_solution_image'].includes(exec.name) ? undefined : 'TeachBuddy permits only teaching draft and solution image tools.';
 }
 
 async function ensureDirectory(path) {
@@ -172,7 +174,32 @@ export function createTeachingDraftTool(runtimeRoot = RUNTIME_ROOT) {
   };
 }
 
+export function createSolutionImageTool(runtimeRoot = RUNTIME_ROOT) {
+  const draftTool = createTeachingDraftTool(runtimeRoot);
+  return {
+    ...draftTool,
+    name: 'create_solution_image',
+    description: 'Create a 16:9 solution process image for preview and PNG download. Supply 2–4 concise steps based on the conversation; formulas are raw LaTeX without dollar delimiters. No drawing or invented problem details. Text and formulas are laid out precisely, not painted by an image model.',
+    parameters: {
+      type: 'object', additionalProperties: false,
+      properties: {
+        title: { type: 'string', maxLength: 60 },
+        steps: { type: 'array', minItems: 2, maxItems: 4, items: {
+          type: 'object', additionalProperties: false, required: ['title', 'explanation'],
+          properties: { title: { type: 'string', maxLength: 24 }, explanation: { type: 'string', maxLength: 140 }, formula: { type: 'string', maxLength: 160 } },
+        } },
+        conclusion: { type: 'string', maxLength: 140 },
+      }, required: ['title', 'steps', 'conclusion'],
+    },
+    async execute(args, exec) {
+      const source = validateSolutionImage(args);
+      return draftTool.execute({ title: source.title, content: JSON.stringify(source), format: 'json', fileName: 'solution.solution.json' }, exec);
+    },
+  };
+}
+
 export function apply(ctx) {
   ctx.tools.guard(teachingToolGuard);
   ctx.tools.register(createTeachingDraftTool());
+  ctx.tools.register(createSolutionImageTool());
 }

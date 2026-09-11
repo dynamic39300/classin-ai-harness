@@ -92,3 +92,21 @@
 @media (prefers-reduced-motion: reduce) {
   .response * { scroll-behavior: auto; }
 }
+
+/* Keep wide equations reachable inside the narrow IM assistant. */
+.response :global(.katex) {
+  font-size: 1.08em;
+}
+
+.response :global(.katex-display) {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.25em;
+  margin-block: 0.75em;
+  text-align: left;
+}
+
+/* Column rules complement the existing outer frame and row rules. */
+.response th + th,
+.response td + td { border-left: var(--rule-thin) solid var(--color-line-subtle); }

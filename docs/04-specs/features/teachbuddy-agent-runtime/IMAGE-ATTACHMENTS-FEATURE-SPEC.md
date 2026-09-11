@@ -49,7 +49,11 @@ AgentRuntimeAdapter.send(scope, sessionId, text, commandId, images?)
 
 浏览器的校验用于及时反馈，不作为安全边界。BFF 独立执行数量、单张/合计大小、规范 Base64、声明 MIME 与文件头一致性、叶文件名和命令图片摘要校验。BFF 不把 Base64 写入自身 Session JSON，只保存摘要和展示名；Harness 将通过验证的内容提升为自己的持久附件引用。
 
-图片消息发送前，BFF 读取当前 Session 的模型目录。当前模型有 `image` 输入能力时保持不变；否则在同一 DeepSeek Provider、同一 Session 中选择公开目录里的视觉模型，优先目录明确返回的 `deepseek-v4-flash-vision-exp`（兼容 rc2 目录未返回 `inputModalities` 的情形）。Harness 的 `session.selectModel` 会同步改写主机默认模型，因此目标 Session 固定视觉路由后，由不进入产品目录的内部恢复 Session 把默认值还原到切换前的文本模型；图片 Session 与后续普通文本 Session 相互隔离。Harness 在 `session.prompt` 入队前仍执行权威模态校验。不存在视觉模型或默认值未能安全恢复时 fail closed，并保留 Composer 草稿。
+图片消息发送前，BFF 从 rc2 的模型目录确认已配置的 `company-gateway/tokenhub/gemini-3.5-flash` 存在，再在同一 Session 选择该模型。rc2 公共目录不返回模态，禁止依赖 `inputModalities` 或 DeepSeek 视觉实验模型名称猜测。公司网关 Adapter 使用 OpenAI-compatible chat 协议，服务端凭据复用当前本机环境，显式声明 text/image。默认容量预算 32768/4096 是保守部署限制，不代表供应商上限。
+
+Harness 的模型选择同时修改主机默认值；选择 Gemini 后通过内部恢复 Session 还原原默认文本模型。图片会话后续文字追问保留 Gemini 以读取历史图片，新建纯文本会话继续使用 DeepSeek。目录缺少指定模型或恢复失败时 fail closed，保留草稿，不静默丢图或改用其他供应商。
+
+2026-09-10 用户授权 Gemini 3.5 Flash 为识图模型。Write Set：本 Spec、`runtime/harness/cordis.patch.yml`、`server/teachbuddy-runtime.ts` 及对应测试、验收记录。页面、审批与正式消息发送合同不变。
 
 Runtime Projection 只把已识别的视觉权限错误投影为稳定 `failureCode: 'vision-permission'`，不向浏览器暴露 Provider 原始错误、模型名或凭据。共享 Recovery Policy 根据该状态和当前附件数量决定是否新建文本 Session。不能把失败 Session 原地切回文本模型，因为其 Harness 历史仍包含图片，继续复用会让文本模型再次接收不支持的历史模态。
 
@@ -71,3 +75,11 @@ Runtime Projection 只把已识别的视觉权限错误投影为稳定 `failureC
 - 视觉权限失败后，刷新页面并发送纯文本会自动改绑到新文本 Session，旧失败会话仍可追溯；
 - 1440×900 下主工作台与最窄 Sidecar 无遮挡、横向撑破或不可达移除按钮；
 - TypeScript、ESLint、契约测试与 Playwright 关键流程通过。
+
+## 2026-09-10 Gemini 工具回放修复
+
+用户实际题目解析触发 create_teaching_draft 后，第二轮被网关以缺少 thought_signature 拒绝。新增仅本机 Harness 使用的协议 Adapter：将网关 tool_calls.extra_content.google.thought_signature 无损映射为 pi-ai 支持的 reasoning_details，出站按 tool call ID 还原，签名始终为不透明值，不解释、不伪造、不展示。不修改第三方安装缓存。Adapter 仅绑定 loopback 临时端口、验证凭据、固定上游及模型，不接收浏览器来源请求；关闭 Harness 时一并关闭。保留流式传输、状态码和取消；旧的已丢签名失败历史不能伪造修复，应重新发起图片解析。
+
+Write Set 增加 runtime/harness/gateway-compat.mjs 与测试、scripts/start-harness.mjs、运行 patch 和验收记录。验收必须覆盖真实图文→工具结果→最终回答，而非仅单轮颜色识别。
+
+旧历史缺签名投影为 `model-history-invalid`，不泄露原始网关错误。沿用两入口共享恢复策略，在下一次提交（含重新添加的图片）前创建新运行 Session，保留旧记录，不删除历史，不静默补造签名。Write Set 相应包括 RuntimeSession 合同、HTTP 校验、错误投影与共享恢复策略及测试。
