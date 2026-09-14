@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { once } from 'node:events';
 
-const MODEL = 'tokenhub/gemini-3.5-flash';
+const MODELS = new Set(['gemini-2.5-pro', 'tokenhub/gemini-3.5-flash']);
 const FORMAT = 'teachbuddy.google.thought-signature';
 
 // Preserve opaque signatures through the existing pi-ai replay contract.
@@ -63,7 +63,7 @@ export async function startGatewayCompat({ baseURL, apiKey }) {
         chunks.push(chunk);
       }
       const body = restoreSignatures(JSON.parse(Buffer.concat(chunks).toString('utf8')));
-      if (body.model !== MODEL || body.stream !== true) { response.writeHead(400).end(); return; }
+      if (!MODELS.has(body.model) || body.stream !== true) { response.writeHead(400).end(); return; }
       const result = await fetch(upstream, {
         method: 'POST', headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(body), signal: controller.signal, redirect: 'error',

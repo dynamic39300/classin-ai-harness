@@ -233,8 +233,8 @@ across the normal runtime process restart above.
 
 The existing server-only `DEEPSEEK_BASE_URL` and `DEEPSEEK_API_KEY` also configure
 `company-gateway` through the generic OpenAI-compatible Adapter. Its explicit
-`tokenhub/gemini-3.5-flash` catalog entry accepts text/images. BFF routes image
-sessions there and pins new text sessions to DeepSeek Flash. Configure both
+Gemini catalog entries accept text/images. BFF currently routes image sessions
+to `gemini-2.5-pro` and pins new text sessions to DeepSeek Flash. Configure both
 environment values before launch; no browser credential or model picker is needed.
 The 32768/4096 token settings are conservative deployment budgets, not measured
 provider limits. See `docs/05-engineering/acceptance/GEMINI-VISION-2026-09-10.md`.

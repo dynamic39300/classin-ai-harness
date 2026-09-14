@@ -143,6 +143,8 @@ test('solution images keep a bounded structured source and are idempotent', asyn
   assert.equal(first.fileName, 'solution.solution.json');
   assert.deepEqual(JSON.parse(first.content), source);
   assert.deepEqual(await tool.execute(source, execution()), first);
+  assert.deepEqual(await tool.execute(source, execution('model-retried-with-new-call-id')), first);
+  assert.deepEqual(await readdir(join(runtimeRoot, 'artifacts/session-1')), [`${first.id}.json`]);
   await assert.rejects(tool.execute({...source,steps:[]}, execution('invalid')));
   assert.equal(teachingToolGuard({name:'create_solution_image'}), undefined);
 });

@@ -106,7 +106,7 @@ async function selectImageModel(rpc: Rpc, sessionId: string) {
   const groups = directoryRecord.groups.filter(record);
   // rc2 session.models omits modalities; use the explicitly configured, verified route.
   const provider = 'company-gateway';
-  const model = 'tokenhub/gemini-3.5-flash';
+  const model = 'gemini-2.5-pro';
   const group = groups.find((entry) => entry.id === provider);
   const models = group && Array.isArray(group.models) ? group.models.filter(record) : [];
   if (!models.some((entry) => entry.id === model)) {
@@ -534,11 +534,40 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
       save(state);
       try {
         if (images.length) await modelExclusive(() => selectImageModel(rpc, id));
-        await rpc('session.prompt', { sessionId: id, mode: 'queue', content: [
+        const admission = rpc('session.prompt', { sessionId: id, mode: 'queue', content: [
           ...(text ? [{ type: 'text', text }] : []),
           ...images.map(({ mediaType, data, name }) => ({ type: 'image', mediaType, data, name })),
         ], clientTimeZone: 'Asia/Shanghai' }, commandId);
-        state.commands[commandId]!.state = 'accepted';
+        // session.prompt resolves when the model turn settles, which can take longer than an HTTP request.
+        // Release the per-session lock after dispatch so reads can observe queue/turn events while it runs.
+        void admission.then(
+          () => exclusive(id, async () => {
+            const latest = load(scope, id);
+            const command = latest.commands[commandId];
+            if (!command || !['pending', 'accepted', 'uncertain'].includes(command.state)) return;
+            command.state = 'accepted';
+            delete command.error;
+            if (latest.snapshot.status === 'failed' && latest.snapshot.error === UNCONFIRMED) {
+              latest.snapshot = { ...latest.snapshot, status: 'running', error: undefined, updatedAt: now() };
+            }
+            save(latest);
+          }),
+          (error) => exclusive(id, async () => {
+            // A timed-out response can still have admitted the command. Reconcile history before
+            // classifying the write so a completed vision turn is never replaced by a false failure.
+            try { await sync(scope, id); } catch { /* persisted command state remains the fallback */ }
+            const latest = load(scope, id);
+            const command = latest.commands[commandId];
+            if (!command || ['queued', 'claimed', 'delivered', 'cancelled'].includes(command.state)) return;
+            command.state = error instanceof RuntimeError && error.status === 409 ? 'rejected' : 'uncertain';
+            command.error = error instanceof RuntimeError ? error.message : UNCONFIRMED;
+            latest.snapshot = { ...latest.snapshot, status: 'failed', error: command.error, updatedAt: now() };
+            if (command.state === 'rejected') delete latest.startedAt;
+            save(latest);
+          }),
+        ).catch(() => {
+          // Maintenance will reconcile the durable pending command if local persistence is briefly unavailable.
+        });
       } catch (error) {
         state.commands[commandId]!.state = error instanceof RuntimeError && error.status === 409 ? 'rejected' : 'uncertain';
         state.commands[commandId]!.error = error instanceof RuntimeError ? error.message : UNCONFIRMED;

@@ -7,6 +7,7 @@ describe('solution image rendering', () => {
   it('escapes model text and rejects unsupported math and oversized content', () => {
     const html=solutionImageHtml({...source,title:'<script>alert(1)</script>'},'');
     expect(html).not.toContain('<script>');
+    expect(html).toContain('AI 消息助手 / 解题步骤');
     expect(()=>validateSolutionImage({...source,steps:[]})).toThrow();
     expect(()=>validateSolutionImage({...source,title:'x'.repeat(61)})).toThrow();
     expect(()=>validateSolutionImage({...source,steps:[{...source.steps[0],formula:'\\unknownmacro{x}'},source.steps[1]]})).toThrow();

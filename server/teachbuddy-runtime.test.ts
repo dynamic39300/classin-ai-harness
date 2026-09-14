@@ -67,7 +67,10 @@ function fixture() {
       groups: [{ id: 'deepseek-official', name: 'DeepSeek', models: [
         { id: 'deepseek-v4-flash', name: 'DeepSeek-V4-Flash' },
         { id: 'deepseek-v4-flash-vision-exp', name: 'DeepSeek Vision' },
-      ] }, { id: 'company-gateway', name: 'Company gateway', models: [{ id: 'tokenhub/gemini-3.5-flash', name: 'Gemini' }] }], failures: [],
+      ] }, { id: 'company-gateway', name: 'Company gateway', models: [
+        { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
+        { id: 'tokenhub/gemini-3.5-flash', name: 'Gemini 3.5 Flash' },
+      ] }], failures: [],
     };
     if (method === 'session.selectModel') return { selected: { provider: payload.provider, model: payload.model } };
     if (method === 'session.prompt') {
@@ -130,7 +133,7 @@ describe('TeachBuddy runtime governance', () => {
     const f = fixture(); const session = await f.adapter.create('ideal-full');
     f.loseResponse();
     const first = await f.adapter.send('ideal-full', session.id, '编写教案', 'command-1');
-    expect(first.status).toBe('failed');
+    expect(first.status).toBe('running');
     const reconciled = await f.adapter.send('ideal-full', session.id, '编写教案', 'command-1');
     expect(reconciled.status).toBe('running');
     expect(f.calls.filter((call) => call.method === 'session.prompt')).toHaveLength(1);
@@ -168,7 +171,7 @@ describe('TeachBuddy runtime governance', () => {
     const data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZxQAAAABJRU5ErkJggg==';
     const image = { name: '../课堂板书.png', mediaType: 'image/png' as const, byteSize: Buffer.from(data, 'base64').length, data };
     await f.adapter.send('ideal-full', session.id, '', 'image-only', [image]);
-    expect(f.calls.find(({ method, payload }) => method === 'session.selectModel' && payload.provider === 'company-gateway')?.payload).toMatchObject({ provider: 'company-gateway', model: 'tokenhub/gemini-3.5-flash' });
+    expect(f.calls.find(({ method, payload }) => method === 'session.selectModel' && payload.provider === 'company-gateway')?.payload).toMatchObject({ provider: 'company-gateway', model: 'gemini-2.5-pro' });
     expect(f.calls.filter(({ method }) => method === 'session.selectModel').at(-1)?.payload).toMatchObject({ sessionId: expect.stringMatching(/^tb-model-default-restore-/), model: 'deepseek-v4-flash' });
     expect(f.calls.find(({ method }) => method === 'session.prompt')?.payload.content).toEqual([{ type: 'image', mediaType: 'image/png', data, name: '课堂板书.png' }]);
     expect((await f.adapter.read('ideal-full', session.id)).events).toContainEqual(expect.objectContaining({ kind: 'teacher_message', summary: '已附 1 张图片（课堂板书.png）' }));
@@ -184,11 +187,41 @@ describe('TeachBuddy runtime governance', () => {
     });
   });
 
+  it('returns a running snapshot after prompt admission starts instead of waiting for the model turn to finish', async () => {
+    const f = fixture();
+    const promptStarted = deferred<void>();
+    const promptFinished = deferred<void>();
+    const rpc = async (method: string, payload: Record<string, unknown>, rpcId?: string) => {
+      const result = await f.rpc(method, payload, rpcId);
+      if (method === 'session.prompt') {
+        promptStarted.resolve();
+        await promptFinished.promise;
+      }
+      return result;
+    };
+    const adapter = createTeachBuddyRuntime({ root: f.root, rpc });
+    const session = await adapter.create('ideal-full');
+    const sending = adapter.send('ideal-full', session.id, '识别图片并生成解析图', 'slow-model-turn');
+    await promptStarted.promise;
+    try {
+      const outcome = await Promise.race([
+        sending.then(() => 'returned'),
+        new Promise<'blocked'>((resolve) => setTimeout(() => resolve('blocked'), 25)),
+      ]);
+      expect(outcome).toBe('returned');
+      expect(await sending).toMatchObject({ status: 'running' });
+    } finally {
+      promptFinished.resolve();
+      await sending;
+    }
+  });
+
   it('maintains a lost prompt response after BFF restart and enforces its deadline without a browser', async () => {
     vi.useFakeTimers();
     const f = fixture(); const session = await f.adapter.create('ideal-full');
     f.loseResponse();
-    expect((await f.adapter.send('ideal-full', session.id, 'Run', 'lost')).status).toBe('failed');
+    expect((await f.adapter.send('ideal-full', session.id, 'Run', 'lost')).status).toBe('running');
+    await vi.advanceTimersByTimeAsync(0);
     const restarted = createTeachBuddyRuntime({ root: f.root, rpc: f.rpc });
     const stop = maintainRuntime(restarted);
     try {
@@ -249,7 +282,8 @@ describe('TeachBuddy runtime governance', () => {
     const rpc = (method: string, payload: Record<string, unknown>, rpcId?: string) => method === 'session.prompt'
       ? remote(method, payload, rpcId) : f.rpc(method, payload, rpcId);
     const adapter = createTeachBuddyRuntime({ root: f.root, rpc });
-    await expect(adapter.send('ideal-full', session.id, 'Keep this input', 'refused')).rejects.toMatchObject({ status: 409 });
+    expect((await adapter.send('ideal-full', session.id, 'Keep this input', 'refused')).status).toBe('running');
+    await vi.waitFor(async () => expect((await adapter.read('ideal-full', session.id)).status).toBe('failed'));
     const read = await adapter.read('ideal-full', session.id);
     expect(read.status).toBe('failed');
     expect(read.error).toContain('模型');

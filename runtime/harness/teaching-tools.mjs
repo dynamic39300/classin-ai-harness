@@ -193,7 +193,11 @@ export function createSolutionImageTool(runtimeRoot = RUNTIME_ROOT) {
     },
     async execute(args, exec) {
       const source = validateSolutionImage(args);
-      return draftTool.execute({ title: source.title, content: JSON.stringify(source), format: 'json', fileName: 'solution.solution.json' }, exec);
+      const content = JSON.stringify(source);
+      const contentId = `solution-${createHash('sha256').update(content).digest('hex').slice(0, 40)}`;
+      // Models can retry an already successful tool call with a new call id. Key solution
+      // images by canonical content so those retries remain one reviewable artifact.
+      return draftTool.execute({ title: source.title, content, format: 'json', fileName: 'solution.solution.json' }, { ...exec, callId: contentId });
     },
   };
 }

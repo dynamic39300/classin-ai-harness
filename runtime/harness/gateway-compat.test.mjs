@@ -36,7 +36,7 @@ test('HTTP stream bridge preserves signature across a tool result round trip and
   const bridge=await startGatewayCompat({baseURL:`http://127.0.0.1:${upstream.address().port}/v1`,apiKey:'fixture-key'});
   try{
     assert.equal((await fetch(bridge.baseURL+'/chat/completions',{method:'POST'})).status,403);
-    const request=async(messages)=>fetch(bridge.baseURL+'/chat/completions',{method:'POST',headers:{Authorization:'Bearer fixture-key','Content-Type':'application/json'},body:JSON.stringify({model:'tokenhub/gemini-3.5-flash',stream:true,messages})});
+    const request=async(messages)=>fetch(bridge.baseURL+'/chat/completions',{method:'POST',headers:{Authorization:'Bearer fixture-key','Content-Type':'application/json'},body:JSON.stringify({model:'gemini-2.5-pro',stream:true,messages})});
     const stream=await(await request([])).text();
     const delta=JSON.parse(stream.split('\n')[0].slice(6)).choices[0].delta;
     assert.equal(delta.reasoning_details[0].data,'opaque-original');
