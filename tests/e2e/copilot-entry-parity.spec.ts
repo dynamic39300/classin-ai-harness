@@ -6,6 +6,9 @@ async function expectPhysicsTeachingSuggestions(page: import('@playwright/test')
   await expect(sidecar.getByText('10 项建议', { exact: true })).toBeVisible();
   await expect(sidecar.getByRole('tab', { name: /课中.*建议 1 条/ })).toBeVisible();
   await expect(sidecar.getByRole('button', { name: /提醒上课：.*动量守恒模型/ })).toBeVisible();
+  await expect(sidecar.getByRole('button', { name: '添加图片' })).toBeVisible();
+  await expect(sidecar.getByRole('button', { name: '打开教学协作' })).toHaveCount(0);
+  await expect(sidecar.getByText(/可直接说你想提醒谁/)).toHaveCount(0);
 }
 
 test('teacher primary message entry and class chat open the same enriched Copilot scenario', async ({ page }) => {

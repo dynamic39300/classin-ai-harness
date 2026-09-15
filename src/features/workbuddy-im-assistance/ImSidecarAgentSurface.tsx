@@ -1,5 +1,5 @@
 import { isSolutionImage } from '@features/agent-runtime/solution-image';
-import { AlertTriangle, LoaderCircle, RefreshCw, Sparkles, Square } from 'lucide-react';
+import { AlertTriangle, LoaderCircle, RefreshCw, Square } from 'lucide-react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { BusinessContextSnapshot, ImSidecarAgentServices, LearningContextCatalog, LearningContextSelection, MessageDraftArtifact, PersonalizedLearningArtifact, SendMessageReceipt } from '@contracts/workbuddy/business-context';
 import type { WorkBuddyImTarget } from '@contracts/workbuddy/im-conversation-run';
@@ -586,7 +586,6 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         className={styles.runComposerDock}
         countThreshold={3_200}
         disabled={delivery.status === 'sending'}
-        hint={direct ? '可直接说你想如何回复或继续处理' : '可直接说你想提醒谁、说明什么'}
         imageAccept={RUNTIME_IMAGE_ACCEPT}
         imageAttachments={imageDrafts}
         imageError={imageError}
@@ -598,7 +597,6 @@ export function ImSidecarAgentSurface({ services, target, onLocateMessage, onIns
         placeholder={direct ? '例如：结合当前对话，帮我拟一条专业回复…' : `告诉 ${TEACHBUDDY_IM_ASSISTANT_LABEL}你想完成什么…`}
         submitLabel={`发送给 ${TEACHBUDDY_IM_ASSISTANT_LABEL}`}
         canSubmit={canSend}
-        tools={<button type="button" aria-label="打开教学协作" title="教学协作" onClick={() => { setPresentation((current) => ({ ...current, expanded: true })); setDynamicsUpdated(false); }}><Sparkles aria-hidden="true" size={17} /><span>教学协作</span></button>}
         secondaryActions={canStop && sessionRef ? <button type="button" aria-label="停止生成" title="停止生成" disabled={stopping} onClick={() => void runtime.execute(sessionRef, { kind: 'cancel' })}><Square aria-hidden="true" size={14} />停止</button> : undefined}
         value={composerDraft}
       />

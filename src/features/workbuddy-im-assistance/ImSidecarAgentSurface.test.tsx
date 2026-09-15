@@ -125,6 +125,8 @@ describe('ImSidecarAgentSurface', () => {
     expect(within(guide).getByRole('button', { name: '收起 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'true');
     const composer = within(sidecar).getByRole('textbox', { name: '向 AI 消息助手输入要求' });
     expect(within(sidecar).getByRole('button', { name: '添加图片' })).toBeVisible();
+    expect(within(sidecar).queryByRole('button', { name: '打开教学协作' })).not.toBeInTheDocument();
+    expect(within(sidecar).queryByText(/可直接说你想提醒谁/)).not.toBeInTheDocument();
     await user.type(composer, '拟一条实验提醒');
     await user.click(within(sidecar).getByRole('button', { name: '发送给 AI 消息助手' }));
     expect(await within(sidecar).findByText('拟一条实验提醒')).toBeInTheDocument();

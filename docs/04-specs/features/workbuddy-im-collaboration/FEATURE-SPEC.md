@@ -420,6 +420,7 @@ interface TeachingDynamicsAdapter {
 - `TeachingDynamicsModule` 的当前选中阶段由 Feature 层按 Thread 保存；展开/紧凑只维持在当前已打开的 Sidecar 中，每次进入聊天重新默认展开。这些本地呈现状态不进入 Snapshot、Run、Artifact 或 Message Domain；新业务快照替换时保持当前呈现状态，不触发强制展开。紧凑态继续显示同一条功能引导文案，事项摘要固定放在名称旁。
 - 正常连接不形成常驻状态条。加载、离线、权限或读取失败只在受影响位置投影恢复信息；外层已明确聊天对象时不重复显示当前上下文。
 - AI 补问、生成、修改、审阅和发送继续由既有 Runtime、Artifact 与 Message Draft Interface 承载。Teaching Dynamics 不监听或改写这些状态；导航只响应老师手动点击右上角图标，任何方向的对话滚动和输入框内部滚动都不改变展开状态。
+- Sidecar 输入区底部只保留有实际动作的图片入口，以及运行期间的停止和发送命令。能力发现统一由顶部教学阶段导航承载；输入框 Placeholder 已说明自由输入用途，因此不再重复显示`教学协作`入口或`可直接说…`通用提示。
 - 收起内容保留在 DOM 中，通过 320ms 高度、透明度和轻微位移过渡；Reduced Motion 下取消动画。Runtime 事件只有在老师原本位于时间线底部时才跟随滚动，新提交教师要求时恢复跟随。
 - 当前 Thread 只暴露一条连续逻辑对话。页面不提供新建 Session、Session 列表、独立历史页或完整工作台继续入口；内部 Runtime Session 轮换通过 Binding Trail 聚合为一条可上滑历史，stale 404 Binding 会透明创建替代 Session。停止当前生成后允许再次提交；停止失败则继续锁定发送并允许重试停止。
 - UI 使用现有 Surface、排版、间距、颜色、Focus Ring、Motion 与 384px Sidecar 响应式 Token。阶段导航使用语义 Tab，装饰连接线不进入辅助技术树；展开控件提供`aria-expanded`且与右侧边缘保留 Token 间距。
@@ -437,6 +438,7 @@ interface TeachingDynamicsAdapter {
 - [ ] 教学动态紧凑时替换业务快照只更新摘要和必要提示，不自动展开、不抢焦点、不移动对话滚动位置。
 - [ ] 正常态和读取失败态均不显示新建 Session；不显示 Session 历史或跳转完整工作台入口。内部 Session 轮换前后的事件通过 Binding Trail 聚合为一条可上滑历史，stale 404 Binding 自动建立替代 Session。
 - [ ] 运行中可在 Composer 内停止；停止后 Composer 恢复可用，下一条教师要求沿用当前 Thread 的同一逻辑对话。停止失败时 Composer 保持发送锁定并允许重试停止。
+- [ ] Sidecar Composer 底部只显示当前可执行的图片、停止和发送操作，不显示无具体业务内容的`教学协作`入口或`可直接说…`提示。
 - [ ] 教学计划任务依次展示班级定位、计划读取、准备事项提炼和通知生成四步 Run，并生成包含本周课次与准备事项的一条可编辑群通知。
 - [ ] 教学计划通知未经教师确认不进入群聊；确认后只新增一条教师身份消息，并显示模拟执行回执。
 - [ ] 教师可以删除一个学生或作业分组；正文、草稿版本和 ProposedAction 同步更新。
