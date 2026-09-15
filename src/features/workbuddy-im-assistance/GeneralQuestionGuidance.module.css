@@ -1,0 +1,29 @@
+.welcome { padding: var(--space-md) 0; color: var(--color-ink-secondary); }
+.welcome p { margin: 0 0 var(--space-sm); font-size: var(--text-sm); line-height: 1.6; }
+.welcome small, .help small { color: var(--color-ink-muted); font-size: var(--text-xs); }
+.questions { list-style: none; margin: var(--space-xs) 0 0; padding: 0; }
+.questions button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: var(--space-sm); min-height: 2.5rem; padding: var(--space-sm); border: 0; border-radius: var(--radius-control); background: transparent; color: var(--color-ink-secondary); text-align: left; font: inherit; font-size: var(--text-sm); line-height: 1.5; cursor: pointer; }
+.questions button span { overflow-wrap: anywhere; }
+.questions button svg { flex-shrink: 0; }
+.questions button:hover, .helpTrigger:hover, .help header button:hover { background: var(--color-surface-muted); color: var(--color-ink); }
+.questions button:disabled { opacity: .55; cursor: default; }
+.questions button:focus-visible, .helpTrigger:focus-visible, .help header button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+.helpDock { position: relative; min-width: 0; padding: 0 var(--space-md); display: flex; justify-content: flex-end; background: var(--color-surface); z-index: 2; }
+.helpTrigger { min-height: 2rem; display: inline-flex; align-items: center; gap: var(--space-xs); border: 0; background: transparent; color: var(--color-ink-muted); font: inherit; font-size: var(--text-xs); cursor: pointer; border-radius: var(--radius-control); }
+.help { position: absolute; bottom: calc(100% + var(--space-xs)); inset-inline: var(--space-md); display: flex; flex-direction: column; overflow: hidden; border: var(--rule-thin) solid var(--color-line-subtle); border-radius: var(--radius-overlay); background: var(--color-surface); box-shadow: var(--shadow-overlay); animation: help-in 160ms ease-out; }
+.help header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); padding: var(--space-sm) var(--space-md) var(--space-xs); }
+.help header strong { font-size: var(--text-sm); }
+.help header button { width: 2rem; min-height: 2rem; flex-shrink: 0; display: grid; place-items: center; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--color-ink-secondary); cursor: pointer; }
+.groupRail { display: flex; gap: var(--space-xs); padding: var(--space-xs) var(--space-md) var(--space-sm); overflow-x: auto; scrollbar-width: none; }
+.groupRail::-webkit-scrollbar { display: none; }
+.groupRail button { flex: 1 0 3.25rem; min-width: 3.25rem; display: grid; justify-items: center; gap: var(--space-3xs); padding: var(--space-3xs); border: 0; border-radius: var(--radius-object); background: transparent; color: var(--color-ink-muted); font: inherit; cursor: pointer; }
+.groupRail button > span { width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: var(--radius-object); background: var(--color-surface-muted); color: var(--color-ink-secondary); }
+.groupRail button small { white-space: nowrap; font-size: .6875rem; }
+.groupRail button:hover { background: var(--color-surface-hover); color: var(--color-ink); }
+.groupRail button[aria-pressed='true'] { color: var(--color-action-strong); font-weight: var(--font-weight-semibold); }
+.groupRail button[aria-pressed='true'] > span { background: var(--color-brand-soft); color: var(--color-action-strong); }
+.groupRail button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+.helpScroll { overflow-y: auto; overscroll-behavior: contain; min-height: 0; padding: var(--space-xs) var(--space-sm) var(--space-sm); border-top: var(--rule-thin) solid var(--color-line-faint); }
+.empty { font-size: var(--text-sm); padding: var(--space-sm); color: var(--color-ink-muted); }
+@keyframes help-in { from { opacity: 0; transform: translateY(.375rem); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .help { animation: none; } }

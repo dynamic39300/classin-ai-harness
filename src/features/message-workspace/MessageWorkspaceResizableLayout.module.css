@@ -111,3 +111,8 @@
     transition: none;
   }
 }
+
+@media (max-width: 74rem) {
+  /* Block fallback still owns a viewport-sized timeline; focusing a message must not scroll the tray offscreen. */
+  .layout[data-assistant-open='true'] .communicationSurface { height: 100%; }
+}

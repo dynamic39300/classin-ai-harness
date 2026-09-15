@@ -4,30 +4,46 @@
   overflow: clip;
   border: 0;
   border-radius: 0;
-  background: var(--color-surface-muted);
+  background: var(--color-assistant-guide-surface);
   box-shadow: none;
   transition: background-color var(--message-shell-transition-duration, 320ms) var(--ease-out);
 }
 
-.module[data-expanded='false'] { background: var(--color-surface-muted); }
+.module[data-expanded='false'] { background: var(--color-assistant-guide-surface); }
 
 .moduleHeader {
   display: flex;
   min-width: 0;
+  align-items: center;
+}
+
+.moduleToggle {
+  display: flex;
+  width: 100%;
+  min-width: 0;
   min-height: 4.5rem;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-xs);
   padding: var(--space-sm) var(--space-md);
+  border: 0;
   background: transparent;
+  color: var(--color-ink-secondary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   transition: min-height var(--message-shell-transition-duration, 320ms) var(--ease-out), padding var(--message-shell-transition-duration, 320ms) var(--ease-out), background-color var(--message-shell-transition-duration, 320ms) var(--ease-out);
 }
 
-.module[data-expanded='false'] .moduleHeader {
+.module[data-expanded='false'] .moduleToggle {
   min-height: 3.5rem;
   padding-block: var(--space-xs);
-  background: var(--color-surface-muted);
 }
+
+.moduleToggle:hover { background: color-mix(in srgb, var(--color-info-soft) 35%, var(--color-assistant-guide-surface)); }
+.moduleToggle:active { background: color-mix(in srgb, var(--color-info-soft) 65%, var(--color-assistant-guide-surface)); }
+.moduleToggle:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
 
 .assistantIdentity {
   display: flex;
@@ -57,12 +73,12 @@
 }
 
 .identityLine span,
-.assistantCopy p {
+.assistantHint {
   color: var(--color-ink-muted);
   font-size: var(--text-xs);
 }
 
-.assistantCopy p {
+.assistantHint {
   display: -webkit-box;
   margin: 0;
   overflow: hidden;
@@ -79,25 +95,16 @@
   gap: var(--space-2xs);
 }
 
-.moduleToggle {
+.toggleIcon {
   display: inline-grid;
   width: 2rem;
   height: 2rem;
   flex: 0 0 auto;
   place-items: center;
-  padding: 0;
-  border-radius: var(--radius-control);
-  background: transparent;
-  color: var(--color-ink-secondary);
-  cursor: pointer;
-  font-size: var(--text-xs);
-  white-space: nowrap;
 }
 
-.moduleToggle:hover { background: var(--color-surface-hover); }
-.moduleToggle:active { background: var(--color-surface-selected); }
-
 .closeButton {
+  margin-right: var(--space-md);
   display: inline-grid;
   width: 2rem;
   height: 2rem;

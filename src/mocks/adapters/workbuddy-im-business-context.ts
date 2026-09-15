@@ -1,3 +1,7 @@
+import type { ImChatReadResult } from '@contracts/workbuddy/im-chat-context';
+import { selectImChatContext } from '@domain/workbuddy/im-chat-context';
+import { GENERAL_QUESTION_TEXT } from '@domain/workbuddy/general-question-guidance';
+import { PHYSICS_GENERAL_QUESTIONS } from '@mocks/scenarios/workbuddy-im-general-questions';
 import type { BusinessContextAdapter, BusinessContextRequest, BusinessContextSnapshot } from '@contracts/workbuddy/business-context';
 import { validateLearningSelectionAgainstCatalog } from '@domain/workbuddy/personalized-learning-service';
 import { DW_DERIVED_IM_LEARNING_CATALOG, learningEvidence, WORKBUDDY_IM_LEARNING_CATALOG } from '@mocks/scenarios/workbuddy-im-learning-evidence';
@@ -33,7 +37,7 @@ function stableVersion(value: string) {
 }
 
 export class FixedWorkBuddyImBusinessContextAdapter implements BusinessContextAdapter {
-  constructor(private readonly now: () => Date) {}
+  constructor(private readonly now: () => Date, private readonly readChat?: (request: BusinessContextRequest) => Promise<ImChatReadResult>) {}
 
   async capture(request: BusinessContextRequest): Promise<BusinessContextSnapshot> {
     const capturedAt = this.now().toISOString();
@@ -42,12 +46,15 @@ export class FixedWorkBuddyImBusinessContextAdapter implements BusinessContextAd
       .filter((message) => message.authorRole === 'teacher' || message.authorRole === 'student-family' || message.authorRole === 'class-agent')
       .slice(-6)
       .map(({ authorRole, authorName, body }) => ({ authorRole: authorRole as 'teacher' | 'student-family' | 'class-agent', authorName, body }));
+    const chatRead = this.readChat ? await this.readChat(request) : null;
+    if (chatRead && chatRead.threadRef !== request.target.threadId) throw new Error('群消息与当前班级不匹配');
+    const chatContext = chatRead ? selectImChatContext(chatRead, request.query, request.referencedMessageId) : undefined;
     const physics = isPhysicsTarget(request);
     const version = stableVersion(JSON.stringify({
       threadRef: request.target.threadId,
       classLabel: request.target.classLabel,
       memberCount: request.target.memberCount,
-      messages,
+      messages: chatRead?.messages ?? messages,
       physicsContextVersion: physics ? PHYSICS_IM_TEACHING_CONTEXT.version : null,
     }));
     const dwDerived = isDwDerivedTarget(request);
@@ -88,7 +95,7 @@ export class FixedWorkBuddyImBusinessContextAdapter implements BusinessContextAd
       items: Object.freeze([
         Object.freeze({ key: 'conversation-label', label: channel === 'class' ? '当前班级' : '当前私聊', value: request.target.classLabel, sourceRef, sensitivity: 'standard' as const }),
         ...(request.target.memberCount === undefined ? [] : [Object.freeze({ key: 'member-count', label: '成员数', value: String(request.target.memberCount), sourceRef, sensitivity: 'standard' as const })]),
-        ...(physics ? physicsImTeachingContextItems(physicsContextSourceRef, request.focusRefs, request.query) : []),
+        ...(physics ? physicsImTeachingContextItems(physicsContextSourceRef, request.focusRefs, [request.query, chatContext?.messages.find(message => message.id === request.referencedMessageId)?.body].filter(Boolean).join(' ')) : []),
         ...(dwDerived ? [
           Object.freeze({ key: 'data-window', label: '数据窗口', value: privateContext?.dataWindow ?? (channel === 'class' ? '2026-09-01—2026-09-07（T-1）' : '2026-08-09—2026-09-07（T-1）'), sourceRef, sensitivity: 'standard' as const }),
           Object.freeze({ key: 'privacy-transform', label: '隐私处理', value: privateContext ? '消息原文仅存在本机私有快照；数据库标识已删除，发言者使用本机会话别名。' : '真实行级消息经过去标识化和业务事实压缩；原始姓名、UID、群ID与原文不进入 Demo。', sourceRef, sensitivity: 'standard' as const }),
@@ -100,6 +107,7 @@ export class FixedWorkBuddyImBusinessContextAdapter implements BusinessContextAd
           ] : []),
         ] : []),
       ]),
+      chatContext,
       recentMessages: Object.freeze(messages.map((message) => Object.freeze(message))),
       excludedSensitiveCount: (request.target.recentMessages?.length ?? 0) - messages.length,
       truthLabel: dwDerived ? 'read-only-business-data' : 'fixed-demo',
@@ -115,6 +123,18 @@ export class FixedWorkBuddyImBusinessContextAdapter implements BusinessContextAd
     const supported = request.target.kind === 'direct' ? Boolean(directStudent) : supportedClassIds.has(request.target.classId);
     return Object.freeze({
       ...sourceCatalog,
+      questionGuidance: request.target.kind === 'direct' ? undefined : {
+        questions: [
+          ...(isPhysicsTarget(request) ? PHYSICS_GENERAL_QUESTIONS.questions : []),
+          ...(this.readChat ? [
+            ...(isPhysicsTarget(request) && /动量守恒.*(?:第二题|第2题|第5题|第五题)/u.test((request.target.aiReference?.preview ?? '').replace(/\s/g, '')) ? [{ id: 'F2' as const, text: `帮我讲解${request.target.aiReference?.authorName ?? '同学'}问的这道动量守恒作业题`, contextRefs: ['homework-momentum-a'] }] : []),
+            { id: 'F1' as const, text: GENERAL_QUESTION_TEXT.F1, contextRefs: [] },
+            { id: 'F3' as const, text: GENERAL_QUESTION_TEXT.F3, contextRefs: [] },
+          ] : []),
+        ],
+        initialQuestionIds: isPhysicsTarget(request) ? PHYSICS_GENERAL_QUESTIONS.initialQuestionIds : this.readChat ? ['F1' as const] : [],
+      },
+      mentionLabels: Object.freeze(!supported ? [] : directStudent ? [directStudent.label] : sourceCatalog.mentionLabels ?? sourceCatalog.students.filter(({ isAggregate }) => !isAggregate).map(({ label }) => label)),
       students: supported ? (directStudent ? Object.freeze([directStudent]) : sourceCatalog.students) : Object.freeze([]),
       lessons: supported ? sourceCatalog.lessons : Object.freeze([]),
       assignments: supported ? sourceCatalog.assignments : Object.freeze([]),

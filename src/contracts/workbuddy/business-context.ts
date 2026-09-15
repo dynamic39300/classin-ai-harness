@@ -1,3 +1,5 @@
+import type { ImChatContext } from './im-chat-context';
+import type { GeneralQuestionAvailability } from './general-question-guidance';
 import type { AgentRuntimeAdapter, RuntimeScope } from './agent-runtime';
 import type { WorkBuddyImTarget } from './im-conversation-run';
 import type { TeachingDynamicsAdapter } from './teaching-dynamics';
@@ -17,6 +19,9 @@ export type LearningContextOption = Readonly<{
 }>;
 
 export type LearningContextCatalog = Readonly<{
+  questionGuidance?: GeneralQuestionAvailability;
+  /** Authorized mention display names for this conversation, independent of selectable learning evidence. */
+  mentionLabels?: readonly string[];
   students: readonly LearningContextOption[];
   lessons: readonly LearningContextOption[];
   assignments: readonly LearningContextOption[];
@@ -66,6 +71,7 @@ export type BusinessContextSnapshot = Readonly<{
   use: BusinessContextUse;
   sources: readonly BusinessContextSource[];
   items: readonly BusinessContextItem[];
+  chatContext?: ImChatContext;
   recentMessages: readonly Readonly<{
     authorRole: 'teacher' | 'student-family' | 'class-agent';
     authorName: string;
@@ -82,6 +88,7 @@ export type BusinessContextRequest = Readonly<{
   use: BusinessContextUse;
   /** Stable business objects selected by the initiating teaching suggestion. */
   focusRefs?: readonly string[];
+  referencedMessageId?: string;
   /** Teacher wording used by a fixed or production Adapter to retrieve relevant evidence. */
   query?: string;
 }>;

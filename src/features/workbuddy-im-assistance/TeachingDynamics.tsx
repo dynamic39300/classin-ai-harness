@@ -102,31 +102,33 @@ export function TeachingDynamics({
       data-expanded={expanded ? 'true' : 'false'}
     >
       <header className={styles.moduleHeader}>
-        <div className={styles.assistantIdentity}>
-          <TeachBuddyAvatar size="compact" />
-          <div className={styles.assistantCopy}>
-            <div className={styles.identityLine}>
-              <strong>{TEACHBUDDY_IM_ASSISTANT_LABEL}</strong>
-              <span>{compactSummary}</span>
-            </div>
-            <p>选环节，点一条建议，AI写消息草稿，您确认后发送</p>
-          </div>
-        </div>
-        <div className={styles.moduleActions}>
-          {updatedWhileCompact && !expanded ? <span className={styles.updateHint}>有更新</span> : null}
-          <button
-            className={styles.moduleToggle}
-            type="button"
-            aria-expanded={expanded}
-            aria-controls="teaching-dynamics-content"
-            aria-label={expanded ? `收起 ${TEACHBUDDY_IM_ASSISTANT_LABEL}建议` : `展开 ${TEACHBUDDY_IM_ASSISTANT_LABEL}建议`}
-            onClick={() => onExpandedChange(!expanded)}
-            ref={toggleRef}
-          >
-            {expanded ? <ChevronUp aria-hidden="true" size={15} /> : <ChevronDown aria-hidden="true" size={15} />}
-          </button>
-          {onClose ? <button className={styles.closeButton} type="button" aria-label={`关闭 ${TEACHBUDDY_IM_ASSISTANT_LABEL}`} onClick={onClose}><X aria-hidden="true" size={16} /></button> : null}
-        </div>
+        <button
+          className={styles.moduleToggle}
+          type="button"
+          aria-expanded={expanded}
+          aria-controls="teaching-dynamics-content"
+          aria-label={expanded ? `收起 ${TEACHBUDDY_IM_ASSISTANT_LABEL}建议` : `展开 ${TEACHBUDDY_IM_ASSISTANT_LABEL}建议`}
+          onClick={() => onExpandedChange(!expanded)}
+          ref={toggleRef}
+        >
+          <span className={styles.assistantIdentity}>
+            <TeachBuddyAvatar size="compact" />
+            <span className={styles.assistantCopy}>
+              <span className={styles.identityLine}>
+                <strong>{TEACHBUDDY_IM_ASSISTANT_LABEL}</strong>
+                <span>{compactSummary}</span>
+              </span>
+              <span className={styles.assistantHint}>选环节，点一条建议，AI写消息草稿，您确认后发送</span>
+            </span>
+          </span>
+          <span className={styles.moduleActions}>
+            {updatedWhileCompact && !expanded ? <span className={styles.updateHint}>有更新</span> : null}
+            <span className={styles.toggleIcon}>
+              {expanded ? <ChevronUp aria-hidden="true" size={15} /> : <ChevronDown aria-hidden="true" size={15} />}
+            </span>
+          </span>
+        </button>
+        {onClose ? <button className={styles.closeButton} type="button" aria-label={`关闭 ${TEACHBUDDY_IM_ASSISTANT_LABEL}`} onClick={onClose}><X aria-hidden="true" size={16} /></button> : null}
       </header>
 
       <div

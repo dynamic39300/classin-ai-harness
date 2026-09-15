@@ -238,3 +238,17 @@ to `gemini-2.5-pro` and pins new text sessions to DeepSeek Flash. Configure both
 environment values before launch; no browser credential or model picker is needed.
 The 32768/4096 token settings are conservative deployment budgets, not measured
 provider limits. See `docs/05-engineering/acceptance/GEMINI-VISION-2026-09-10.md`.
+
+## Launcher and model-route recovery (2026-09-15)
+
+The launcher now starts its detached Harness tree through
+`scripts/harness-process.mjs`. Keep this file alongside `start-harness.mjs` in
+all deployment bundles. The wrapper watches launcher IPC: losing the owner of
+the loopback model bridge terminates the runtime descendants, rather than
+leaving an apparently healthy host with a dead model route. Start the complete
+launcher with `npm run dev` or the existing online startup script; do not retain
+an orphaned npx host as a substitute for the launcher.
+
+Transport errors are projected safely and separately from exhausted model
+context. The latter uses the existing next-submit recovery path while preserving
+visible IM history. See [incident evidence and limits](../../docs/05-engineering/acceptance/IM-GENERATION-RECOVERY-2026-09-15.md).

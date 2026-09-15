@@ -157,12 +157,14 @@ test('IM Sidecar resumes text in a clean session after the vision credential gat
   expect(String(messageBodies[1]?.text)).toContain('先继续处理纯文本内容');
   expect(calls.filter((call) => call === 'POST /api/teachbuddy/sessions')).toHaveLength(2);
   expect(calls).toContain('POST /api/teachbuddy/sessions/im-learning-session-2/messages');
+  await sidecar.getByRole('button', { name: '查看历史消息' }).click();
   await expect(sidecar.getByText(/当前模型凭据未开通图片理解/).first()).toBeVisible();
   await expect(sidecar.getByText('先继续处理纯文本内容', { exact: true })).toBeVisible();
   await expect(sidecar.getByText(/课堂回顾建议/).first()).toBeVisible();
 
   await page.reload();
   sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  await sidecar.getByRole('button', { name: '查看历史消息' }).click();
   await expect(sidecar.getByText(/当前模型凭据未开通图片理解/).first()).toBeVisible();
   await expect(sidecar.getByText('先继续处理纯文本内容', { exact: true })).toBeVisible();
   await expect(sidecar.getByText(/课堂回顾建议/).first()).toBeVisible();
@@ -221,7 +223,7 @@ test('IM Sidecar transparently replaces a stale binding without exposing session
   expect(calls).toContain('POST /api/teachbuddy/sessions/im-learning-session-1/messages');
 });
 
-test('demo reset URL starts with an empty AI conversation after every page refresh', async ({ page }) => {
+test('legacy demo reset URL now hides history without resetting the AI session', async ({ page }) => {
   const priorSession: RuntimeSession = {
     id: 'demo-history-session',
     title: '历史演示消息',
@@ -253,10 +255,13 @@ test('demo reset URL starts with an empty AI conversation after every page refre
   await composer.fill('生成一条消息，提醒大家明天上课');
   await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
   await expect(sidecar.getByText('生成一条消息，提醒大家明天上课', { exact: true })).toBeVisible();
-  expect(calls.filter((call) => call === 'POST /api/teachbuddy/sessions')).toHaveLength(1);
+  expect(calls.filter((call) => call === 'POST /api/teachbuddy/sessions')).toHaveLength(0);
+  expect(calls).toContain('POST /api/teachbuddy/sessions/demo-history-session/messages');
 
   await page.reload();
   await expect(sidecar.getByText('生成一条消息，提醒大家明天上课', { exact: true })).toHaveCount(0);
+  await sidecar.getByRole('button', { name: '查看历史消息' }).click();
+  await expect(sidecar.getByText('生成一条消息，提醒大家明天上课', { exact: true })).toBeVisible();
 });
 
 test('a failed stale-binding replacement preserves earlier readable history', async ({ page }) => {
@@ -284,6 +289,7 @@ test('a failed stale-binding replacement preserves earlier readable history', as
   await enterTeacherMessages(page, 'class-physics-3');
 
   const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  await sidecar.getByRole('button', { name: '查看历史消息' }).click();
   await expect(sidecar.getByText('之前整理的课堂提醒仍然保留。', { exact: true })).toBeVisible();
   const composer = sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' });
   await expect(composer).toBeEnabled();
@@ -333,8 +339,9 @@ test('review edits the current AI reply instead of an artifact left by an earlie
   await enterTeacherMessages(page, 'class-physics-3');
 
   const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+  await sidecar.getByRole('button', { name: '查看历史消息' }).click();
   await expect(sidecar.getByText(/@李明 第5题先约定向右为正/)).toBeVisible();
-  await sidecar.getByRole('button', { name: '审阅并发送' }).click();
+  await sidecar.getByRole('button', { name: '修改文案' }).click();
 
   const editor = sidecar.getByRole('textbox', { name: '消息草稿正文' });
   await expect(editor).toHaveValue('@李明 第5题先约定向右为正，再带着正负号代入动量守恒方程。');
@@ -368,7 +375,7 @@ test('Teaching Dynamics starts an AI task when randomUUID is unavailable on an H
   await expect.poll(() => messageBodies.length).toBe(1);
   expect(messageBodies[0]?.commandId).toEqual(expect.any(String));
   await expect(sidecar.getByText('请为明天 19:00 的电磁感应课生成一条群提醒，提醒同学们准时进入课堂，并准备好讲义和预习单。', { exact: true })).toBeVisible();
-  await expect(sidecar.getByText(/课堂回顾建议/).first()).toBeVisible();
+  await expect(sidecar.getByText('消息草稿', { exact: true })).toBeVisible();
 });
 
 test('teacher starts a governed recap from Teaching Dynamics without a configuration page', async ({ page }) => {
@@ -400,10 +407,10 @@ test('teacher starts a governed recap from Teaching Dynamics without a configura
   await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' })).not.toContainText('请执行“个人学情总结”');
   await expect(sidecar.getByRole('list', { name: 'AI 消息助手会话消息' })).not.toContainText('TEACHBUDDY_MESSAGE_BODY_START');
   await expect(sidecar.getByText(/介质不变，所以波速不变/)).toBeVisible();
-  await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
+  await expect(sidecar.getByText('消息草稿', { exact: true })).toBeVisible();
   await expect(sidecar.getByRole('article', { name: '你的消息' })).toBeVisible();
   await expect(sidecar.getByText('您', { exact: true })).toHaveCount(0);
-  await expect(sidecar.getByRole('table')).toContainText('巩固练习');
+  await expect(sidecar.getByRole('table')).toHaveCount(0);
   await expect(sidecar).not.toContainText('| --- | --- |');
   const analysis = sidecar.getByRole('region', { name: 'AI 消息助手 分析过程' });
   await expect(analysis).not.toContainText('个步骤');
@@ -411,7 +418,7 @@ test('teacher starts a governed recap from Teaching Dynamics without a configura
   await expect(analysisToggle).toHaveAttribute('aria-expanded', 'false');
   await analysisToggle.click();
   await expect(analysis.getByText('已核对当前会话上下文', { exact: true })).toHaveCount(0);
-  await sidecar.getByRole('button', { name: '审阅并发送' }).click();
+  await sidecar.getByRole('button', { name: '修改文案' }).click();
   const artifact = sidecar.getByRole('region', { name: '个性化沟通草稿' });
   await expect(artifact).toContainText('接收对象李明');
   await expect(artifact).toContainText('学生私聊 · 插入输入框');
@@ -419,8 +426,8 @@ test('teacher starts a governed recap from Teaching Dynamics without a configura
   await expect(artifact.getByRole('textbox', { name: '消息草稿正文' })).toHaveValue('李明你好！机械波课堂要先明确“介质不变，所以波速不变”，再用 v=fλ 判断频率和波长。');
   await artifact.getByRole('button', { name: '取消' }).click();
   await expect(artifact).toHaveCount(0);
-  await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
-  await sidecar.getByRole('button', { name: '审阅并发送' }).click();
+  await expect(sidecar.getByText('消息草稿', { exact: true })).toBeVisible();
+  await sidecar.getByRole('button', { name: '修改文案' }).click();
   await expect(artifact).toBeVisible();
   await artifact.getByRole('button', { name: '转到李明私聊并插入' }).click();
 
@@ -429,7 +436,7 @@ test('teacher starts a governed recap from Teaching Dynamics without a configura
   expect(calls.some((call) => call.endsWith('/messages'))).toBe(true);
 });
 
-test('AI message helper stays expanded while scrolling and collapses only from its icon', async ({ page }) => {
+test('AI message helper stays expanded while scrolling and toggles from its full header', async ({ page }, testInfo) => {
   await mockRuntime(page);
   await page.setViewportSize({ width: 1440, height: 900 });
   await enterTeacherMessages(page, 'class-physics-3');
@@ -463,7 +470,8 @@ test('AI message helper stays expanded while scrolling and collapses only from i
   });
   expect(surfaces.sidecar).toEqual({ borderWidth: '0px', boxShadow: 'none', margin: '0px' });
   expect(surfaces.guide).toMatchObject({ position: 'relative', borderWidth: '0px', boxShadow: 'none' });
-  expect(surfaces.guide?.backgroundColor).toBe('rgb(244, 244, 244)');
+  expect(surfaces.guide?.backgroundColor).toBe('rgb(242, 247, 252)');
+  await page.screenshot({ path: testInfo.outputPath('guide-expanded.png') });
   expect(surfaces.guide?.backgroundColor).not.toBe(surfaces.conversationBackground);
   const motion = await content.evaluate((element) => {
     const style = getComputedStyle(element);
@@ -473,7 +481,7 @@ test('AI message helper stays expanded while scrolling and collapses only from i
   expect(motion.property).toContain('opacity');
   expect(motion.property).toContain('transform');
   expect(motion.duration).toContain('0.32s');
-  await expect(collapse).toHaveText('');
+  await expect(collapse).toContainText('AI 消息助手');
   await content.evaluate((element) => {
     element.setAttribute('data-observed-transitions', '[]');
     element.addEventListener('transitionend', (event) => {
@@ -488,18 +496,21 @@ test('AI message helper stays expanded while scrolling and collapses only from i
   await conversation.hover();
   await page.mouse.wheel(0, 240);
   await expect(collapse).toHaveAttribute('aria-expanded', 'true');
-  await collapse.click();
+  await guide.getByText('AI 消息助手', { exact: true }).click();
   const expand = guide.getByRole('button', { name: '展开 AI 消息助手建议' });
   await expect(expand).toHaveAttribute('aria-expanded', 'false');
   await expect(guide.getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
   await expect(content).toHaveCSS('visibility', 'hidden');
+  await expect(guide).toHaveCSS('background-color', 'rgb(242, 247, 252)');
+  await page.screenshot({ path: testInfo.outputPath('guide-collapsed.png') });
   const transitionEvents = await content.evaluate((element) => JSON.parse(element.getAttribute('data-observed-transitions') ?? '[]') as { property: string; elapsedTime: number }[]);
   for (const property of ['grid-template-rows', 'opacity', 'transform']) {
     const transition = transitionEvents.find((entry) => entry.property === property);
     expect(transition, `${property} transition should finish`).toBeDefined();
     expect(transition?.elapsedTime).toBeCloseTo(0.32, 2);
   }
-  await expand.click();
+  await expand.focus();
+  await page.keyboard.press('Enter');
   await expect(guide.getByRole('tablist', { name: '教学阶段' })).toBeVisible();
 });
 
@@ -521,8 +532,8 @@ test('DW-derived class context creates a private learning summary for its mapped
   await sidecar.getByRole('tab', { name: /总结/ }).click();
   await sidecar.getByRole('button', { name: /生成总结：/ }).click();
   await expect(sidecar.getByRole('combobox')).toHaveCount(0);
-  await expect(sidecar.getByText('林悦的个人学情总结文稿已生成，请教师审阅。')).toBeVisible();
-  await sidecar.getByRole('button', { name: '审阅并发送' }).click();
+  await expect(sidecar.getByText(/林悦你好！近一个月/)).toBeVisible();
+  await sidecar.getByRole('button', { name: '修改文案' }).click();
   const artifact = sidecar.getByRole('region', { name: '个性化沟通草稿' });
   await expect(artifact).toContainText('接收对象林悦');
   await expect(artifact).not.toContainText('使用依据');
@@ -540,11 +551,103 @@ test('rich Agent response stays contained in the compact Sidecar', async ({ page
   const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
   await sidecar.getByRole('tab', { name: /总结/ }).click();
   await sidecar.getByRole('button', { name: /个人总结：李明/ }).click();
-  await expect(sidecar.getByRole('heading', { name: '课堂回顾建议', level: 2 })).toBeVisible();
-  await expect(sidecar.getByRole('table')).toBeVisible();
+  await expect(sidecar.getByText('消息草稿', { exact: true })).toBeVisible();
+  await expect(sidecar.getByRole('table')).toHaveCount(0);
   await expect(sidecar.getByRole('region', { name: 'AI 消息助手 分析过程' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   const box = await sidecar.boundingBox();
   expect(box).not.toBeNull();
   expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(901);
 });
+
+for (const entry of ['messages', 'class-chat'] as const) {
+  test(`structured draft can be sent directly from ${entry}`, async ({ page }, testInfo) => {
+    const body = '@所有人 以下是当前学习进度\n\n当前进度\n\n- 已完成 8 讲\n- 动量守恒：碰撞模型\n\n接下来安排： • 8 月 10 日 19:00：电磁感应导入 • 8 月 12 日 19:00：楞次定律\n\n@李明、@周然 @陈晨 @王小明 @张然 @赵可 请带好讲义';
+    const session: RuntimeSession = {
+      id: 'structured-draft', title: '课程安排', status: 'idle', updatedAt: timestamp, artifacts: [], events: [
+        { id: 't1', runRef: 'structured-draft', sequence: 1, occurredAt: timestamp, updatedAt: timestamp, actor: 'teacher', kind: 'teacher_message', state: 'completed', title: '教师', summary: '请把学习进度整理成一条群消息', objectRefs: [], allowedCommands: [] },
+        { id: 'a1', runRef: 'structured-draft', sequence: 2, occurredAt: timestamp, updatedAt: timestamp, actor: 'agent', kind: 'process', state: 'completed', title: '助手', summary: `好的，王老师。\n<!--TEACHBUDDY_MESSAGE_BODY_START-->\n${body}\n<!--TEACHBUDDY_MESSAGE_BODY_END-->`, objectRefs: [], allowedCommands: [] },
+      ],
+    };
+    await page.addInitScript(() => localStorage.setItem('classin:teachbuddy:im-session-bindings:v1', JSON.stringify({ 'ideal-full|classin-demo-school|teacher-001|class-physics-3': { sessionRef: 'structured-draft', updatedAt: '2026-09-08T02:20:00.000Z' } })));
+    await mockRuntime(page, [], { initialSessions: [session] });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await enterTeacherMessages(page, 'class-physics-3');
+    if (entry === 'class-chat') await page.goto('/teacher/classes/physics-3/chat');
+    const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+    await sidecar.getByRole('button', { name: '收起 AI 消息助手建议' }).click();
+    await expect(sidecar.getByRole('article', { name: 'AI 消息助手回复' })).toHaveCount(0);
+    await sidecar.getByRole('button', { name: '查看历史消息' }).click();
+    const reply = sidecar.getByRole('article', { name: 'AI 消息助手回复' });
+    await expect(reply.locator('li')).toHaveCount(4);
+    await expect(reply.locator('[data-message-mention]')).toHaveText(['@所有人', '@李明', '@周然', '@陈晨', '@王小明', '@张然', '@赵可']);
+    await expect(reply).not.toContainText('好的，王老师');
+    await expect(sidecar.getByText('发送至：高二物理 3 班')).toBeVisible();
+    await sidecar.getByRole('button', { name: '直接发送' }).scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath(`draft-${entry}.png`) });
+    const accessibility = await new AxeBuilder({ page }).include('#workbuddy-im-sidecar').analyze();
+    expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
+    await sidecar.getByRole('button', { name: '直接发送' }).click();
+    await expect(sidecar.getByText('已发送', { exact: true })).toBeVisible();
+    await expect(sidecar.getByRole('textbox', { name: '消息草稿正文' })).toHaveCount(0);
+    const sent = page.getByRole('region', { name: '高二物理 3 班会话' }).getByText(/当前进度/).last();
+    await expect(sent).toContainText('- 8 月 10 日 19:00：电磁感应导入');
+    expect(await sent.textContent()).toContain('\n- 8 月 12 日');
+    expect(await sidecar.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+  });
+}
+
+
+for (const entry of ['messages', 'class-chat'] as const) {
+  test(`page-local history stays hidden until requested and keeps the AI session in ${entry}`, async ({ page }, testInfo) => {
+    const old: RuntimeSession = { id: 'history-retained', title: '保留上下文', status: 'idle', updatedAt: timestamp, artifacts: [], events: [
+      { id: 'old-teacher', runRef: 'history-retained', sequence: 1, occurredAt: timestamp, updatedAt: timestamp, actor: 'teacher', kind: 'teacher_message', state: 'completed', title: '教师', summary: '之前讨论的教学安排', objectRefs: [], allowedCommands: [] },
+      { id: 'old-agent', runRef: 'history-retained', sequence: 2, occurredAt: timestamp, updatedAt: timestamp, actor: 'agent', kind: 'process', state: 'completed', title: '助手', summary: '上次的课堂安排仍然保留', objectRefs: [], allowedCommands: [] },
+    ] };
+    await page.addInitScript(() => localStorage.setItem('classin:teachbuddy:im-session-bindings:v1', JSON.stringify({ 'ideal-full|classin-demo-school|teacher-001|class-physics-3': { sessionRef: 'history-retained', updatedAt: '2026-09-08T02:20:00Z' } })));
+    const calls = await mockRuntime(page, [], { initialSessions: [old] });
+    await enterTeacherMessages(page, 'class-physics-3');
+    if (entry === 'class-chat') await page.goto('/teacher/classes/physics-3/chat');
+    const sidecar = page.getByRole('complementary', { name: 'AI 消息助手私密协作窗口' });
+    const history = sidecar.getByRole('button', { name: '查看历史消息' });
+    const conversation = sidecar.getByRole('region', { name: 'AI 消息助手对话' });
+    await expect(history).toBeVisible();
+    await expect(sidecar.getByText('上次的课堂安排仍然保留', { exact: true })).toHaveCount(0);
+    await expect(sidecar.getByRole('button', { name: '直接发送', exact: true })).toHaveCount(0);
+    await page.screenshot({ path: testInfo.outputPath(`history-empty-${entry}.png`) });
+    const accessibility = await new AxeBuilder({ page }).include('#workbuddy-im-sidecar').analyze();
+    expect(accessibility.violations.filter(({ impact }) => impact === 'serious' || impact === 'critical')).toEqual([]);
+    await sidecar.getByRole('region', { name: 'AI 消息助手建议' }).hover();
+    await page.mouse.wheel(0, -200);
+    await expect(history).toBeVisible();
+    await conversation.hover();
+    await page.mouse.wheel(0, -200);
+    await expect(sidecar.getByText('上次的课堂安排仍然保留', { exact: true })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath(`history-revealed-${entry}.png`) });
+    await page.reload();
+    await expect(history).toBeVisible();
+    await expect(sidecar.getByText('上次的课堂安排仍然保留', { exact: true })).toHaveCount(0);
+    await history.click();
+    await expect(sidecar.getByText('上次的课堂安排仍然保留', { exact: true })).toBeVisible();
+    await page.reload();
+    await expect(history).toBeVisible();
+    await sidecar.getByRole('textbox', { name: '向 AI 消息助手输入要求' }).fill('继续刚才的话题');
+    await sidecar.getByRole('button', { name: '发送给 AI 消息助手' }).click();
+    await expect(sidecar.getByRole('article', { name: '你的消息' })).toContainText('继续刚才的话题');
+    await expect(history).toBeVisible();
+    expect(calls).toContain('POST /api/teachbuddy/sessions/history-retained/messages');
+    expect(calls).not.toContain('POST /api/teachbuddy/sessions');
+    await expect(sidecar.getByText('以下为新消息', { exact: true })).toHaveCount(0);
+    await history.click();
+    const divider = sidecar.getByText('以下为新消息', { exact: true });
+    await expect(divider).toHaveCount(1);
+    const boundaryPosition = await divider.evaluate(element => {
+      const row = element.closest('li');
+      return { previous: row?.previousElementSibling?.textContent, next: row?.nextElementSibling?.textContent };
+    });
+    expect(boundaryPosition.previous).toContain('上次的课堂安排仍然保留');
+    expect(boundaryPosition.next).toContain('继续刚才的话题');
+    await divider.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath(`history-boundary-${entry}.png`) });
+  });
+}

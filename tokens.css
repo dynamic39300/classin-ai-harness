@@ -32,6 +32,7 @@
   --color-surface-raised: rgb(250 250 250);
   /* Equal RGB channels keep every neutral control surface strictly gray. */
   --color-surface-muted: rgb(244 244 244);
+  --color-assistant-guide-surface: #f2f7fc;
   --color-surface-hover: rgb(247 247 247);
   --color-surface-selected: rgb(232 232 232);
   --color-ink: rgb(27 27 27);

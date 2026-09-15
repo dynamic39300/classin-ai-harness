@@ -36,7 +36,7 @@ describe('TeachingDynamics', () => {
     expect(within(module).queryByText('您好，我会根据当前教学进展，帮您把要发给学生的消息整理好。')).not.toBeInTheDocument();
     const collapse = within(module).getByRole('button', { name: '收起 AI 消息助手建议' });
     expect(collapse).toHaveAttribute('aria-expanded', 'true');
-    expect(collapse).toHaveTextContent('');
+    expect(collapse).toHaveTextContent('AI 消息助手');
     expect(within(module).queryByText('教学动态')).not.toBeInTheDocument();
     expect(within(module).getByRole('tab', { name: /课中.*建议 1 条/ })).toHaveAttribute('aria-selected', 'true');
     expect(within(module).getByRole('tab', { name: /课中.*建议 1 条/ })).toHaveTextContent('课中1条');
@@ -69,11 +69,14 @@ describe('TeachingDynamics', () => {
     await user.click(screen.getByRole('tab', { name: /课后/ }));
     await user.click(screen.getByRole('button', { name: /提醒学生：大数加减法/ }));
     expect(onAction).toHaveBeenCalledWith(expect.objectContaining({ teacherRequest: '提醒交作业' }));
-    await user.click(screen.getByRole('button', { name: '收起 AI 消息助手建议' }));
+    await user.click(screen.getByText('选环节，点一条建议，AI写消息草稿，您确认后发送'));
     expect(screen.getByRole('button', { name: '展开 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'false');
     expect(screen.getByText('4 项建议')).toBeVisible();
     expect(screen.getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    await user.keyboard(' ');
+    expect(screen.getByRole('button', { name: '收起 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('tab', { name: /课后/ })).toHaveAttribute('aria-selected', 'true');
   });
 
   it('keeps the current stage selected until the teacher chooses another tab', () => {

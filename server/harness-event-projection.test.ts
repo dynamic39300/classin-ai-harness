@@ -213,6 +213,30 @@ describe('projectHarnessEvents', () => {
     expect(resumed.events.filter(row => row.kind === 'error')).toHaveLength(1);
   });
 
+  it('classifies exhausted model context so the next submit can recover', () => {
+    const failure = { code: 'CONTEXT_WINDOW_EXCEEDED', message: 'pi-ai detected context overflow for model PRIVATE' };
+    const projected = project([
+      event(0, 'turn/start', { turn: 1 }),
+      chunk(1, { type: 'finish', reason: { kind: 'error', failure } }),
+      end(2, { kind: 'error', error: failure }),
+    ]);
+    expect(projected.failureCode).toBe('context-window-exceeded');
+    expect(projected.error).toContain('历史消息仍保留');
+    expect(JSON.stringify(projected)).not.toContain('PRIVATE');
+  });
+
+  it('reports model transport failure without exposing provider details', () => {
+    const failure = { code: 'TRANSPORT', message: 'Connection error. Bearer PRIVATE-KEY http://private.invalid' };
+    const projected = project([
+      event(0, 'turn/start', { turn: 1 }),
+      chunk(1, { type: 'finish', reason: { kind: 'error', failure } }),
+      end(2, { kind: 'error', error: failure }),
+    ]);
+    expect(projected.status).toBe('failed');
+    expect(projected.error).toBe('AI 服务连接失败，请检查服务连接后重试。已输入的内容和历史消息仍保留。');
+    expect(JSON.stringify(projected)).not.toMatch(/PRIVATE|Bearer|private/);
+  });
+
   it('turns a vision permission rejection into a safe recovery instruction', () => {
     const projected = project([
       event(0, 'turn/start', { turn: 1 }),

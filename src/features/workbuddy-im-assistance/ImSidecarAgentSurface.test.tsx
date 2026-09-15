@@ -21,7 +21,7 @@ function OpenSidecar() {
   return null;
 }
 
-async function renderRestoredConversation(request: string, response: string) {
+async function renderRestoredConversation(request: string, response: string, append = vi.fn()) {
   const session: RuntimeSession = {
     id: 'tb-session-restored', title: '教学咨询', status: 'idle', updatedAt: '2026-09-08T00:00:01.000Z', artifacts: [], events: [
       { id: 'teacher-restored', runRef: 'tb-session-restored', sequence: 1, occurredAt: '2026-09-08T00:00:00.000Z', updatedAt: '2026-09-08T00:00:00.000Z', actor: 'teacher', kind: 'teacher_message', state: 'completed', title: '教师', summary: request, objectRefs: [], allowedCommands: [] },
@@ -39,7 +39,6 @@ async function renderRestoredConversation(request: string, response: string) {
   };
   const now = () => new Date('2026-08-09T10:00:00+08:00');
   const legacy = createHomeworkScenario();
-  const append = vi.fn();
   const homework = new MockWorkBuddyImHomeworkReminderAdapter({ readSnapshot: () => ({ ...legacy, classId: 'class-1', classLabel: '高二物理 3 班' }), appendTeacherMessage: append });
   const guided = new MockGuidedExplanationDistributionAdapter({ appendTeacherMessage: append });
   const messageDraft = new MockWorkBuddyImMessageDraftAdapter({ now, appendTeacherMessage: append });
@@ -51,7 +50,10 @@ async function renderRestoredConversation(request: string, response: string) {
   }
 
   render(<MemoryRouter><Tree /></MemoryRouter>);
-  return screen.findByLabelText('AI 消息助手私密协作窗口');
+  const sidecar = await screen.findByLabelText('AI 消息助手私密协作窗口');
+  expect(within(sidecar).queryByRole('article', { name: 'AI 消息助手回复' })).not.toBeInTheDocument();
+  fireEvent.click(await within(sidecar).findByRole('button', { name: '查看历史消息' }));
+  return sidecar;
 }
 
 describe('ImSidecarAgentSurface', () => {
@@ -114,7 +116,7 @@ describe('ImSidecarAgentSurface', () => {
     fireEvent.wheel(conversation, { deltaY: 240 });
     const collapseDynamics = within(guide).getByRole('button', { name: '收起 AI 消息助手建议' });
     expect(collapseDynamics).toHaveAttribute('aria-expanded', 'true');
-    expect(collapseDynamics).toHaveTextContent('');
+    expect(collapseDynamics).toHaveTextContent('AI 消息助手');
     await user.click(collapseDynamics);
     const compactDynamics = within(guide).getByRole('button', { name: '展开 AI 消息助手建议' });
     expect(compactDynamics).toHaveAttribute('aria-expanded', 'false');
@@ -139,7 +141,7 @@ describe('ImSidecarAgentSurface', () => {
     await user.click(within(process).getByRole('button', { name: '展开处理过程：已整理好' }));
     expect(within(process).getByRole('list', { name: '分析步骤' })).toBeVisible();
     expect(within(guide).getByRole('button', { name: '收起 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'true');
-    await user.click(within(sidecar).getByRole('button', { name: '审阅并发送' }));
+    await user.click(within(sidecar).getByRole('button', { name: '修改文案' }));
     expect(within(sidecar).queryByRole('link', { name: /在 TeachBuddy 中继续/ })).not.toBeInTheDocument();
     const draftEditor = within(sidecar).getByRole('textbox', { name: '消息草稿正文' });
     expect(draftEditor).toHaveValue('同学们，请明天带上实验报告。');
@@ -149,15 +151,44 @@ describe('ImSidecarAgentSurface', () => {
     await user.click(within(sidecar).getByRole('button', { name: '取消' }));
     expect(within(sidecar).queryByRole('textbox', { name: '消息草稿正文' })).not.toBeInTheDocument();
     expect(within(sidecar).getByText('同学们，请明天带上实验报告。')).toBeVisible();
-    expect(within(sidecar).getByRole('button', { name: '审阅并发送' })).toBeVisible();
+    expect(within(sidecar).getByRole('button', { name: '修改文案' })).toBeVisible();
     expect(append).not.toHaveBeenCalled();
-    await user.click(within(sidecar).getByRole('button', { name: '审阅并发送' }));
+    await user.click(within(sidecar).getByRole('button', { name: '修改文案' }));
     expect(within(sidecar).getByRole('textbox', { name: '消息草稿正文' })).toHaveValue('同学们，请明天带上实验报告。');
+    await user.type(within(sidecar).getByRole('textbox', { name: '消息草稿正文' }), '\n请准时到课。');
     await user.click(within(sidecar).getByRole('button', { name: '确认发送' }));
     await waitFor(() => expect(append).toHaveBeenCalledTimes(1));
-    expect(append.mock.calls[0]?.[0]).toMatchObject({ threadId: 'class-physics-3', authorName: '王老师', body: '同学们，请明天带上实验报告。' });
+    expect(append.mock.calls[0]?.[0]).toMatchObject({ threadId: 'class-physics-3', authorName: '王老师', body: '同学们，请明天带上实验报告。\n请准时到课。' });
     expect(within(sidecar).queryByLabelText('班级群消息草稿')).not.toBeInTheDocument();
-    expect(within(sidecar).queryByText('已发送')).not.toBeInTheDocument();
+    expect(within(sidecar).getByText('已发送')).toBeVisible();
+  });
+
+  it('previews a structured body and sends it once without opening the editor', async () => {
+    const append = vi.fn();
+    const sidecar = await renderRestoredConversation('帮我写一条课程安排群消息', '好的，王老师，以下是群消息。\n\n安排如下： • 周一：电磁感应 • 周三：楞次定律', append);
+    expect(within(sidecar).getByText('发送至：高二物理 3 班')).toBeVisible();
+    expect(within(sidecar).getByRole('article', { name: 'AI 消息助手回复' }).querySelectorAll('li')).toHaveLength(2);
+    expect(within(sidecar).queryByText(/好的，王老师/)).not.toBeInTheDocument();
+    expect(append).not.toHaveBeenCalled();
+    fireEvent.click(within(sidecar).getByRole('button', { name: '直接发送' }));
+    fireEvent.click(within(sidecar).getByRole('button', { name: /直接发送|发送中/ }));
+    await waitFor(() => expect(append).toHaveBeenCalledTimes(1));
+    expect(append.mock.calls[0]?.[0]).toMatchObject({ body: '安排如下：\n\n- 周一：电磁感应\n- 周三：楞次定律', threadId: 'class-physics-3' });
+    expect(within(sidecar).queryByRole('textbox', { name: '消息草稿正文' })).not.toBeInTheDocument();
+    expect(within(sidecar).getByText('已发送')).toBeVisible();
+    expect(within(sidecar).queryByRole('button', { name: '直接发送' })).not.toBeInTheDocument();
+  });
+
+  it('keeps the draft after a failed direct send and allows retry', async () => {
+    const append = vi.fn().mockImplementationOnce(() => { throw new Error('网络暂不可用'); });
+    const sidecar = await renderRestoredConversation('帮我写一条群消息', '同学们，请带上实验报告。', append);
+    const user = userEvent.setup();
+    await user.click(within(sidecar).getByRole('button', { name: '直接发送' }));
+    expect(await within(sidecar).findByRole('alert')).toHaveTextContent('网络暂不可用');
+    expect(within(sidecar).getByText('同学们，请带上实验报告。')).toBeVisible();
+    await user.click(within(sidecar).getByRole('button', { name: '重试发送' }));
+    expect(await within(sidecar).findByText('已发送')).toBeVisible();
+    expect(append).toHaveBeenCalledTimes(2);
   });
 
   it('keeps informational answers in the conversation without offering message delivery', async () => {
@@ -167,8 +198,16 @@ describe('ImSidecarAgentSurface', () => {
     );
 
     expect(within(sidecar).getByText('接下来有两节课：周一物理和周三数学。')).toBeVisible();
-    expect(within(sidecar).queryByRole('button', { name: '审阅并发送' })).not.toBeInTheDocument();
+    expect(within(sidecar).queryByRole('button', { name: '修改文案' })).not.toBeInTheDocument();
     expect(within(sidecar).queryByRole('button', { name: '整理成群消息' })).not.toBeInTheDocument();
+  });
+
+  it('keeps a parent or parent-group draft away from the class send command', async () => {
+    const append = vi.fn();
+    const sidecar = await renderRestoredConversation('根据李明的学情报告，帮我写一段给家长的话', '李明家长您好，当前作业尚未提交。', append);
+    expect(within(sidecar).getByRole('button', { name: '复制草稿' })).toBeVisible();
+    expect(within(sidecar).queryByRole('button', { name: '直接发送' })).not.toBeInTheDocument();
+    expect(append).not.toHaveBeenCalled();
   });
 
   it('offers a lightweight conversion for advice without opening an editor', async () => {
@@ -178,7 +217,7 @@ describe('ImSidecarAgentSurface', () => {
     );
 
     expect(within(sidecar).getByRole('button', { name: '整理成群消息' })).toBeVisible();
-    expect(within(sidecar).queryByRole('button', { name: '审阅并发送' })).not.toBeInTheDocument();
+    expect(within(sidecar).queryByRole('button', { name: '修改文案' })).not.toBeInTheDocument();
     expect(within(sidecar).queryByRole('textbox', { name: '消息草稿正文' })).not.toBeInTheDocument();
   });
 
@@ -226,7 +265,8 @@ describe('ImSidecarAgentSurface', () => {
     const sidecar = await screen.findByLabelText('AI 消息助手私密协作窗口');
     const composer = sidecar.querySelector<HTMLElement>('[data-workspace-composer="true"]');
     expect(composer).not.toBeNull();
-    expect(within(sidecar).getByRole('button', { name: '展开处理过程：正在生成回答' })).toHaveAttribute('aria-expanded', 'false');
+    expect(await within(sidecar).findByRole('button', { name: '查看历史消息' })).toBeVisible();
+    expect(within(sidecar).queryByText('先帮我整理课堂提醒')).not.toBeInTheDocument();
     const conversation = within(sidecar).getByRole('region', { name: 'AI 消息助手对话' });
     Object.defineProperty(conversation, 'scrollHeight', { configurable: true, value: 1_000 });
     Object.defineProperty(conversation, 'clientHeight', { configurable: true, value: 240 });
@@ -255,7 +295,9 @@ describe('ImSidecarAgentSurface', () => {
     expect(send.mock.calls[0]?.[1]).toBe('tb-session-keep');
     expect(create).not.toHaveBeenCalled();
     expect(scrollTo).toHaveBeenCalled();
-    expect(within(sidecar).getByText('先帮我整理课堂提醒')).toBeVisible();
+    expect(within(sidecar).queryByText('先帮我整理课堂提醒')).not.toBeInTheDocument();
     expect(await within(sidecar).findByText('换一种简短说法')).toBeVisible();
+    await user.click(within(sidecar).getByRole('button', { name: '查看历史消息' }));
+    expect(within(sidecar).getByText('先帮我整理课堂提醒')).toBeVisible();
   });
 });

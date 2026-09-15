@@ -1,6 +1,7 @@
 import type { LearningContextCatalog, LearningContextSelection } from '@contracts/workbuddy/business-context';
 
 export const WORKBUDDY_IM_LEARNING_CATALOG: LearningContextCatalog = Object.freeze({
+  mentionLabels: Object.freeze(['李明', '王小明', '张然', '周然', '陈晨', '赵可']),
   students: Object.freeze([
     Object.freeze({ ref: 'student-001', label: '李明', description: '高二物理 3 班 · 当前私聊可达', directThreadRef: 'direct-wang-li' }),
     Object.freeze({ ref: 'student-002', label: '王小明', description: '高二物理 3 班 · 作业待提交' }),

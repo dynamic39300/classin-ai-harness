@@ -837,3 +837,66 @@
     animation: none;
   }
 }
+
+/* Message delivery: a quiet destination label and two explicit actions. */
+.deliveryTarget { flex: 1 1 10rem; min-width: 0; color: var(--color-ink-muted); font-size: var(--text-xs); overflow-wrap: anywhere; }
+.draftCaption { margin: 0 0 var(--space-xs); color: var(--color-ink-muted); font-size: var(--text-xs); }
+.resultAction:disabled, .conversionAction:disabled { opacity: .5; cursor: default; }
+
+/* Keep sendable messages compact without flattening schedules into prose. */
+.agentEvents .compactDraft { line-height: 1.55; }
+.agentEvents .compactDraft p,
+.agentEvents .compactDraft ul,
+.agentEvents .compactDraft ol { margin: 0 0 var(--space-2xs); }
+.agentEvents .compactDraft li + li { margin-top: var(--space-3xs); }
+.agentEvents .compactDraft li > p { margin-bottom: 0; }
+.agentEvents .compactDraft h1,
+.agentEvents .compactDraft h2,
+.agentEvents .compactDraft h3 { margin: var(--space-xs) 0 var(--space-2xs); }
+.agentEvents .compactDraft > :last-child { margin-bottom: 0; }
+.agentEvents article > .draftCaption { margin: 0 0 var(--space-2xs); font-size: var(--text-xs); }
+
+
+.historyEntry {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  padding: var(--space-xs);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+.historyEntry:hover { background: var(--color-surface-hover); color: var(--color-ink); }
+.historyHint { margin-left: var(--space-xs); }
+.agentBody:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+
+
+.newMessageDivider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-xs) 0;
+  color: var(--color-danger);
+  font-size: var(--text-xs);
+}
+.newMessageDivider::before,
+.newMessageDivider::after {
+  height: var(--rule-thin);
+  flex: 1 1 auto;
+  background: color-mix(in srgb, var(--color-danger) 35%, transparent);
+  content: '';
+}
+.agentEvents > li[data-actor='agent']:has(+ .newMessageDivider) article { border-bottom: 0; }
+
+.questionComposerArea { min-width: 0; position: relative; background: var(--color-surface); }
+.questionReference { display: flex; gap: var(--space-sm); align-items: flex-start; margin: var(--space-xs) var(--space-md); padding: var(--space-sm); border-left: 2px solid var(--color-line-subtle); background: var(--color-surface-muted); font-size: var(--text-xs); }
+.questionReference span { min-width: 0; flex: 1; }
+.questionReference strong, .questionReference small { display: block; overflow-wrap: anywhere; }
+.questionReference small { color: var(--color-ink-muted); margin-top: var(--space-3xs); }
+.questionReference button { display: grid; place-items: center; flex-shrink: 0; width: 2rem; height: 2rem; background: transparent; color: var(--color-ink-secondary); cursor: pointer; }
+.questionNotice { padding: 0 var(--space-md); margin: var(--space-3xs) 0; font-size: var(--text-xs); color: var(--color-ink-muted); }

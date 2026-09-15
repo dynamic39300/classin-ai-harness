@@ -4,7 +4,7 @@ type Projection = {
   events: ConversationRunEvent[];
   status?: 'idle' | 'running' | 'stopped' | 'failed';
   error?: string;
-  failureCode?: 'vision-permission' | 'model-history-invalid';
+  failureCode?: 'vision-permission' | 'model-history-invalid' | 'context-window-exceeded';
 };
 type RawEvent = { seq: number; time: number; type: string; data: Record<string, unknown> };
 type Step = {
@@ -57,11 +57,17 @@ function rawEvent(entry: unknown): RawEvent | undefined {
   return { seq: event.seq, time: event.time, type: event.type, data };
 }
 
-function generationError(raw: RawEvent): { error: string; failureCode?: 'vision-permission' | 'model-history-invalid' } {
+function generationError(raw: RawEvent): { error: string; failureCode?: 'vision-permission' | 'model-history-invalid' | 'context-window-exceeded' } {
   const chunk = record(raw.data.chunk);
   const reason = record(chunk?.reason) ?? record(raw.data.reason);
   const failure = record(reason?.failure) ?? record(reason?.error);
   const message = typeof failure?.message === 'string' ? failure.message : '';
+  if (failure?.code === 'CONTEXT_WINDOW_EXCEEDED') {
+    return { error: '本轮对话内容过长，历史消息仍保留。请重新发送本次具体要求；如需分析之前的图片，请重新附图。', failureCode: 'context-window-exceeded' };
+  }
+  if (failure?.code === 'TRANSPORT') {
+    return { error: 'AI 服务连接失败，请检查服务连接后重试。已输入的内容和历史消息仍保留。' };
+  }
   if (/missing.*thought_signature|thought_signature.*missing/iu.test(message)) {
     return { error: '此前生成记录无法继续，请重新添加图片并发送，系统会自动开启新的处理记录。', failureCode: 'model-history-invalid' };
   }

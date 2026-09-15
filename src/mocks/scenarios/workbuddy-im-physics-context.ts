@@ -9,7 +9,7 @@ type FixedTeachingFact = Readonly<{
 
 type FixedTeachingEntity = Readonly<{
   ref: string;
-  kind: 'class' | 'plan' | 'course' | 'lesson' | 'attendance' | 'assignment' | 'quiz' | 'wrong-question-set' | 'period' | 'student';
+  kind: 'class' | 'plan' | 'course' | 'lesson' | 'attendance' | 'assignment' | 'quiz' | 'wrong-question-set' | 'period' | 'student' | 'resource';
   relatedRefs: readonly string[];
   facts: readonly FixedTeachingFact[];
 }>;
@@ -36,7 +36,7 @@ const entity = (
  * Every person, time, score and learning record below is synthetic.
  */
 export const PHYSICS_IM_TEACHING_CONTEXT: FixedImTeachingContext = Object.freeze({
-  version: 'physics-im-context-2026-08-09-v2',
+  version: 'physics-im-context-2026-08-09-v3',
   capturedAt: '2026-08-09T14:40:00+08:00',
   classRef: 'physics-3',
   entities: Object.freeze([
@@ -68,6 +68,9 @@ export const PHYSICS_IM_TEACHING_CONTEXT: FixedImTeachingContext = Object.freeze
     entity('homework-momentum-a', 'assignment', ['physics-momentum', 'lesson-momentum-0809'], [
       fact('homework-profile', '作业', '动量守恒作业 A 组；共 8 题：4题基础判断、3题一维碰撞计算、1题实验数据分析；2026年8月10日 18:00 截止。'),
       fact('homework-status', '作业提交', '应交 30 人，已交 24 人，未交 6 人；当前尚未截止。'),
+      fact('homework-review', '作业批阅', '24份已交作业中，已批阅20份、待批阅4份。待批阅：孙悦、林澈、许宁、周禾；均为本演示虚构学生。'),
+      fact('question-2', 'A组第2题完整题面（固定版本v1）', '光滑水平轨道上，两辆小车A、B相向运动后发生碰撞，碰撞持续时间极短，水平方向外力冲量可忽略。若要用动量守恒计算两车碰撞后的运动，应选择什么研究系统？说明理由。无附图，无其他条件。参考答案：选择A与B组成的系统；两车间相互作用力为内力，系统外力冲量可忽略，所以碰撞前后系统总动量守恒。'),
+      fact('question-5', 'A组第5题完整题面（固定版本v1）', '光滑水平轨道上，质量均为1kg的A、B小车，A以4m/s向右碰撞原来静止的B。碰撞后A以1m/s向左运动。求B碰撞后的速度，画方向示意并列式。外力冲量忽略。无其他图示条件。参考解：向右为正，1×4+1×0=1×(-1)+1×v，v=5m/s向右；总动量验算两边均为4kg·m/s。'),
       fact('homework-missing', '未交学生', '李明、周然、陈晨、王小明、张然、赵可。', 'student-personal'),
       fact('homework-requirement', '完成要求', '在 ClassIn 提交完整计算过程；第5题必须画方向示意图并标出速度正负号；有困难可先提交已完成部分并留言。'),
     ]),
@@ -105,6 +108,12 @@ export const PHYSICS_IM_TEACHING_CONTEXT: FixedImTeachingContext = Object.freeze
       fact('wrong-7', '错题7', '机械波第4题：横波与纵波；典型错误是按传播方向判断；解析重点是比较质点振动方向与波传播方向。'),
       fact('card-format', '错题卡格式', '每题正面放精简题面和“先想一步”；背面放典型错因、分步解析、答案和一道不重复原题的再练题。'),
     ]),
+    entity('resource-momentum-guide', 'resource', ['physics-momentum'], [
+      fact('resource-title', '资料正文：动量守恒解题指引', '固定演示资料v1，全文共三段，已完整读取。'),
+      fact('resource-step-1', '原文第一段', '先确定相互作用的物体，把碰撞双方作为研究系统；检查系统所受外力的冲量是否可忽略，不要只选择其中一辆车。'),
+      fact('resource-step-2', '原文第二段', '选定统一正方向，并画出碰撞前后的速度方向；沿正方向的速度为正，反向为负，所有速度使用同一个坐标约定。'),
+      fact('resource-step-3', '原文第三段', '分别写出系统碰撞前后的总动量并令其相等，代入质量和带符号的速度求解；最后代回检查总动量，并用文字解释答案的方向。'),
+    ]),
     entity('physics-induction', 'course', ['plan-physics-2026-summer', 'lesson-induction-0810'], [
       fact('course-name', '课程', '电磁感应；所属班级：高二物理 3 班；当前状态：尚未开始。'),
       fact('course-goal', '课程目标', '认识磁通量，能从磁通量变化判断是否产生感应电流，为后续法拉第电磁感应定律和楞次定律建立基础。'),
@@ -134,25 +143,26 @@ export const PHYSICS_IM_TEACHING_CONTEXT: FixedImTeachingContext = Object.freeze
 function inferredContextRefs(query: string | undefined): readonly string[] {
   const value = query?.trim() ?? '';
   const refs = new Set<string>();
-  if (/计划|进度|学了|后续|课程.*时间|接下来.*课/u.test(value)) refs.add('plan-physics-2026-summer');
+  if (/计划|进度|学了|后续|课程|接下来.*课/u.test(value)) { refs.add('plan-physics-2026-summer'); refs.add('physics-momentum'); refs.add('physics-wave'); refs.add('physics-induction'); }
   if (/动量|碰撞|当前.*课|进入课堂|到课/u.test(value)) {
     refs.add('physics-momentum'); refs.add('lesson-momentum-0809');
   }
   if (/进入课堂|到课/u.test(value)) refs.add('attendance-momentum-0809');
-  if (/动量.*作业|作业\s*A|交作业|未交作业/u.test(value)) refs.add('homework-momentum-a');
+  if (/动量.*作业|作业\s*A|交作业|未交|批阅|批完|作业.*题|第[二五25]题/u.test(value)) refs.add('homework-momentum-a');
   if (/测验/u.test(value)) refs.add('quiz-momentum-check');
   if (/机械波|本讲回顾|课堂回顾/u.test(value)) {
     refs.add('physics-wave'); refs.add('lesson-wave-0808');
   }
   if (/课后任务|学习任务|3\s*份作业/u.test(value)) refs.add('task-plan-wave-0808');
   if (/错题|错因|错题卡|闪卡/u.test(value)) refs.add('wrong-question-set-physics-recent');
-  if (/整班|本班.*学情|阶段学情|共性/u.test(value)) {
+  if (/整班|本班.*学情|阶段学情|共性|本周.*学习/u.test(value)) {
     refs.add('period-this-week'); refs.add('plan-physics-2026-summer');
   }
   if (/李明|个人学情/u.test(value)) refs.add('student-001');
   if (/电磁|预习|明天.*开课|提醒上课/u.test(value)) {
     refs.add('physics-induction'); refs.add('lesson-induction-0810');
   }
+  if (/资料|解题指引|方法/u.test(value)) refs.add('resource-momentum-guide');
   return refs.size ? Object.freeze([...refs]) : Object.freeze(['plan-physics-2026-summer']);
 }
 

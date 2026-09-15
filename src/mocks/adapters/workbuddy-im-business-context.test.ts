@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { buildMessageDraftRuntimeRequest } from '@domain/workbuddy/im-message-draft';
 import { buildLearningTeacherRequest } from '@domain/workbuddy/personalized-learning-service';
 import { createRuntimeContextEnvelope } from '@domain/workbuddy/runtime-context-envelope';
 import { WORKBUDDY_IM_LEARNING_CATALOG } from '@mocks/scenarios/workbuddy-im-learning-evidence';
@@ -19,6 +20,18 @@ describe('fixed WorkBuddy IM business context adapter', () => {
     expect(snapshot.items.map((item) => item.key)).toEqual(['conversation-label', 'member-count']);
     expect(snapshot.recentMessages).toEqual([{ authorRole: 'student-family', authorName: '李明', body: '明天交吗？' }]);
     expect(JSON.stringify(snapshot)).not.toContain('database');
+  });
+
+  it('supplies mention names independently of selectable evidence and scopes them to the conversation', async () => {
+    const adapter = new FixedWorkBuddyImBusinessContextAdapter(() => new Date('2026-08-09T14:40:00+08:00'));
+    const request = { actorRef: 'teacher-001', tenantRef: 'classin-demo-school', target: { kind: 'class' as const, classId: 'physics-3', classLabel: '高二物理 3 班', threadId: 'class-physics-3' } };
+    const catalog = await adapter.listLearningContext(request);
+    expect(catalog.mentionLabels).toEqual(expect.arrayContaining(['周然', '陈晨', '王小明', '张然', '赵可']));
+    expect(catalog.students.some(({ label }) => label === '赵可')).toBe(false);
+    const direct = await adapter.listLearningContext({ ...request, target: { ...request.target, kind: 'direct', threadId: 'direct-wang-li' } });
+    expect(direct.mentionLabels).toEqual(['李明']);
+    const unsupported = await adapter.listLearningContext({ ...request, target: { ...request.target, classId: 'other-class', threadId: 'other-thread' } });
+    expect(unsupported.mentionLabels).toEqual([]);
   });
 
   it('keeps the source version stable until governed business facts change', async () => {
@@ -43,7 +56,7 @@ describe('fixed WorkBuddy IM business context adapter', () => {
     });
 
     expect(snapshot.truthLabel).toBe('fixed-demo');
-    expect(snapshot.sources).toContainEqual(expect.objectContaining({ sourceRef: 'fixed-teaching-context:physics-im-context-2026-08-09-v2', version: 'physics-im-context-2026-08-09-v2' }));
+    expect(snapshot.sources).toContainEqual(expect.objectContaining({ sourceRef: 'fixed-teaching-context:physics-im-context-2026-08-09-v3', version: 'physics-im-context-2026-08-09-v3' }));
     expect(snapshot.items).toEqual(expect.arrayContaining([
       expect.objectContaining({ key: 'lesson-wave-0808:lesson-outline', value: expect.stringContaining('波速由介质决定') }),
       expect.objectContaining({ key: 'task-plan-wave-0808:task-overview', value: expect.stringContaining('3 份作业和 1 次测验') }),
@@ -69,10 +82,13 @@ describe('fixed WorkBuddy IM business context adapter', () => {
       const taskRequest = dynamicAction.learningSelection
         ? buildLearningTeacherRequest(dynamicAction.learningSelection, WORKBUDDY_IM_LEARNING_CATALOG, dynamicAction.teacherRequest)
         : dynamicAction.teacherRequest;
+      const draftRequest = buildMessageDraftRuntimeRequest(taskRequest);
+      expect(draftRequest, dynamicAction.label).toContain('逐一写 @姓名');
+      expect(draftRequest, dynamicAction.label).toContain('正文开头写 @所有人');
       const envelope = createRuntimeContextEnvelope(snapshot, taskRequest, dynamicAction.teacherRequest);
 
-      expect(envelope.length, `${dynamicAction.label} should leave room for runtime generation instructions`).toBeLessThanOrEqual(3_800);
-      expect(envelope).toContain('fixed-teaching-context:physics-im-context-2026-08-09-v2');
+      expect(envelope.length, `${dynamicAction.label} should leave room for runtime generation instructions`).toBeLessThanOrEqual(11_800);
+      expect(envelope).toContain('fixed-teaching-context:physics-im-context-2026-08-09-v3');
     }
   });
 

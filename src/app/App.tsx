@@ -1,4 +1,5 @@
-import { useCallback, useMemo, type ReactNode } from 'react';
+import { createFixedImChatReader } from '@mocks/adapters/im-chat-reader';
+import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import { RoleSessionProvider } from '@features/role-switch';
 import { ClassWorkspaceProvider, useClassWorkspaceStore } from '@features/class-workspace';
@@ -92,7 +93,9 @@ function ClassMessageBridge({ children }: { children: ReactNode }) {
 
 function WorkBuddyImBridge({ children }: { children: ReactNode }) {
   const homework = useHomeworkWorkspace();
-  const { actions: messageActions } = useMessageWorkspaceStore();
+  const { actions: messageActions, state: messageState } = useMessageWorkspaceStore();
+  const chatReader = useMemo(() => createFixedImChatReader(), []);
+  useEffect(() => { chatReader.update(messageState.status === 'ready' ? messageState.threads : null); }, [chatReader, messageState]);
   const artifactLibrary = useWorkBuddyArtifactLibrary();
   const adapter = useMemo(() => new MockWorkBuddyImHomeworkReminderAdapter({
     readSnapshot: ({ classId, classLabel }) => ({
@@ -111,7 +114,7 @@ function WorkBuddyImBridge({ children }: { children: ReactNode }) {
   }), [messageActions]);
   const agentServices = useMemo(() => ({
     runtime: createHttpAgentRuntime(),
-    businessContext: new FixedWorkBuddyImBusinessContextAdapter(() => TEACHING_DYNAMICS_DEMO_NOW),
+    businessContext: new FixedWorkBuddyImBusinessContextAdapter(() => TEACHING_DYNAMICS_DEMO_NOW, chatReader.read),
     teachingDynamics: new FixedWorkBuddyImTeachingDynamicsAdapter(() => TEACHING_DYNAMICS_DEMO_NOW),
     messageDraft: new MockWorkBuddyImMessageDraftAdapter({
       now: () => new Date(),
@@ -122,7 +125,7 @@ function WorkBuddyImBridge({ children }: { children: ReactNode }) {
     actor: Object.freeze({ id: 'teacher-001', name: '王老师' }),
     tenantRef: 'classin-demo-school',
     scope: 'ideal-full' as const,
-  }), [messageActions]);
+  }), [messageActions, chatReader]);
   return (
     <WorkBuddyImProvider adapter={adapter} guidedExplanationAdapter={guidedExplanationAdapter} agentServices={agentServices} onArtifactCreated={artifactLibrary.add} teacher={{ id: 'teacher-001', name: '王老师' }} now={() => HOMEWORK_NOW}>
       {children}
