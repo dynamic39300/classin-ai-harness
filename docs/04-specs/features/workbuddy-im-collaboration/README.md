@@ -2,6 +2,8 @@
 
 本目录按 `PRD → Feature Spec → Tickets → Implementation → Acceptance` 管理 IM 协作能力，避免产品判断、工程规则和实现结果混写。
 
+2026-09-17 阶段交付后，整体产品范围请从[IM Copilot 独立 PRD v0.1](../../../02-product/IM-COPILOT-PRD.md)审阅；该稿汇总当前入口、基础 IM、AI 能力与交付边界，并已发布到 Notion 供逐项反馈。下列文档继续保留各阶段规格与验收证据，新稿批准前不替代已锁定实施合同。
+
 本轮 Part 1 的整体推进以[IM Copilot 总里程碑计划](./COPILOT-MILESTONE-PLAN.md)为入口，统一维护阶段顺序、当前进度、交付物和验收条件；Part 2 继续使用其独立规格与记录。
 
 2026-09-16，V2 默认 IM 按 D-157 恢复的模拟基线及源项目最新代码对齐已完成用户验收；后续开发继续在当前 V2 仓库推进，当前主线是真实 API 映射审阅。对齐材料为[盘点](./IM-COPILOT-SOURCE-PARITY-AUDIT-2026-09-15.md)、[PRD](./IM-COPILOT-SOURCE-PARITY-PRD.md)、[Feature Spec](./IM-COPILOT-SOURCE-PARITY-FEATURE-SPEC.md)、[Tickets](./IM-COPILOT-SOURCE-PARITY-TICKETS.md)和[实施验收](./IM-COPILOT-SOURCE-PARITY-IMPLEMENTATION-REVIEW-2026-09-15.md)。

@@ -4,7 +4,9 @@
 
 查看项目整体进展、待审阅材料和下一步安排时，先读[当前状态与下一阶段计划](./00-project/CURRENT-STATUS-AND-NEXT-PLAN.md)。该入口区分最新工作树事实、工程验证、用户验收和历史阶段记录。
 
-当前真实API接入的待审阅基线见[Copilot真实业务Context接入计划](./04-specs/features/copilot-real-context-integration/README.md)，包含产品范围、技术设计、21题验收矩阵和M0–M6里程碑。
+IM Copilot 阶段交付后的整体产品审阅入口为[独立 PRD v0.1](./02-product/IM-COPILOT-PRD.md)，按入口、IM 基础功能、AI 功能和验收框架逐项描述；[里程碑交付记录](./00-project/IM-COPILOT-MILESTONE-2026-09-17.md)保存本次版本与工程验证结果。
+
+真实 API 的详细实施与验收依据见[Copilot真实业务Context接入计划](./04-specs/features/copilot-real-context-integration/README.md)，包含产品范围、技术设计、21题验收矩阵和M0–M6里程碑。
 
 | 目录 | 用途 |
 |---|---|
