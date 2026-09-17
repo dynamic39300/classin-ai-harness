@@ -1,0 +1,11 @@
+{
+  "projects": 101,
+  "documentedEndpoints": 4188,
+  "scanCandidates": 350,
+  "statusCounts": {
+    "UNIQUE_LITERAL_CANDIDATE": 128,
+    "NO_LITERAL_MATCH": 187,
+    "MULTIPLE_LITERAL_CANDIDATES": 22,
+    "METHOD_UNKNOWN": 13
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "instance": "starrocks_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 2845,
+  "data": [
+    {
+      "biz_type": 4,
+      "action": "looked_activity",
+      "event_n": 28079,
+      "student_activity_n": 28079,
+      "student_n": 16061,
+      "activity_n": 6154,
+      "school_n": 318
+    }
+  ]
+}

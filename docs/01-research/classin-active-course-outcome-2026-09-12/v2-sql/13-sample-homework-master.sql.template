@@ -1,0 +1,2 @@
+-- Replace placeholders with numeric keys returned by sample selectors in this run.
+SELECT homework_id,num,cnum,rnum,start_time,end_time,status,is_del,auto_add FROM eo_pdviews.ods_ms_eo_oshw_eeo_course_homework_7df_view WHERE dt='2026-09-11' AND homework_id IN ({{sample_homework_ids}}) ORDER BY homework_id LIMIT 10;

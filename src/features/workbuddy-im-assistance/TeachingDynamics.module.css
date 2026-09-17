@@ -4,30 +4,46 @@
   overflow: clip;
   border: 0;
   border-radius: 0;
-  background: var(--color-surface-muted);
+  background: var(--color-assistant-guide-surface);
   box-shadow: none;
   transition: background-color var(--message-shell-transition-duration, 320ms) var(--ease-out);
 }
 
-.module[data-expanded='false'] { background: var(--color-surface-muted); }
+.module[data-expanded='false'] { background: var(--color-assistant-guide-surface); }
 
 .moduleHeader {
   display: flex;
   min-width: 0;
-  min-height: 4.5rem;
+  align-items: center;
+}
+
+.moduleToggle {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 3.5rem;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm) var(--space-md) var(--space-xs);
+  border: 0;
   background: transparent;
+  color: var(--color-ink-secondary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   transition: min-height var(--message-shell-transition-duration, 320ms) var(--ease-out), padding var(--message-shell-transition-duration, 320ms) var(--ease-out), background-color var(--message-shell-transition-duration, 320ms) var(--ease-out);
 }
 
-.module[data-expanded='false'] .moduleHeader {
+.module[data-expanded='false'] .moduleToggle {
   min-height: 3.5rem;
   padding-block: var(--space-xs);
-  background: var(--color-surface-muted);
 }
+
+.moduleToggle:hover { background: color-mix(in srgb, var(--color-info-soft) 35%, var(--color-assistant-guide-surface)); }
+.moduleToggle:active { background: color-mix(in srgb, var(--color-info-soft) 65%, var(--color-assistant-guide-surface)); }
+.moduleToggle:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
 
 .assistantIdentity {
   display: flex;
@@ -48,7 +64,20 @@
   min-width: 0;
   align-items: baseline;
   gap: var(--space-xs);
+  flex-wrap: wrap;
 }
+
+.loadSummary { display: inline-flex; align-items: center; gap: var(--space-2xs); }
+.loadingIcon { flex-shrink: 0; animation: suggestion-spin 1.2s linear infinite; }
+.unavailableHeader { display: flex; width: 100%; min-width: 0; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); }
+.retryButton { flex-shrink: 0; min-height: 2rem; padding: var(--space-xs); border-radius: var(--radius-control); color: var(--color-action-strong); background: var(--color-surface); cursor: pointer; font: inherit; font-size: var(--text-xs); }
+.retryButton:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.skeleton .stageTab { cursor: default; }
+.skeletonBar { display: block; height: .625rem; border-radius: var(--radius-control); background: var(--color-surface-selected); animation: suggestion-pulse 1.6s ease-in-out infinite; }
+.skeletonCount { width: 1.125rem; height: .375rem; background: var(--color-line-subtle); }
+.skeletonCard { display: grid; align-content: center; gap: var(--space-xs); min-height: 4.5rem; padding: var(--space-sm); animation: none; }
+.skeletonCard .skeletonBar:first-child { width: 48%; height: .75rem; }
+.skeletonCard .skeletonBar:last-child { width: 78%; }
 
 .identityLine strong {
   color: var(--color-ink);
@@ -57,18 +86,16 @@
 }
 
 .identityLine span,
-.assistantCopy p {
+.assistantHint {
   color: var(--color-ink-muted);
   font-size: var(--text-xs);
 }
 
-.assistantCopy p {
-  display: -webkit-box;
+.assistantHint {
+  display: block;
   margin: 0;
-  overflow: hidden;
   line-height: 1.45;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
 }
 
 .moduleActions {
@@ -79,25 +106,16 @@
   gap: var(--space-2xs);
 }
 
-.moduleToggle {
+.toggleIcon {
   display: inline-grid;
   width: 2rem;
   height: 2rem;
   flex: 0 0 auto;
   place-items: center;
-  padding: 0;
-  border-radius: var(--radius-control);
-  background: transparent;
-  color: var(--color-ink-secondary);
-  cursor: pointer;
-  font-size: var(--text-xs);
-  white-space: nowrap;
 }
 
-.moduleToggle:hover { background: var(--color-surface-hover); }
-.moduleToggle:active { background: var(--color-surface-selected); }
-
 .closeButton {
+  margin-right: var(--space-md);
   display: inline-grid;
   width: 2rem;
   height: 2rem;
@@ -147,7 +165,8 @@
   overflow: hidden;
 }
 
-.content { padding: var(--space-xs) var(--space-md) var(--space-md); }
+.content { padding: var(--space-2xs) var(--space-md) var(--space-md); }
+.contentResize { overflow: clip; }
 
 .feedback {
   margin: 0 0 var(--space-xs);
@@ -234,6 +253,7 @@
 }
 
 .items { display: grid; }
+.stageNotice { border: 0; background: transparent; }
 
 .item {
   display: grid;
@@ -251,6 +271,8 @@
 }
 
 .item:last-child { border-bottom: 0; }
+.notice { grid-template-columns: minmax(0, 1fr); }
+.notice .itemDetail { display: block; overflow: visible; }
 button.item { cursor: pointer; }
 
 button.item:hover {
@@ -346,6 +368,9 @@ button.item:disabled { cursor: default; opacity: .45; }
   from { opacity: .55; transform: translateY(.1875rem); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes suggestion-spin { to { transform: rotate(360deg); } }
+@keyframes suggestion-pulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 
 @container (max-width: 21rem) {
   .stageCount { font-size: .5rem; }

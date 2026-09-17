@@ -363,3 +363,12 @@ IM-001 产品与规格冻结
 - 明确不改变：`TeachingDynamicsAdapter`业务投影、最终消息发送 Gate、方案一分支、公开班级 Agent、生产 Runtime 协议和实时 ClassIn 数据 Adapter。
 - 完成条件：同一可访问区域同时包含身份与四阶段；正常/失败态无新建 Session；一击只提交一次精确自然语言 Prompt，内部结构化要求不进入老师消息；Session 轮换后仍是一条可上滑历史，stale 404 自动恢复；生成请求未返回时也可停止，停止成功后同一逻辑对话续写，停止失败则保持锁定并可重试；轻微/向上/输入框滚动不收起，达到阈值后以 320ms 平滑收起，隐藏区不保留键盘焦点；TypeScript、scoped ESLint、focused Vitest、Chromium E2E、build 和实机视觉通过。
 - 当前状态：`COMPLETED`
+
+## IM-037 Structured Message Rendering Parity v0.21
+
+- 需求：Copilot 审阅区中的结构化回答经教师确认进入班级群后，标题、表格、编号、列表、加粗、引用、链接、代码、任务列表和公式继续按相同语义呈现，不显示 Markdown 控制符。
+- Write Set：共享 `RichTextContent` Design System Interface、`MessageWorkspace` 消息正文编排与紧凑气泡样式、Integration/E2E 及本 Feature Spec。
+- 交付：Copilot 与消息时间线复用同一安全 GFM 渲染层；消息气泡保留发送方配色、提及高亮和普通换行，宽表/公式仅在气泡内部滚动。
+- 明确不改变：消息正文存储、审批与发送 Gate、真实/模拟写回边界、回复/翻译/撤回、附件和对象卡合同。
+- 完成条件：先复现群聊显示原始 Markdown；组件测试覆盖标题、表格、有序/无序列表、加粗、引用和控制符消失；浏览器测试覆盖 Copilot 审阅后发送及无横向溢出；消息工作区既有 Integration、类型检查、Lint 与构建通过。
+- 当前状态：`COMPLETED`

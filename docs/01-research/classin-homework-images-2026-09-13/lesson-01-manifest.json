@@ -1,0 +1,20 @@
+{
+  "truth": "GENERATED_TEST_CONTENT",
+  "lesson": 1,
+  "images": [
+    {
+      "lesson": 1,
+      "question": 1,
+      "filename": "lesson-01-question-1.png",
+      "bytes": 72649,
+      "sha256": "e68ab1e70ad16f27ea43933b23bd59659403fb5e3c20c7967fd6644e96f6db29"
+    },
+    {
+      "lesson": 1,
+      "question": 2,
+      "filename": "lesson-01-question-2.png",
+      "bytes": 84005,
+      "sha256": "412152c9a0e3d73463ca5f024c9c6105f6f5e904ba580f9d77a4cffa15f1afc4"
+    }
+  ]
+}

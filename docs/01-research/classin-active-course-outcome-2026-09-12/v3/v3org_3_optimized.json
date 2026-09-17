@@ -1,0 +1,16 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 18333,
+  "data": [
+    {
+      "school_n": 31982,
+      "all_configured_school_n": 386,
+      "partly_configured_school_n": 752,
+      "none_configured_school_n": 30844,
+      "all_week_candidate_school_n": 183
+    }
+  ]
+}

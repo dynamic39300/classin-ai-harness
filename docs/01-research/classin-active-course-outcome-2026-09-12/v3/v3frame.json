@@ -1,0 +1,14 @@
+{
+  "instance": "starrocks_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 4514,
+  "data": [
+    {
+      "course_n": 660657,
+      "school_n": 31982,
+      "opened_n": 1171172
+    }
+  ]
+}

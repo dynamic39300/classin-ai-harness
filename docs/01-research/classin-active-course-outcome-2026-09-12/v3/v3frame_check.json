@@ -1,0 +1,15 @@
+{
+  "instance": "starrocks_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 9359,
+  "data": [
+    {
+      "mapped_course_n": 660657,
+      "mapped_course_lesson_n": 1171172,
+      "min_lessons": 1,
+      "max_lessons": 1738
+    }
+  ]
+}

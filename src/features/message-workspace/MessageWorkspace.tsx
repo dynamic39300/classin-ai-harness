@@ -90,6 +90,7 @@ import type { DirectConversationScope } from '@domain/message/direct-conversatio
 import { MESSAGE_NOW } from '@mocks/scenarios/messages';
 import { WorkspaceComposer } from '@design-system/WorkspaceComposer';
 import { TeachBuddyAvatar } from '@design-system/TeachBuddyAvatar';
+import { RichTextContent } from '@design-system/RichTextContent';
 import { GuidedExplanationPreviewDialog, WorkBuddyImSidecar, useOptionalWorkBuddyIm, type WorkBuddyImTarget } from '@features/workbuddy-im-assistance';
 import {
   AgentMentionPicker,
@@ -1234,6 +1235,11 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
         .filter(({ kind }) => kind !== 'system')
         .map(({ authorName }) => authorName),
     ));
+    const messageMentionLabels = Array.from(new Set([
+      '所有人',
+      ...historySenders,
+      ...(groupProfile?.members.flatMap(({ name, displayName }) => [name, displayName]) ?? []),
+    ]));
     const classAgent = thread.classAgentBinding && classAgentConversation
       ? classAgentConversation.getAgent(thread.classAgentBinding.agentId)
       : null;
@@ -1693,19 +1699,19 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
             return (
               <Fragment key={entry.id}>
               {newMessageBoundary}
-              <article className={styles.messageEntry} data-agent={isClassAgentEntry} data-grouped={grouped} data-highlighted={highlightedMessageId === entry.id} data-mention-everyone={entry.mentions?.some(({ kind }) => kind === 'everyone')} data-message-id={entry.id} data-own={own} data-retracted={entry.kind === 'retracted'} tabIndex={entry.id.startsWith('workbuddy-reminder-') || highlightedMessageId === entry.id ? -1 : undefined}>
+              <article className={styles.messageEntry} data-agent={isClassAgentEntry} data-grouped={grouped} data-highlighted={highlightedMessageId === entry.id} data-mention-everyone={entry.mentions?.some(({ kind }) => kind === 'everyone')} data-message-id={entry.id} data-own={own} data-retracted={entry.kind === 'retracted'} tabIndex={role === 'teacher' && thread.category === 'class' && workBuddyIm?.agentServices && entry.body && entry.kind !== 'retracted' ? 0 : entry.id.startsWith('workbuddy-reminder-') || highlightedMessageId === entry.id ? -1 : undefined}>
                 {!own && !grouped ? <span className={styles.messageAvatar}>{isClassAgentEntry ? <Sparkles aria-hidden="true" size={15} /> : entry.authorName.slice(0, 1)}</span> : null}
                 <div>
                   {!grouped ? <span className={styles.messageAuthor}>{own ? '我' : entry.authorName} · {formatEntryTime(entry.sentAt)}</span> : null}
                   {entry.replyTo ? <button className={styles.replyPreview} type="button" onClick={() => locateTimelineMessage(entry.replyTo?.messageId ?? '')}><MessageSquareReply aria-hidden="true" size={13} /><span><strong>{entry.replyTo.authorName}</strong>{entry.replyTo.bodyPreview}</span></button> : null}
-                  {entry.body ? <p className={entry.contentReference?.kind === 'guided-explanation' ? styles.messageWithLink : undefined}>
-                    <span>{entry.body}</span>
+                  {entry.body ? <div className={[styles.messageBubble, entry.contentReference?.kind === 'guided-explanation' ? styles.messageWithLink : undefined].filter(Boolean).join(' ')} data-message-body>
+                    <RichTextContent className={styles.messageBody} mentionLabels={messageMentionLabels}>{entry.body}</RichTextContent>
                   {entry.contentReference?.kind === 'guided-explanation' ? (
                     <button className={styles.explanationLink} type="button" onClick={(event) => { explanationTriggerRef.current = event.currentTarget; setOpenExplanation(entry.contentReference ?? null); }}>
                       <Link2 aria-hidden="true" size={14} />{entry.contentReference.linkLabel}
                     </button>
                   ) : null}
-                  </p> : null}
+                  </div> : null}
                   {entry.attachments?.length ? <div className={styles.messageMedia} data-count={entry.attachments.length}>
                     {entry.attachments.map((attachment, attachmentIndex) => {
                       const contentUrl = mediaAdapter.resolveContent(attachment.contentRef);
@@ -1776,6 +1782,7 @@ export function MessageWorkspace({ role, immersive = false, onEnterImmersive, fi
                       }}
                     ><SmilePlus aria-hidden="true" size={15} /></button>
                     <button type="button" aria-label="回复" title="回复" onClick={() => { const reference = createReplyReference(entry); if (reference) { setReplyByThread((current) => ({ ...current, [thread.id]: reference })); window.requestAnimationFrame(() => document.querySelector<HTMLTextAreaElement>('textarea[aria-label="输入消息"]')?.focus()); } }}><MessageSquareReply aria-hidden="true" size={13} /><span className={styles.messageActionLabel}>回复</span></button>
+                    {role === 'teacher' && thread.category === 'class' && workBuddyIm?.agentServices && entry.body ? <button type="button" aria-label="引用给AI" title="引用给AI" onClick={() => workBuddyIm.actions.open({ ...createWorkBuddyTarget(role, thread), aiReference: { id: entry.id, authorName: entry.authorName, sentAt: entry.sentAt, preview: entry.body.slice(0, 160), requestId: createMessageSurfaceId('ai-reference') } })}><Sparkles aria-hidden="true" size={13} /><span className={styles.messageActionLabel}>引用给AI</span></button> : null}
                     {entry.body ? <button type="button" aria-label="翻译" title="翻译" onClick={() => void actions.translateMessage(entry.id, entry.body, /[\u4e00-\u9fff]/u.test(entry.body) ? 'en' : 'zh-CN')}><Languages aria-hidden="true" size={13} /><span className={styles.messageActionLabel}>翻译</span></button> : null}
                     {canRecall ? <button type="button" aria-label="撤回" title="撤回" onClick={() => recallMessage(entry.id)}><Undo2 aria-hidden="true" size={13} /><span className={styles.messageActionLabel}>撤回</span></button> : null}
                     {reactionPickerTarget?.threadId === thread.id && reactionPickerTarget.messageId === entry.id ? <MessageReactionPicker

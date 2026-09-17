@@ -1,0 +1,16 @@
+{
+  "instance": "starrocks_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 4755,
+  "data": [
+    {
+      "school_n": 31982,
+      "all_configured_school_n": 1715,
+      "partly_configured_school_n": 2905,
+      "none_configured_school_n": 27362,
+      "all_week_candidate_school_n": 990
+    }
+  ]
+}

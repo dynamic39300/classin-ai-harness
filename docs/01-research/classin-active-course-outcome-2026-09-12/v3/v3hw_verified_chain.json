@@ -1,0 +1,29 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 14202,
+  "data": [
+    {
+      "deadline_group": "due",
+      "represented_homework_n": 13646,
+      "assigned_records_n": 104505,
+      "assigned_pairs_n": 104505,
+      "student_n": 70465,
+      "submitted_n": 49524,
+      "reviewed_n": 34941,
+      "last_submit_on_time_n": 39507,
+      "last_submit_late_n": 9701,
+      "review_after_last_submit_n": 34625,
+      "viewed_after_review_n": 8885,
+      "feedback_presence_candidate_n": 34197,
+      "on_time_then_reviewed_n": 28434,
+      "text_feedback_candidate_n": 13794,
+      "audio_feedback_candidate_n": 742,
+      "avg_review_delay_hours": "30.029623",
+      "reviewed_within_24h_n": 21858,
+      "updated_after_cutoff_n": 8
+    }
+  ]
+}

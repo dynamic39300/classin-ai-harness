@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { classInTestMiddleware } from './server/classin-test-middleware.ts';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vitest/config';
 import { createTeachBuddyRuntime, maintainRuntime, runtimeMiddleware } from './server/teachbuddy-runtime.ts';
@@ -8,11 +9,13 @@ export default defineConfig({
     name: 'teachbuddy-runtime',
     configureServer(server) {
       const runtime = createTeachBuddyRuntime();
+      server.middlewares.use(classInTestMiddleware());
       server.middlewares.use(runtimeMiddleware(runtime));
       server.httpServer?.once('close', maintainRuntime(runtime));
     },
     configurePreviewServer(server) {
       const runtime = createTeachBuddyRuntime();
+      server.middlewares.use(classInTestMiddleware());
       server.middlewares.use(runtimeMiddleware(runtime));
       server.httpServer.once('close', maintainRuntime(runtime));
     },
@@ -41,6 +44,7 @@ export default defineConfig({
     port: 4173,
   },
   test: {
+    maxWorkers: 4,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.{ts,tsx}', 'server/**/*.test.ts'],

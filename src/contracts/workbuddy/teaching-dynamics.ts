@@ -3,6 +3,10 @@ import type { WorkBuddyImTarget } from './im-conversation-run';
 
 export type TeachingStageId = 'before' | 'during' | 'after' | 'summary';
 
+export type TeachingRecommendationKey =
+  | 'P01' | 'P02' | 'P03' | 'P04' | 'P05'
+  | 'P06' | 'P07' | 'P08' | 'P09' | 'P10';
+
 export type TeachingDynamicKind =
   | 'attention'
   | 'progress'
@@ -19,6 +23,8 @@ export type TeachingDynamicAction = Readonly<{
 
 export type TeachingDynamicItem = Readonly<{
   id: string;
+  /** Stable product recommendation identity. Facts without a suggested action omit it. */
+  recommendationKey?: TeachingRecommendationKey;
   stage: TeachingStageId;
   kind: TeachingDynamicKind;
   /** Teacher-facing ClassIn scope such as class, course, lesson, assignment, or destination. */

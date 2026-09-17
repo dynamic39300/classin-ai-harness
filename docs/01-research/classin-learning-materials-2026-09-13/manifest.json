@@ -1,0 +1,160 @@
+{
+  "truthLabel": "AI_GENERATED_TEST_CONTENT",
+  "courseId": 591820,
+  "pdfs": [
+    {
+      "lesson": 1,
+      "unitId": 53173128,
+      "unitName": "【第1讲】有理数综合提高（一）（课程结构）",
+      "title": "有理数综合提高（一）",
+      "file": "lesson-01-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 72290,
+      "sha256": "934567861dcc6a9ce29430f4295f10edfafdb9a0201bbb1155f7b9e210cbe202"
+    },
+    {
+      "lesson": 2,
+      "unitId": 53173129,
+      "unitName": "【第2讲】有理数综合提高（二）",
+      "title": "有理数综合提高（二）",
+      "file": "lesson-02-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 71193,
+      "sha256": "ee89bb707774886e980d6be6be4bf1b4af2aaec475c66f91ecf0797d94b0e62c"
+    },
+    {
+      "lesson": 3,
+      "unitId": 53173130,
+      "unitName": "【第3讲】压轴题：数轴上的动点问题",
+      "title": "数轴上的动点问题",
+      "file": "lesson-03-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 68143,
+      "sha256": "545e2f7dc7a2cec122a3ba9b657d95573d43a52d0a10b01b0022b8f294ec65cd"
+    },
+    {
+      "lesson": 4,
+      "unitId": 53173131,
+      "unitName": "【第4讲】整式综合提高（一）",
+      "title": "整式综合提高（一）",
+      "file": "lesson-04-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 69252,
+      "sha256": "0a63a9bf329fdf1ba0caf525490845142f693808b71d527da7b3fc8dc7ca0951"
+    },
+    {
+      "lesson": 5,
+      "unitId": 53173132,
+      "unitName": "【第5讲】整式综合提高（二）",
+      "title": "整式综合提高（二）",
+      "file": "lesson-05-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 67301,
+      "sha256": "1b75116b70bc1965387961db7cf97298ed40a4869becc43743b175a32be9b199"
+    },
+    {
+      "lesson": 6,
+      "unitId": 53173133,
+      "unitName": "【第6讲】压轴题：定义新运算与数阵图",
+      "title": "定义新运算与数阵图",
+      "file": "lesson-06-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 72948,
+      "sha256": "8d13689bafa60986acb642cdffa36f40b69bb6064272399c9a388677a17c16ef"
+    },
+    {
+      "lesson": 7,
+      "unitId": 53173134,
+      "unitName": "【第7讲】压轴题：运算类新定义问题",
+      "title": "运算类新定义问题",
+      "file": "lesson-07-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 76929,
+      "sha256": "b76875d9f7193f450660f7adc5971e0cd09496b2cf62e7186ece3b2f6f24bd5c"
+    },
+    {
+      "lesson": 8,
+      "unitId": 53173135,
+      "unitName": "【第8讲】图形初步综合提高",
+      "title": "图形初步综合提高",
+      "file": "lesson-08-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 74145,
+      "sha256": "98ffd9a958318fe7144e96770bafe0b234652c87f60b2ff9a7a46571e53831ec"
+    },
+    {
+      "lesson": 9,
+      "unitId": 53173136,
+      "unitName": "【第9讲】线段计算综合",
+      "title": "线段计算综合",
+      "file": "lesson-09-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 67667,
+      "sha256": "a078b306a05797b6e4822e9d3e1d5a47f57519b8fef98300da708fa24762dda0"
+    },
+    {
+      "lesson": 10,
+      "unitId": 53173137,
+      "unitName": "【第10讲】角的计算综合",
+      "title": "角的计算综合",
+      "file": "lesson-10-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 65548,
+      "sha256": "75365ef6ea02439cd08b8e1ee17f2792a8f3024daf95f412c95fdd2a4e0209df"
+    },
+    {
+      "lesson": 11,
+      "unitId": 53173138,
+      "unitName": "【第11讲】压轴题：动射线与角度计算",
+      "title": "动射线与角度计算",
+      "file": "lesson-11-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 74767,
+      "sha256": "3384bd099438e2f920374442743f8a8a6609dc568fb94cee30588bb33b30803b"
+    },
+    {
+      "lesson": 12,
+      "unitId": 53173139,
+      "unitName": "【第12讲】一元一次方程综合提高",
+      "title": "一元一次方程综合提高",
+      "file": "lesson-12-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 66649,
+      "sha256": "55278b834e78e1369eac080c919b1b9ed51d863207e8790a2dbd74285f265c6b"
+    },
+    {
+      "lesson": 13,
+      "unitId": 53173140,
+      "unitName": "【第13讲】方程应用综合提高",
+      "title": "方程应用综合提高",
+      "file": "lesson-13-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 72081,
+      "sha256": "ded3abdacb08db475ccd42ed2fce68c5005926d22054f9d0410d9b7db0647856"
+    },
+    {
+      "lesson": 14,
+      "unitId": 53173141,
+      "unitName": "【第14讲】压轴题：数轴与新定义问题综合",
+      "title": "数轴与新定义问题综合",
+      "file": "lesson-14-learning-material.pdf",
+      "pages": 1,
+      "pageSize": "A4",
+      "fileSizeBytes": 74590,
+      "sha256": "cf83f7d6aeb5f5903ab85c7a6144ddcc2a7d71b0859f27e8b41380c1977448d7"
+    }
+  ]
+}

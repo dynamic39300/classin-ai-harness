@@ -1,3 +1,8 @@
+import { authorizeClassInRuntime, type ClassInRuntimeGrant } from './classin-runtime-authorization.ts';
+import { createClassInTestService } from './classin-test-service.ts';
+import { ClassInError } from './classin-test-transport.ts';
+import { allowsClassInRequest } from './classin-test-middleware.ts';
+import type { ClassInScene } from '../src/contracts/classin-test/index.ts';
 import { renderSolutionPng } from './solution-image-renderer.ts';
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync, existsSync, statSync } from 'node:fs';
@@ -21,7 +26,7 @@ type Command = {
 };
 type StoredSession = {
   scope: RuntimeScope; snapshot: RuntimeSession; commands: Record<string, Command>;
-  startedAt?: number; cursor?: number;
+  startedAt?: number; cursor?: number; businessRead?: ClassInRuntimeGrant;
   cancelRequested?: { reason: 'user' | 'timeout'; at: number; status?: 'pending' | 'settled' };
 };
 type Rpc = (method: string, payload: Record<string, unknown>, rpcId?: string) => Promise<unknown>;
@@ -37,7 +42,7 @@ const ADMISSION_WAIT_MS = 15_000;
 const UNCONFIRMED = '消息发送结果尚未确认，请重新连接核对记录后再继续，避免重复执行。';
 const REJECTED = '消息未进入执行，请恢复输入并重新发送。';
 const TIMED_OUT = '任务执行超过 10 分钟，已请求停止。已有内容仍然保留。';
-const scopes = new Set(['ideal-full', 'classin-mvp', 'standalone-teacher']);
+const scopes = new Set(['ideal-full', 'classin-mvp', 'standalone-teacher', 'classin-test']);
 const identifier = /^[a-zA-Z0-9_-]{1,120}$/;
 const artifactFormats = new Set<SessionFileFormat>(['markdown', 'html', 'text', 'json']);
 const imageMediaTypes = new Set<RuntimeImageMediaType>(['image/png', 'image/jpeg', 'image/webp', 'image/gif']);
@@ -235,10 +240,11 @@ function admissions(entries: HistoryEntry[]) {
   return { commands, openTurn };
 }
 
-export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; verifyHost?: boolean } = {}): MaintainedRuntime {
+export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; verifyHost?: boolean; classInScene?: () => Promise<ClassInScene> } = {}): MaintainedRuntime {
   const root = resolve(options.root ?? '.runtime');
   const rpc = options.rpc ?? createHarnessRpc();
   const sessionFiles = createLocalSessionFileLibrary(root);
+  const classInScene = options.classInScene ?? (() => createClassInTestService().scene());
   const locks = new Map<string, Promise<unknown>>();
   let modelMutation: Promise<unknown> = Promise.resolve();
   const sessionsDir = join(root, 'sessions');
@@ -489,6 +495,7 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
       return sessions.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     },
     async create(scope) {
+      if (scope === 'classin-test') await classInScene();
       if (!scopes.has(scope)) throw new RuntimeError('工作区不存在。', 400);
       const health = await adapter.health();
       if (health.status !== 'ready') throw new RuntimeError(health.message, 503);
@@ -525,7 +532,9 @@ export function createTeachBuddyRuntime(options: { root?: string; rpc?: Rpc; ver
       }
       const health = await adapter.health();
       if (health.status !== 'ready') throw new RuntimeError(health.message, 503);
+      const businessRead = scope === 'classin-test' ? authorizeClassInRuntime(await classInScene(), text, commandId) : undefined;
       const state = load(scope, id);
+      state.businessRead = businessRead;
       const at = now();
       Object.defineProperty(state.commands, commandId, { value: { text, at, state: 'pending', afterSeq: state.cursor ?? -1, imageSignature, imageNames: images.map(({ name }) => name) }, enumerable: true, writable: true, configurable: true });
       state.startedAt = Date.now();
@@ -662,6 +671,7 @@ export function runtimeMiddleware(adapter: AgentRuntimeAdapter & {
       const scope = method === 'POST' ? body.scope : url.searchParams.get('scope');
       if (typeof scope !== 'string' || !scopes.has(scope)) throw new RuntimeError('工作区不存在。', 400);
       const selectedScope = scope as RuntimeScope;
+      if (selectedScope === 'classin-test' && !allowsClassInRequest(request)) throw new RuntimeError('测试会话仅允许本机同源访问。', 403);
       if (url.pathname === '/api/teachbuddy/im-demo-context') {
         if (method !== 'GET' || selectedScope !== 'ideal-full' || !adapter.readPrivateImDemoContext) {
           throw new RuntimeError('接口不存在。', 404);
@@ -702,7 +712,14 @@ export function runtimeMiddleware(adapter: AgentRuntimeAdapter & {
         if (!artifact || artifact.format !== 'json' || !artifact.fileName.endsWith('.solution.json')) throw new RuntimeError('解题图片不存在。', 404);
         let png: Buffer;
         try { png = await renderSolutionPng(artifact.content); }
-        catch { throw new RuntimeError('图片排版未完成，请重试；若内容过长，请让 AI 精简步骤后重新生成。', 422); }
+        catch (error) {
+          console.error('[TeachBuddy] solution image render failed', {
+            sessionId: session.id,
+            artifactId: artifact.id,
+            reason: error instanceof Error ? error.message : 'unknown render error',
+          });
+          throw new RuntimeError('图片排版未完成，请重试；若内容过长，请让 AI 精简步骤后重新生成。', 422);
+        }
         response.writeHead(200, { 'Content-Type': 'image/png', 'Content-Length': png.length, 'Cache-Control': 'no-store',
           'X-Content-Type-Options': 'nosniff', 'Content-Disposition': `${url.searchParams.get('download') === '1' ? 'attachment' : 'inline'}; filename="solution.png"` });
         response.end(png);
@@ -721,6 +738,10 @@ export function runtimeMiddleware(adapter: AgentRuntimeAdapter & {
       }
       throw new RuntimeError('请求参数不正确。', 400);
     })().then((value) => { if (!response.writableEnded) respond(200, value); }).catch((error: unknown) => {
+      if (error instanceof ClassInError) {
+        respond(error.code === 'forbidden' ? 403 : error.code === 'unauthorized' ? 401 : error.code === 'unsupported' ? 422 : 503, { error: error.message });
+        return;
+      }
       respond(error instanceof RuntimeError || error instanceof SessionFileError ? error.status : 500,
         { error: error instanceof RuntimeError || error instanceof SessionFileError ? error.message : '读取任务失败，请重新连接。' });
     });

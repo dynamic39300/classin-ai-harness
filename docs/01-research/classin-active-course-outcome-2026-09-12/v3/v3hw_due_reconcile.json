@@ -1,0 +1,29 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 2,
+  "truncated": false,
+  "execution_time_ms": 7496,
+  "data": [
+    {
+      "quality_group": "reconciled",
+      "homework_n": 13803,
+      "master_assigned_n": 104505,
+      "detail_assigned_n": 104505,
+      "master_submitted_n": 49524,
+      "detail_submitted_n": 49524,
+      "master_reviewed_n": 34941,
+      "detail_reviewed_n": 34941
+    },
+    {
+      "quality_group": "unreconciled",
+      "homework_n": 160,
+      "master_assigned_n": 4168,
+      "detail_assigned_n": 4168,
+      "master_submitted_n": 2476,
+      "detail_submitted_n": 2271,
+      "master_reviewed_n": 1708,
+      "detail_reviewed_n": 1439
+    }
+  ]
+}

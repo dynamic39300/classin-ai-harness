@@ -1,0 +1,54 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 3,
+  "truncated": false,
+  "execution_time_ms": 8561,
+  "data": [
+    {
+      "deadline_group": "due",
+      "represented_homework_n": 13806,
+      "assigned_records_n": 108673,
+      "assigned_pairs_n": 108673,
+      "student_n": 72330,
+      "submitted_n": 51795,
+      "reviewed_n": 36380,
+      "last_submit_on_time_n": 41390,
+      "last_submit_late_n": 10088,
+      "review_after_last_submit_n": 36063,
+      "viewed_after_review_n": 9242,
+      "feedback_presence_candidate_n": 35627,
+      "updated_after_cutoff_n": 10
+    },
+    {
+      "deadline_group": "no_deadline",
+      "represented_homework_n": 6725,
+      "assigned_records_n": 57550,
+      "assigned_pairs_n": 57550,
+      "student_n": 29651,
+      "submitted_n": 15029,
+      "reviewed_n": 8386,
+      "last_submit_on_time_n": 0,
+      "last_submit_late_n": 0,
+      "review_after_last_submit_n": 8342,
+      "viewed_after_review_n": 1878,
+      "feedback_presence_candidate_n": 8183,
+      "updated_after_cutoff_n": 1
+    },
+    {
+      "deadline_group": "not_due",
+      "represented_homework_n": 17164,
+      "assigned_records_n": 171151,
+      "assigned_pairs_n": 171150,
+      "student_n": 108950,
+      "submitted_n": 36933,
+      "reviewed_n": 22908,
+      "last_submit_on_time_n": 36829,
+      "last_submit_late_n": 0,
+      "review_after_last_submit_n": 22804,
+      "viewed_after_review_n": 4481,
+      "feedback_presence_candidate_n": 22518,
+      "updated_after_cutoff_n": 671
+    }
+  ]
+}

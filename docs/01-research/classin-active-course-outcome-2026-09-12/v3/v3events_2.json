@@ -1,0 +1,27 @@
+{
+  "instance": "starrocks_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 2,
+  "truncated": false,
+  "execution_time_ms": 8682,
+  "data": [
+    {
+      "biz_type": 2,
+      "action": "handin_homework",
+      "event_n": 155653,
+      "student_activity_n": 149304,
+      "student_n": 90925,
+      "activity_n": 31511,
+      "school_n": 2038
+    },
+    {
+      "biz_type": 2,
+      "action": "readover_homework_st",
+      "event_n": 125195,
+      "student_activity_n": 120088,
+      "student_n": 76265,
+      "activity_n": 25172,
+      "school_n": 1775
+    }
+  ]
+}

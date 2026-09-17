@@ -18,6 +18,7 @@ test('launcher reads .env privately, pins the package and passes isolated paths'
   await mkdir(originalHome);
   await writeFile(join(originalHome, '.env'), 'DEEPSEEK_API_KEY=fixture-user-key\nUNRELATED_USER_VALUE=not-forwarded\n');
   await copyFile(new URL('../../scripts/start-harness.mjs', import.meta.url), join(scripts, 'start-harness.mjs'));
+  await copyFile(new URL('../../scripts/harness-process.mjs', import.meta.url), join(scripts, 'harness-process.mjs'));
   await writeFile(join(root, '.env'), 'DEEPSEEK_API_KEY=fixture-secret\nTEACHBUDDY_LAUNCH_FIXTURE=file\nDSH_HOME=/wrong\n');
   await writeFile(join(bin, 'npx'), `#!/usr/bin/env node
 console.log(JSON.stringify({
@@ -71,4 +72,41 @@ console.log(JSON.stringify({
   const inherited = await invoke();
   assert.equal(inherited.configured, true);
   assert.equal(inherited.userConfigured, false);
+});
+
+test('loss of the bridge-owning launcher also stops the runtime process tree', { skip: process.platform === 'win32' }, async t => {
+  const root = await realpath(await mkdtemp(join(tmpdir(), 'teachbuddy-orphan-')));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(join(root, 'scripts'));
+  await mkdir(join(root, 'runtime/harness'), { recursive: true });
+  await mkdir(join(root, 'bin'));
+  await copyFile(new URL('../../scripts/start-harness.mjs', import.meta.url), join(root, 'scripts/start-harness.mjs'));
+  await copyFile(new URL('./gateway-compat.mjs', import.meta.url), join(root, 'runtime/harness/gateway-compat.mjs'));
+  await copyFile(new URL('../../scripts/harness-process.mjs', import.meta.url), join(root, 'scripts/harness-process.mjs'));
+  await writeFile(join(root, '.env'), 'DEEPSEEK_API_KEY=fixture-key\nDEEPSEEK_BASE_URL=http://127.0.0.1:1/v1\n');
+  await writeFile(join(root, 'bin/npx'), `#!/usr/bin/env node
+require('node:child_process').spawn(process.execPath,['-e',
+  "const server=require('node:http').createServer((req,res)=>res.end('ready'));server.listen(0,'127.0.0.1',()=>console.log(JSON.stringify({pid:process.pid,port:server.address().port})));"
+],{stdio:'inherit'});
+`, { mode: 0o700 });
+  const child = spawn(process.execPath, [join(root, 'scripts/start-harness.mjs')], {
+    env: { ...process.env, PATH: `${join(root, 'bin')}${delimiter}${process.env.PATH ?? ''}` }, stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  let fixture;
+  t.after(() => { child.kill('SIGKILL'); if (fixture) { try { process.kill(fixture.pid, 'SIGKILL'); } catch { /* Already stopped. */ } } });
+  fixture = await new Promise((resolve, reject) => {
+    let output = '';
+    const timer = setTimeout(() => reject(new Error('Fixture failed to start')), 5000);
+    child.stdout.on('data', data => { output += data; if (output.includes('\n')) { clearTimeout(timer); resolve(JSON.parse(output.split('\n')[0])); } });
+    child.once('error', reject);
+  });
+  const url = `http://127.0.0.1:${fixture.port}`;
+  assert.equal((await fetch(url)).status, 200);
+  child.kill('SIGKILL');
+  let reachable = true;
+  for (let attempt = 0; attempt < 30 && reachable; attempt++) {
+    await new Promise(resolve => setTimeout(resolve, 50));
+    try { await fetch(url, { signal: AbortSignal.timeout(200) }); } catch { reachable = false; }
+  }
+  assert.equal(reachable, false, 'Runtime must not remain healthy after its model bridge has died');
 });

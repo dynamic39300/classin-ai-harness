@@ -1,0 +1,351 @@
+﻿扫描ID,方法,服务前缀,原路径,匹配状态,候选Apifox项目,候选接口ID,候选接口名称
+PCAPI-0001,POST,//question-bank-business-service,/paper/relation,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496922,试卷绑定关系
+PCAPI-0002,POST,/,/schedule-bff/class_schedule/courser/search,UNIQUE_LITERAL_CANDIDATE,eeo_schedule_bff,3499146,获取课程名称搜索
+PCAPI-0003,POST,/,/schedule-bff/class_schedule/get,NO_LITERAL_MATCH,,,
+PCAPI-0004,POST,/,/schedule-bff/class_schedule/list,UNIQUE_LITERAL_CANDIDATE,eeo_schedule_bff,3493820,获取课程表列表
+PCAPI-0005,POST,/,/schedule-bff/class_schedule/lock_info,NO_LITERAL_MATCH,,,
+PCAPI-0006,POST,/agent-api/app/,/message/deployTrialAgent,NO_LITERAL_MATCH,,,
+PCAPI-0007,POST,/agent-api,/app/agent/cos/presignUrl,UNIQUE_LITERAL_CANDIDATE,agent_api,3498541,cos预签名url-上传和下载
+PCAPI-0008,POST,/agent-api,/app/agent/selection/page,NO_LITERAL_MATCH,,,
+PCAPI-0009,POST,/agent-api,/app/attachment/del,UNIQUE_LITERAL_CANDIDATE,agent_api,3502869,agent产物修删除
+PCAPI-0010,POST,/agent-api,/app/attachment/download,UNIQUE_LITERAL_CANDIDATE,agent_api,3502861,附件下载
+PCAPI-0011,POST,/agent-api,/app/attachment/list,UNIQUE_LITERAL_CANDIDATE,agent_api,3502753,agent产物列表
+PCAPI-0012,POST,/agent-api,/app/attachment/update,UNIQUE_LITERAL_CANDIDATE,agent_api,3502867,agent产物修改
+PCAPI-0013,POST,/agent-api,/app/config/welcome,MULTIPLE_LITERAL_CANDIDATES,course_ai_assistant_service; agent_api,3497919; 3498621,欢迎语/引导问题; ai学情-欢迎语/引导问题
+PCAPI-0014,POST,/agent-api,/app/feedback/add,UNIQUE_LITERAL_CANDIDATE,agent_api,3500551,添加反馈
+PCAPI-0015,POST,/agent-api,/app/feedback/getConfig,UNIQUE_LITERAL_CANDIDATE,agent_api,3500587,反馈配置
+PCAPI-0016,POST,/agent-api,/app/message/answerUseful,MULTIPLE_LITERAL_CANDIDATES,course_ai_assistant_service; agent_api,3497908; 3498487,回答赞踩; 回答赞踩
+PCAPI-0017,POST,/agent-api,/app/message/list,MULTIPLE_LITERAL_CANDIDATES,course_ai_assistant_service; agent_api,3497922; 3498480,问答列表; 会话详情
+PCAPI-0018,POST,/agent-api,/app/session/del,UNIQUE_LITERAL_CANDIDATE,agent_api,3498654,会话删除
+PCAPI-0019,POST,/agent-api,/app/session/list,MULTIPLE_LITERAL_CANDIDATES,course_ai_assistant_service; agent_api,3497918; 3498479,会话列表; 会话列表
+PCAPI-0020,POST,/agent-api,/app/session/studentList,MULTIPLE_LITERAL_CANDIDATES,course_ai_assistant_service; agent_api,3497921; 3498791,学生会话量列表; 学生会话量列表
+PCAPI-0021,POST,/agent-api,/app/skill/get,UNIQUE_LITERAL_CANDIDATE,agent_api,3502767,获取skill
+PCAPI-0022,POST,/agent-api,/app/task/generateStudentReports,UNIQUE_LITERAL_CANDIDATE,agent_api,3503375,创建生成报告任务
+PCAPI-0023,POST,/agentin/,/app/collect/agent/add,UNIQUE_LITERAL_CANDIDATE,agentin,3499647,添加业务智能体
+PCAPI-0024,POST,/agentin/,/app/collect/agent/delete,UNIQUE_LITERAL_CANDIDATE,agentin,3499649,删除业务智能体
+PCAPI-0025,POST,/agentin/,/app/collect/agent/list,UNIQUE_LITERAL_CANDIDATE,agentin,3499651,业务智能体收藏列表
+PCAPI-0026,POST,/agentin/,/app/collect/agent/top,UNIQUE_LITERAL_CANDIDATE,agentin,3500549,置顶/取消 业务智能体
+PCAPI-0027,POST,/agentin/,/app/index/recommend_agent,UNIQUE_LITERAL_CANDIDATE,agentin,3500061,推荐智能体--推荐智能体
+PCAPI-0028,POST,/agentin/,/app/orchestration/get_category_list,UNIQUE_LITERAL_CANDIDATE,agentin,3499416,智能体编排--获取分类列表
+PCAPI-0029,POST,/agentin/,/app/self_agent/delete,UNIQUE_LITERAL_CANDIDATE,agentin,3499353,我创建的--删除个人智能体（导入 + 自建）
+PCAPI-0030,POST,/agentin/,/app/self_agent/list,UNIQUE_LITERAL_CANDIDATE,agentin,3499359,我创建的--智能体列表（导入 + 自建）
+PCAPI-0031,POST,/agentin/,/app/self_agent/off_shelf,UNIQUE_LITERAL_CANDIDATE,agentin,3499360,我创建的--下架智能体（下架）
+PCAPI-0032,POST,/agentin/,/app/user/identity,MULTIPLE_LITERAL_CANDIDATES,eeo_zero_user; agentin,3500199; 3500021,根据用户id查询用户身份; 根据用户id查询用户身份
+PCAPI-0033,POST,/agentin/,/app/user/identity/list,MULTIPLE_LITERAL_CANDIDATES,eeo_zero_user; agentin,3500197; 3500029,获取身份列表（客户端）; 获取身份列表（客户端）
+PCAPI-0034,POST,/agentin/,/app/user/identity/save,MULTIPLE_LITERAL_CANDIDATES,eeo_zero_user; agentin,3500195; 3500027,存储用户身份; 存储用户身份
+PCAPI-0035,POST,/agentin/,/person/modify,NO_LITERAL_MATCH,,,
+PCAPI-0036,POST,/agentin/,app/agent/category,MULTIPLE_LITERAL_CANDIDATES,agentin; agentin,3498869; 3499421,商店--智能体分类-树形结构; 商店--智能体分类
+PCAPI-0037,POST,/agentin,/app/agent/detail,MULTIPLE_LITERAL_CANDIDATES,agentin; agentin,3499237; 3499422,商店--公开智能体详情; 商店--公开智能体详情
+PCAPI-0038,POST,/agentin,/app/agent/get_category_list,UNIQUE_LITERAL_CANDIDATE,agentin,3500339,商店--获取分类列表
+PCAPI-0039,POST,/agentin/,app/agent/list,MULTIPLE_LITERAL_CANDIDATES,agentin; agentin,3499423; 3498871,商店--根据分类获取智能体列表; 商店--根据分类获取智能体列表
+PCAPI-0040,POST,/agentin/,app/agent/person/list,UNIQUE_LITERAL_CANDIDATE,agentin,3499429,商店--个人智能体列表
+PCAPI-0041,POST,/agentin/,app/agent/person/query_flowin_agent_detail,UNIQUE_LITERAL_CANDIDATE,agentin,3499235,商店--查询flowin智能体详情
+PCAPI-0042,POST,/agentin/,app/agent/search,UNIQUE_LITERAL_CANDIDATE,agentin,3502465,商店--按名称搜索智能体
+PCAPI-0043,POST,/agentin/,app/agent/tag,UNIQUE_LITERAL_CANDIDATE,agentin,3499418,商店--智能体标签-列表
+PCAPI-0044,POST,/agentin,/app/course/agent/add,MULTIPLE_LITERAL_CANDIDATES,agentin; agentin,3498877; 3499432,添加业务智能体(个人、班级); 添加业务智能体(个人、班级)
+PCAPI-0045,POST,/agentin/app/course/agent,/delete,NO_LITERAL_MATCH,,,
+PCAPI-0046,POST,/agentin/app/,course/agent/delete,NO_LITERAL_MATCH,,,
+PCAPI-0047,POST,/agentin/app/course/agent,/list,NO_LITERAL_MATCH,,,
+PCAPI-0048,POST,/agentin/app/,course/agent/list,NO_LITERAL_MATCH,,,
+PCAPI-0049,POST,/agentin,/app/course/publicagent/detail,MULTIPLE_LITERAL_CANDIDATES,agentin; agentin,3499425; 3498872,业务商店智能体详情(班级、个人); 业务商店智能体详情(班级、个人)
+PCAPI-0050,POST,/agentin/,app/index/banner_list,UNIQUE_LITERAL_CANDIDATE,agentin,3500059,首页--Banner列表
+PCAPI-0051,POST,/agentin,/app/newbee/content/is_empty,UNIQUE_LITERAL_CANDIDATE,agentin,3500161,判断创建者说内容是否为空
+PCAPI-0052,POST,/agentin,/app/newbee/creater_token/get,UNIQUE_LITERAL_CANDIDATE,agentin,3500007,获取创建者说访问token
+PCAPI-0053,POST,/agentin,/app/newbee/space/read_token,UNIQUE_LITERAL_CANDIDATE,agentin,3502759,获取 Newbee 空间只读访问 Token
+PCAPI-0054,POST,/agentin,/app/newbee/wisehub/batch_study_status,UNIQUE_LITERAL_CANDIDATE,agentin,3501263,Wisehub 批量学习状态
+PCAPI-0055,POST,/agentin/,app/notification/list,UNIQUE_LITERAL_CANDIDATE,agentin,3502513,通知--前台通知列表（已上架，按更新时间倒序）
+PCAPI-0056,POST,/agentin/,app/notification/read,UNIQUE_LITERAL_CANDIDATE,agentin,3502529,通知--标记已读
+PCAPI-0057,POST,/agentin,/app/options/all,UNIQUE_LITERAL_CANDIDATE,agentin,3500595,获取静态配置
+PCAPI-0058,POST,/agentin,/app/orchestration/get_category_list,UNIQUE_LITERAL_CANDIDATE,agentin,3499416,智能体编排--获取分类列表
+PCAPI-0059,POST,/agentin,/app/orchestration/get_llm_config,UNIQUE_LITERAL_CANDIDATE,agentin,3499366,智能体编排--获取系统LLM配置
+PCAPI-0060,POST,/agentin,/app/orchestration/get_tag_list,UNIQUE_LITERAL_CANDIDATE,agentin,3499417,智能体编排--获取标签列表
+PCAPI-0061,POST,/agentin/,app/personal/publish/history,UNIQUE_LITERAL_CANDIDATE,agentin,3499274,个人发布历史列表
+PCAPI-0062,POST,/agentin/,app/personal/publish/history/read,UNIQUE_LITERAL_CANDIDATE,agentin,3499397,个人发布历史列表已读
+PCAPI-0063,POST,/agentin,/app/publish/history,UNIQUE_LITERAL_CANDIDATE,agentin,3499275,应用发布历史+草稿
+PCAPI-0064,POST,/agentin,/app/ranking_list/detail,UNIQUE_LITERAL_CANDIDATE,agentin,3499991,客户端-榜单详情
+PCAPI-0065,POST,/agentin,/app/ranking_list/list,UNIQUE_LITERAL_CANDIDATE,agentin,3499993,客户端-榜单列表
+PCAPI-0066,POST,/agentin,/app/self_agent/arrangement/detail,UNIQUE_LITERAL_CANDIDATE,agentin,3500645,我创建的--获取智能体编排信息(已发布版本)
+PCAPI-0067,POST,/agentin,/app/self_agent/avatar/generate,UNIQUE_LITERAL_CANDIDATE,agentin,3500647,我创建的--生成 AI 头像
+PCAPI-0068,POST,/agentin,/app/self_agent/content/audit,UNIQUE_LITERAL_CANDIDATE,agentin,3500649,我创建的--智能体内容审核
+PCAPI-0069,POST,/agentin,/app/self_agent/create,UNIQUE_LITERAL_CANDIDATE,agentin,3499352,我创建的--创建应用（创建应用）
+PCAPI-0070,POST,/agentin,/app/self_agent/detail,UNIQUE_LITERAL_CANDIDATE,agentin,3499563,我创建的--个人智能体详情[已发布后使用]（导入 + 自建）
+PCAPI-0071,POST,/agentin,/app/self_agent/draft_box/detail,UNIQUE_LITERAL_CANDIDATE,agentin,3499355,我创建的--获取草稿箱详情（自建智能体编辑回显）
+PCAPI-0072,POST,/agentin,/app/self_agent/draft_box/save,UNIQUE_LITERAL_CANDIDATE,agentin,3499356,我创建的--智能体保存到草稿箱（定时保存）
+PCAPI-0073,POST,/agentin/,app/self_agent/import/add,UNIQUE_LITERAL_CANDIDATE,agentin,3499357,我创建的--添加个人智能体（导入）
+PCAPI-0074,POST,/agentin/,app/self_agent/import/modify,UNIQUE_LITERAL_CANDIDATE,agentin,3499358,我创建的--修改个人智能体（导入）
+PCAPI-0075,POST,/agentin,/app/self_agent/publish,UNIQUE_LITERAL_CANDIDATE,agentin,3499361,我创建的--发布智能体（点击发布）
+PCAPI-0076,POST,/agentin,/app/self_agent/publish/details,UNIQUE_LITERAL_CANDIDATE,agentin,3499561,我创建的--发布详情页信息（语言、平台）
+PCAPI-0077,POST,/agentin,/app/template/list,UNIQUE_LITERAL_CANDIDATE,agentin,3499323,端上模板列表
+PCAPI-0078,POST,/agentin/app/,user/configure/getWebData,NO_LITERAL_MATCH,,,
+PCAPI-0079,POST,/agentin,/get/knowledge,NO_LITERAL_MATCH,,,
+PCAPI-0080,POST,/agentin,/save/knowledge,NO_LITERAL_MATCH,,,
+PCAPI-0081,POST,/api,/classin.api.php?action=addClassStudent,NO_LITERAL_MATCH,,,
+PCAPI-0082,POST,/api,/classin.api.php?action=addSuggest,NO_LITERAL_MATCH,,,
+PCAPI-0083,POST,/api,/classin.api.php?action=getMySchoolList,NO_LITERAL_MATCH,,,
+PCAPI-0084,POST,/api,/classin.api.php?action=uploadImage,NO_LITERAL_MATCH,,,
+PCAPI-0085,POST,/api/,exam.api.php?action=getTextbookTree,NO_LITERAL_MATCH,,,
+PCAPI-0086,POST,/api,classin.api.php?action=delCourseAudit,NO_LITERAL_MATCH,,,
+PCAPI-0087,POST,/api,classin.api.php?action=delCourseStudent,NO_LITERAL_MATCH,,,
+PCAPI-0088,POST,/api,classin.api.php?action=deleteCourseTeacher,NO_LITERAL_MATCH,,,
+PCAPI-0089,POST,/api,classin.api.php?action=editClusterMemberNicknames,NO_LITERAL_MATCH,,,
+PCAPI-0090,POST,/api,classin.api.php?action=editCourse,NO_LITERAL_MATCH,,,
+PCAPI-0091,POST,/api,classin.api.php?action=getLoginUserStatus,NO_LITERAL_MATCH,,,
+PCAPI-0092,POST,/api,classin.api.php?action=getQuitClusterStatus,NO_LITERAL_MATCH,,,
+PCAPI-0093,POST,/api,classin.api.php?action=getSchoolAuthInfo,NO_LITERAL_MATCH,,,
+PCAPI-0094,POST,/api,classin.api.php?action=quitCluster,NO_LITERAL_MATCH,,,
+PCAPI-0095,POST,/api,classin.api.php?action=studentBecomeTeacher,NO_LITERAL_MATCH,,,
+PCAPI-0096,POST,/api,classin.api.php?action=teacherBecomeStudent,NO_LITERAL_MATCH,,,
+PCAPI-0097,POST,/classroom/app,/classInfo/simpleInfo,NO_LITERAL_MATCH,,,
+PCAPI-0098,POST,/classroom,/web/class/open/get,UNIQUE_LITERAL_CANDIDATE,eeo_classroom_business,3497930,页面搜索-公开课详情
+PCAPI-0099,POST,/classroom,/web/class/open/students,UNIQUE_LITERAL_CANDIDATE,eeo_classroom_business,3497931,页面搜索-公开课学生列表
+PCAPI-0100,POST,/client-base-api/,/user/sources,NO_LITERAL_MATCH,,,
+PCAPI-0101,POST,/clouddisk/api,/batchDel,NO_LITERAL_MATCH,,,
+PCAPI-0102,POST,/clouddisk/api,/beike/create,NO_LITERAL_MATCH,,,
+PCAPI-0103,POST,/clouddisk/api,/course/createFolder,NO_LITERAL_MATCH,,,
+PCAPI-0104,POST,/clouddisk/api,/createFolder,NO_LITERAL_MATCH,,,
+PCAPI-0105,POST,/clouddisk/api,/delAuthBySid,NO_LITERAL_MATCH,,,
+PCAPI-0106,POST,/clouddisk/api,/getAuthorizedInfo,NO_LITERAL_MATCH,,,
+PCAPI-0107,POST,/clouddisk/api,/getFileInfo,NO_LITERAL_MATCH,,,
+PCAPI-0108,POST,/clouddisk/api,/getFilesTransitionState,NO_LITERAL_MATCH,,,
+PCAPI-0109,POST,/clouddisk/api,/getFolderList,NO_LITERAL_MATCH,,,
+PCAPI-0110,POST,/clouddisk/api,/onlinedoc/create,NO_LITERAL_MATCH,,,
+PCAPI-0111,POST,/clouddisk/api,/renameFile,NO_LITERAL_MATCH,,,
+PCAPI-0112,POST,/clouddisk/api,/renameFolder,NO_LITERAL_MATCH,,,
+PCAPI-0113,POST,/clouddisk/api,/resource/getMyResource,NO_LITERAL_MATCH,,,
+PCAPI-0114,POST,/clouddisk/api,/saveAuthFile,NO_LITERAL_MATCH,,,
+PCAPI-0115,POST,/clouddisk/web,/resource/getResourceAuth,NO_LITERAL_MATCH,,,
+PCAPI-0116,POST,/clouddisk/web,/resource/setResourceAuthWithAction,NO_LITERAL_MATCH,,,
+PCAPI-0117,POST,/cloudspace/api,/course/breadcrumb,NO_LITERAL_MATCH,,,
+PCAPI-0118,POST,/cloudspace/api,/course/getSubFolderList,NO_LITERAL_MATCH,,,
+PCAPI-0119,POST,/cloudspace/api,/eppt/create,NO_LITERAL_MATCH,,,
+PCAPI-0120,POST,/cloudspace/api,/home/getBannerListNew,NO_LITERAL_MATCH,,,
+PCAPI-0121,POST,/cloudspace/api,/logs,NO_LITERAL_MATCH,,,
+PCAPI-0122,POST,/cloudspace/api,/organization/auth/get,NO_LITERAL_MATCH,,,
+PCAPI-0123,POST,/cloudspace/api,/organization/auth/set/download,NO_LITERAL_MATCH,,,
+PCAPI-0124,POST,/cloudspace/api,/organization/auth/setWithAction,NO_LITERAL_MATCH,,,
+PCAPI-0125,POST,/cloudspace/api,/organization/breadcrumb,NO_LITERAL_MATCH,,,
+PCAPI-0126,POST,/cloudspace/api,/organization/copy,NO_LITERAL_MATCH,,,
+PCAPI-0127,POST,/cloudspace/api,/organization/delete,NO_LITERAL_MATCH,,,
+PCAPI-0128,POST,/cloudspace/api,/organization/disk/create,NO_LITERAL_MATCH,,,
+PCAPI-0129,POST,/cloudspace/api,/organization/disk/delete,NO_LITERAL_MATCH,,,
+PCAPI-0130,POST,/cloudspace/api,/organization/disk/list,NO_LITERAL_MATCH,,,
+PCAPI-0131,POST,/cloudspace/api,/organization/disk/rename,NO_LITERAL_MATCH,,,
+PCAPI-0132,POST,/cloudspace/api,/organization/edoc/create,NO_LITERAL_MATCH,,,
+PCAPI-0133,POST,/cloudspace/api,/organization/eppt/create,NO_LITERAL_MATCH,,,
+PCAPI-0134,POST,/cloudspace/api,/organization/file/rename,NO_LITERAL_MATCH,,,
+PCAPI-0135,POST,/cloudspace/api,/organization/file/upload,NO_LITERAL_MATCH,,,
+PCAPI-0136,POST,/cloudspace/api,/organization/fileinfo/get,NO_LITERAL_MATCH,,,
+PCAPI-0137,POST,/cloudspace/api,/organization/folder/create,NO_LITERAL_MATCH,,,
+PCAPI-0138,POST,/cloudspace/api,/organization/folder/list,NO_LITERAL_MATCH,,,
+PCAPI-0139,POST,/cloudspace/api,/organization/folder/rename,NO_LITERAL_MATCH,,,
+PCAPI-0140,POST,/cloudspace/api,/organization/homework/upload,NO_LITERAL_MATCH,,,
+PCAPI-0141,POST,/cloudspace/api,/organization/move,NO_LITERAL_MATCH,,,
+PCAPI-0142,POST,/cloudspace/api,/organization/my2organization,NO_LITERAL_MATCH,,,
+PCAPI-0143,POST,/cloudspace/api,/organization/ppt/upgrade,NO_LITERAL_MATCH,,,
+PCAPI-0144,POST,/cloudspace/api,/organization/saveAuthFile,NO_LITERAL_MATCH,,,
+PCAPI-0145,POST,/cloudspace/api,/organization/school/list,NO_LITERAL_MATCH,,,
+PCAPI-0146,POST,/cloudspace/api,/organization/search,NO_LITERAL_MATCH,,,
+PCAPI-0147,POST,/cloudspace/api,/user/addRecentOpen,NO_LITERAL_MATCH,,,
+PCAPI-0148,POST,/cloudspace/api,/user/auth/breadcrumb,NO_LITERAL_MATCH,,,
+PCAPI-0149,POST,/cloudspace/api,/user/batchAddRecentOpenRecord,NO_LITERAL_MATCH,,,
+PCAPI-0150,POST,/cloudspace/api,/user/batchCopyto,NO_LITERAL_MATCH,,,
+PCAPI-0151,POST,/cloudspace/api,/user/batchMove,NO_LITERAL_MATCH,,,
+PCAPI-0152,POST,/cloudspace/api,/user/breadcrumb,NO_LITERAL_MATCH,,,
+PCAPI-0153,POST,/cloudspace/api,/user/delRecentOpenRecord,NO_LITERAL_MATCH,,,
+PCAPI-0154,POST,/cloudspace/api,/user/getBannerList,NO_LITERAL_MATCH,,,
+PCAPI-0155,POST,/cloudspace/api,/user/getFolderList,NO_LITERAL_MATCH,,,
+PCAPI-0156,POST,/cloudspace/api,/user/getNavigationPreference,NO_LITERAL_MATCH,,,
+PCAPI-0157,POST,/cloudspace/api,/user/getRecentOpenList,NO_LITERAL_MATCH,,,
+PCAPI-0158,POST,/cloudspace/api,/user/getSubFolderList,NO_LITERAL_MATCH,,,
+PCAPI-0159,POST,/cloudspace/api,/user/getTransStateByOriginId,NO_LITERAL_MATCH,,,
+PCAPI-0160,POST,/cloudspace/api,/user/pin,NO_LITERAL_MATCH,,,
+PCAPI-0161,POST,/cloudspace/api,/user/reTransFile,NO_LITERAL_MATCH,,,
+PCAPI-0162,POST,/cloudspace/api,/user/saveNavigationPreference,NO_LITERAL_MATCH,,,
+PCAPI-0163,POST,/cloudspace/api,/user/search/files,NO_LITERAL_MATCH,,,
+PCAPI-0164,POST,/cloudspace/api,/user/uploadFileMix,NO_LITERAL_MATCH,,,
+PCAPI-0165,POST,/cloudspace/api,user/batchDelRecentOpenRecord,NO_LITERAL_MATCH,,,
+PCAPI-0166,POST,/cloudspace/storage,/org/limit/info,NO_LITERAL_MATCH,,,
+PCAPI-0167,POST,/cloudspace/storage,/org/usage/detail,NO_LITERAL_MATCH,,,
+PCAPI-0168,POST,/cloudspace/web,/organization/auth/get,NO_LITERAL_MATCH,,,
+PCAPI-0169,POST,/cloudspace/web,/organization/auth/setWithAction,NO_LITERAL_MATCH,,,
+PCAPI-0170,POST,/cloudspace/web,/organization/disk/create,NO_LITERAL_MATCH,,,
+PCAPI-0171,POST,/coreapi/app,/getClientVersionShowItems,NO_LITERAL_MATCH,,,
+PCAPI-0172,POST,/coreapi/app,/getDepartmentList,NO_LITERAL_MATCH,,,
+PCAPI-0173,POST,/coreapi/app,/getDepartmentUpdateVersion,UNIQUE_LITERAL_CANDIDATE,eeo_core_business,3492932,获取组织架构更新版本
+PCAPI-0174,POST,/coreapi/app,/getSchoolInfos,NO_LITERAL_MATCH,,,
+PCAPI-0175,POST,/coreapi/app,/getStorageReminderMsg,NO_LITERAL_MATCH,,,
+PCAPI-0176,POST,/coreapi/app,/getVersionMultilingual,NO_LITERAL_MATCH,,,
+PCAPI-0177,POST,/coreapi/app,/school/getSubListAuth,UNIQUE_LITERAL_CANDIDATE,eeo_core_business,3496484,获取机构子账号权限
+PCAPI-0178,POST,/coreapi/app,/schoolUser/getSchoolStudentList,NO_LITERAL_MATCH,,,
+PCAPI-0179,POST,/coreapi/app,/schoolUser/getSchoolTeacherList,UNIQUE_LITERAL_CANDIDATE,eeo_core_business,3496718,获取老师列表
+PCAPI-0180,POST,/coreapi/app,/schoolUser/getStudentTree,NO_LITERAL_MATCH,,,
+PCAPI-0181,POST,/coreapi/app,/schoolUser/getTeacherDepartmentList,NO_LITERAL_MATCH,,,
+PCAPI-0182,POST,/coreapi,/category/student/tree,UNIQUE_LITERAL_CANDIDATE,eeo_core_business,3470032,学生分类树
+PCAPI-0183,POST,/coreapi,/department/getSchoolTeacherTree,UNIQUE_LITERAL_CANDIDATE,eeo_core_business,3498988,获取教师组织架构树 - 中小学
+PCAPI-0184,POST,/coreapi,/school/getSubListAuth?authType=orgCloudAuth,NO_LITERAL_MATCH,,,
+PCAPI-0185,POST,/coreapi,/schoolUser/getSchoolTeacherList,UNIQUE_LITERAL_CANDIDATE,eeo_core_business,3496718,获取老师列表
+PCAPI-0186,POST,/coreapi,/student/getStudentList,UNIQUE_LITERAL_CANDIDATE,eeo_core_business,3470024,获取学生（搜索）列表
+PCAPI-0187,POST,/course-ai-assistant/app,/config/welcome,NO_LITERAL_MATCH,,,
+PCAPI-0188,POST,/course-ai-assistant/app,/course/checkStatus,NO_LITERAL_MATCH,,,
+PCAPI-0189,POST,/course-ai-assistant/app,/file/suggestedQuestions,NO_LITERAL_MATCH,,,
+PCAPI-0190,POST,/course-ai-assistant/app,/message/answerUseful,NO_LITERAL_MATCH,,,
+PCAPI-0191,POST,/course-ai-assistant/app,/message/list,NO_LITERAL_MATCH,,,
+PCAPI-0192,POST,/course-ai-assistant/app,/session/delete,UNIQUE_LITERAL_CANDIDATE,class-claw,3501033,删除历史 session
+PCAPI-0193,POST,/course-ai-assistant/app,/session/list,NO_LITERAL_MATCH,,,
+PCAPI-0194,POST,/course-ai-assistant/app,/session/studentList,NO_LITERAL_MATCH,,,
+PCAPI-0195,POST,/course,/app/course/add,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3497871,添加班级
+PCAPI-0196,POST,/course,/app/course/addCourseStudent,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3497906,班级添加学生
+PCAPI-0197,POST,/course,/app/course/detail,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3497881,班级详情
+PCAPI-0198,POST,/course,/app/course/detail/by-no,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3499132,通过cno获取班级详情
+PCAPI-0199,POST,/course,/app/course/edit,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3497852,编辑班级
+PCAPI-0200,POST,/course,/app/course/end,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3498436,结课
+PCAPI-0201,POST,/course,/app/course/get-invite-url,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3499130,获取班级分享链接
+PCAPI-0202,POST,/course,/app/course/lessons/stats,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3499500,获取班级课节统计信息
+PCAPI-0203,POST,/course,/app/course/member/edit,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3497894,编辑班级成员
+PCAPI-0204,POST,/course,/app/course/member/info,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3497966,班级成员详情
+PCAPI-0205,POST,/course,/app/course/member/setting,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3497893,班级成员设置
+PCAPI-0206,POST,/course/app/course,/rechargeReminder,NO_LITERAL_MATCH,,,
+PCAPI-0207,POST,/course,/app/course/setting,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3497892,班级设置
+PCAPI-0208,POST,/course,/app/member/course_list,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3496948,获取用户班级列表
+PCAPI-0209,POST,/course,/app/member/course_pin,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3497855,班级置顶
+PCAPI-0210,POST,/course,/app/member/course/move,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3498238,移动班级
+PCAPI-0211,POST,/course,/app/school/user/course-list,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3499089,获取机构用户班级列表
+PCAPI-0212,POST,/course,/app/user/teacher-courses,UNIQUE_LITERAL_CANDIDATE,eeo_course_business,3500047,获取老师班级列表
+PCAPI-0213,POST,/finance/app/metering,/getUsageInfo,UNIQUE_LITERAL_CANDIDATE,商业化,3502917,获取机构余量信息
+PCAPI-0214,POST,/infra,/short-url/api/get,UNIQUE_LITERAL_CANDIDATE,infra-bff,3490430,短连接获取长链接信息
+PCAPI-0215,POST,/lms-ai-service,/app/ai/generate,UNIQUE_LITERAL_CANDIDATE,lms_ai_service,3498443,AI 智能问答
+PCAPI-0216,POST,/lms,/app/activity/class/get,UNIQUE_LITERAL_CANDIDATE,lms,3471071,活动 - 课堂 - 详情
+PCAPI-0217,POST,/lms/app,/activity/class/get,NO_LITERAL_MATCH,,,
+PCAPI-0218,POST,/lms,/app/activity/learningMaterials/get,UNIQUE_LITERAL_CANDIDATE,lms,3471040,学习资料 - 详情
+PCAPI-0219,POST,/lms,/app/activity/recordClass/get,UNIQUE_LITERAL_CANDIDATE,lms,3471030,录播课 - 详情
+PCAPI-0220,POST,/lms/app,/activity/sort,NO_LITERAL_MATCH,,,
+PCAPI-0221,POST,/lms/app,/category/getActivityCountByCategory,NO_LITERAL_MATCH,,,
+PCAPI-0222,POST,/lms/app,/category/list,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487376,分类列表
+PCAPI-0223,POST,/lms/app,/category/sort,NO_LITERAL_MATCH,,,
+PCAPI-0224,POST,/lms/app/content,/collection/detail,NO_LITERAL_MATCH,,,
+PCAPI-0225,POST,/lms/app/content,/collection/getCollectionId,NO_LITERAL_MATCH,,,
+PCAPI-0226,POST,/lms/app,/content/collection/getCollectionId,NO_LITERAL_MATCH,,,
+PCAPI-0227,POST,/lms/app/content,/collection/setNodeReadonly,NO_LITERAL_MATCH,,,
+PCAPI-0228,POST,/lms/app,/content/flowin/getToken,NO_LITERAL_MATCH,,,
+PCAPI-0229,POST,/lms/app/content,/notice/list,NO_LITERAL_MATCH,,,
+PCAPI-0230,POST,/lms/app/content,/notice/mention/list,NO_LITERAL_MATCH,,,
+PCAPI-0231,POST,/lms/app,/content/notice/mention/list,UNIQUE_LITERAL_CANDIDATE,lms,3497942,获取mention人员信息
+PCAPI-0232,POST,/lms/app/content,/notice/mention/submit,NO_LITERAL_MATCH,,,
+PCAPI-0233,POST,/lms/app/content,/notice/read,NO_LITERAL_MATCH,,,
+PCAPI-0234,POST,/lms/app/content,/notice/read/all,NO_LITERAL_MATCH,,,
+PCAPI-0235,POST,/lms/app/content,/notice/unread/count,NO_LITERAL_MATCH,,,
+PCAPI-0236,POST,/lms/app,/copy/createActivityFromOtherCourse,NO_LITERAL_MATCH,,,
+PCAPI-0237,POST,/lms/app,/copy/createActivityToOtherCourses,NO_LITERAL_MATCH,,,
+PCAPI-0238,POST,/lms/app,/course/getTeacherCourses,NO_LITERAL_MATCH,,,
+PCAPI-0239,POST,/lms/app,/share/shareParamDecrypt,NO_LITERAL_MATCH,,,
+PCAPI-0240,POST,/lms/app,/share/short,NO_LITERAL_MATCH,,,
+PCAPI-0241,POST,/lms/app,/teacherIn/saveToTeacherIn,NO_LITERAL_MATCH,,,
+PCAPI-0242,POST,/lms/app,/teacherIn/teacherInOwnerList,NO_LITERAL_MATCH,,,
+PCAPI-0243,POST,/lms/app,/unit/getUnits,NO_LITERAL_MATCH,,,
+PCAPI-0244,POST,/lms/app,/unit/sort,NO_LITERAL_MATCH,,,
+PCAPI-0245,POST,/lms/app/user,/getCreateActivityMemo,NO_LITERAL_MATCH,,,
+PCAPI-0246,POST,/lms/app,activity/delete,NO_LITERAL_MATCH,,,
+PCAPI-0247,POST,/lms/app,activity/end,NO_LITERAL_MATCH,,,
+PCAPI-0248,POST,/lms/app,activity/homework/get,UNIQUE_LITERAL_CANDIDATE,homework,3492626,作业详情
+PCAPI-0249,POST,/lms/app,activity/release,NO_LITERAL_MATCH,,,
+PCAPI-0250,POST,/lms/app,category/create,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487374,分类创建
+PCAPI-0251,POST,/lms/app,category/delete,MULTIPLE_LITERAL_CANDIDATES,eeo_core_business; eeo_lms_question_bank_business_go,3470019; 3487380,删除分类; 分类删除
+PCAPI-0252,POST,/lms/app,category/list,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487376,分类列表
+PCAPI-0253,POST,/lms/app,category/update,MULTIPLE_LITERAL_CANDIDATES,eeo_core_business; eeo_lms_question_bank_business_go,3470038; 3487378,更新分类信息; 分类编辑
+PCAPI-0254,POST,/lms/app,common/pollingAsyncResult,NO_LITERAL_MATCH,,,
+PCAPI-0255,POST,/lms/app,content/teachPlan/isShow,NO_LITERAL_MATCH,,,
+PCAPI-0256,POST,/lms/app,course/classActivityList,NO_LITERAL_MATCH,,,
+PCAPI-0257,POST,/lms/app,course/getCourseAllUnits,NO_LITERAL_MATCH,,,
+PCAPI-0258,POST,/lms/app,course/getCourseUnitsActivities,NO_LITERAL_MATCH,,,
+PCAPI-0259,POST,/lms/app,course/studentUnitActivityList,NO_LITERAL_MATCH,,,
+PCAPI-0260,POST,/lms/app,course/studentUnitList,NO_LITERAL_MATCH,,,
+PCAPI-0261,POST,/lms/app,course/unitActivityList,NO_LITERAL_MATCH,,,
+PCAPI-0262,POST,/lms/app,course/unitList,NO_LITERAL_MATCH,,,
+PCAPI-0263,POST,/lms/app,unit/delete,NO_LITERAL_MATCH,,,
+PCAPI-0264,POST,/lms/app,unit/mergeUnit,NO_LITERAL_MATCH,,,
+PCAPI-0265,POST,/lms/app,unit/publish,NO_LITERAL_MATCH,,,
+PCAPI-0266,POST,/mix/app,/getCosTempToken,UNIQUE_LITERAL_CANDIDATE,eeo_mix_business,3492000,获取cos桶的临时密钥
+PCAPI-0267,POST,/mix/app,/gray/v2/batchGetGrayVal,NO_LITERAL_MATCH,,,
+PCAPI-0268,POST,/mix/app,/gray/v2/getGrayVal,NO_LITERAL_MATCH,,,
+PCAPI-0269,POST,/question-bank-business-service/,/paper/saveAsVerify,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3499560,试卷转存-前置校验
+PCAPI-0270,POST,/question-bank-business-service/,bankTag/list,NO_LITERAL_MATCH,,,
+PCAPI-0271,POST,/question-bank-business-service/,category/create,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487374,分类创建
+PCAPI-0272,POST,/question-bank-business-service/,category/delete,MULTIPLE_LITERAL_CANDIDATES,eeo_core_business; eeo_lms_question_bank_business_go,3470019; 3487380,删除分类; 分类删除
+PCAPI-0273,POST,/question-bank-business-service/,category/list,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487376,分类列表
+PCAPI-0274,POST,/question-bank-business-service/,category/order,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3494488,分类排序
+PCAPI-0275,POST,/question-bank-business-service/,category/update,MULTIPLE_LITERAL_CANDIDATES,eeo_core_business; eeo_lms_question_bank_business_go,3470038; 3487378,更新分类信息; 分类编辑
+PCAPI-0276,POST,/question-bank-business-service/,paper/copy,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496498,试卷复制
+PCAPI-0277,POST,/question-bank-business-service/,paper/create,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487336,试卷创建
+PCAPI-0278,POST,/question-bank-business-service/,paper/get,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487366,试卷详情
+PCAPI-0279,POST,/question-bank-business-service/,paper/move,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496496,试卷移动
+PCAPI-0280,POST,/question-bank-business-service/,paper/update,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487368,试卷编辑
+PCAPI-0281,POST,/question-bank-business-service/,subject/deleteBank,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496188,删除学科学段以及对应的题库
+PCAPI-0282,POST,/question-bank-business-service/,subject/getSection,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496420,k12获取章节列表
+PCAPI-0283,POST,/question-bank-business-service/,subject/list,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496186,创建了题库的学科学段列表
+PCAPI-0284,POST,/question-bank-business-service/,subject/updateBank,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496406,编辑学科对应题库的状态
+PCAPI-0285,POST,/question-bank-business-service/,subjectiveQuestionName/list,NO_LITERAL_MATCH,,,
+PCAPI-0286,POST,/question-bank-business-service/,topic/batchCreate,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487312,试题创建(批量)
+PCAPI-0287,POST,/question-bank-business-service/,topic/batchCreateTemp,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496784,试题创建(批量) -不保存题库
+PCAPI-0288,POST,/question-bank-business-service/,topic/batchGet,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487332,试题详情(批量)
+PCAPI-0289,POST,/question-bank-business-service/,topic/copy,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496178,试题复制
+PCAPI-0290,POST,/question-bank-business-service/,topic/incrementalUpdate,NO_LITERAL_MATCH,,,
+PCAPI-0291,POST,/question-bank-business-service/,topic/move,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3496176,试题移动
+PCAPI-0292,POST,/question-bank-business-service/,topic/update,UNIQUE_LITERAL_CANDIDATE,eeo_lms_question_bank_business_go,3487316,试题编辑
+PCAPI-0293,POST,/saasajax,/school.ajax.php?action=getLoginUserStatus,NO_LITERAL_MATCH,,,
+PCAPI-0294,POST,/saasajax,/server.ajax.php?action=getNServeTime,NO_LITERAL_MATCH,,,
+PCAPI-0295,POST,/,saasajax/server.ajax.php?action=getNServeTime,NO_LITERAL_MATCH,,,
+PCAPI-0296,POST,/schedule-bff,/api/class/announcement/entrance/detail,UNIQUE_LITERAL_CANDIDATE,eeo_schedule_bff,3497810,（班级公告）入口公告详情
+PCAPI-0297,POST,/schedule-bff,/api/class/announcement/list,UNIQUE_LITERAL_CANDIDATE,eeo_schedule_bff,3497809,（班级公告）公告列表
+PCAPI-0298,POST,/school,/setting/batchGet,UNIQUE_LITERAL_CANDIDATE,eeo_school,3498441,获取机构设置信息
+PCAPI-0299,POST,/,todocenter/todo/list/complete,NO_LITERAL_MATCH,,,
+PCAPI-0300,POST,/todocenter,/todo/list/course,UNIQUE_LITERAL_CANDIDATE,待办中心(eeo_todo_business),3496842,列表-班级待办
+PCAPI-0301,POST,/todocenter,/todo/list/index,UNIQUE_LITERAL_CANDIDATE,待办中心(eeo_todo_business),3496808,列表-首页待办
+PCAPI-0302,POST,/todocenter,/todo/red-dot/get,MULTIPLE_LITERAL_CANDIDATES,待办中心(eeo_todo_business); 待办中心(eeo_todo_business),3492264; 3497905,红点-获取红点数; 红点-获取红点数
+PCAPI-0303,POST,/,todocenter/todo/search-options,NO_LITERAL_MATCH,,,
+PCAPI-0304,POST,/,todocenter/todo/status/batch-complete,NO_LITERAL_MATCH,,,
+PCAPI-0305,POST,/,todocenter/todo/status/info,NO_LITERAL_MATCH,,,
+PCAPI-0306,POST,/,todocenter/todo/status/update,NO_LITERAL_MATCH,,,
+PCAPI-0307,POST,/todocenter,/todo/todo-list/detail,UNIQUE_LITERAL_CANDIDATE,待办中心(eeo_todo_business),3492260,详情-待办详情
+PCAPI-0308,POST,/todocenter,/todo/v6/list/future/main,MULTIPLE_LITERAL_CANDIDATES,待办中心(eeo_todo_business); eeo_todo_service_go,3498956; 3498952,列表-预计处理-首次加载; 列表-预计待办6.0-首页
+PCAPI-0309,POST,/,todocenter/todo/v6/list/future/page,NO_LITERAL_MATCH,,,
+PCAPI-0310,POST,/todocenter,/todo/v6/list/main,UNIQUE_LITERAL_CANDIDATE,待办中心(eeo_todo_business),3497846,列表-首次加载
+PCAPI-0311,POST,/,todocenter/todo/v6/list/pending,NO_LITERAL_MATCH,,,
+PCAPI-0312,POST,/,todocenter/todo/v6/status/future/batch-complete,NO_LITERAL_MATCH,,,
+PCAPI-0313,POST,/uc,/classin_uc.php?action=getUserInfoByQrCodeIn,NO_LITERAL_MATCH,,,
+PCAPI-0314,POST,/uc,/classin_uc.php?action=getUserQrCodeIn,NO_LITERAL_MATCH,,,
+PCAPI-0315,POST,/usercenter,/user/getRedirectUrl,UNIQUE_LITERAL_CANDIDATE,用户中心（eeo_usercenter_business）,3491458,跳转登录-获取跳转登录链接
+PCAPI-0316,POST,/usercenter,/user/parnter/xiyue/getRedirectUrl,UNIQUE_LITERAL_CANDIDATE,用户中心（eeo_usercenter_business）,3491594,获取希悦跳转地址
+PCAPI-0317,POST,/usercenter,/v2/app/user-info/getUserInfoByUid,UNIQUE_LITERAL_CANDIDATE,用户中心（eeo_usercenter_business）,3491466,根据uid获取用户信息
+PCAPI-0318,POST,/useroperating/api/v1/activity_resource,/deliver,NO_LITERAL_MATCH,,,
+PCAPI-0319,POST,/useroperating/api/v1/activity_resource,/reserve,NO_LITERAL_MATCH,,,
+PCAPI-0320,POST,/zero-user-wx,/cloud/accountUrl,NO_LITERAL_MATCH,,,
+PCAPI-0321,POST,/zero-user-wx,/cloud/authorized,NO_LITERAL_MATCH,,,
+PCAPI-0322,POST,/zero-user-wx,/cloud/getAccessToken,NO_LITERAL_MATCH,,,
+PCAPI-0323,POST,/zero-user-wx,/cloud/unbind,NO_LITERAL_MATCH,,,
+PCAPI-0324,POST,/zero-user-wx,/google/getAccessToken,UNIQUE_LITERAL_CANDIDATE,eeo_zero_user,3492056,获取access token
+PCAPI-0325,POST,/,zero-user-wx/public/checkDisplay,NO_LITERAL_MATCH,,,
+PCAPI-0326,POST,/,zero-user-wx/public/info,UNIQUE_LITERAL_CANDIDATE,eeo_zero_user,3492042,获取公众号内容
+PCAPI-0327,POST,/zero-usercenter/,/app/category/list,MULTIPLE_LITERAL_CANDIDATES,lms; eeo_zero_user,3496924; 3500193,课程分类列表; 获取学段、年级、学科配置信息列表
+PCAPI-0328,POST,/zero-usercenter/,/app/user/guidance/task,UNIQUE_LITERAL_CANDIDATE,eeo_zero_user,3501057,新手引导任务活动查询（返回 user_guidance_task 表字段及派生字段）
+PCAPI-0329,POST,/zero-usercenter/,/app/user/guidance/task/set,UNIQUE_LITERAL_CANDIDATE,eeo_zero_user,3501059,新手引导任务上报/设置（里程碑置 1、体验完成、领取奖励）
+PCAPI-0330,POST,/zero-usercenter/,/app/user/identity,MULTIPLE_LITERAL_CANDIDATES,eeo_zero_user; agentin,3500199; 3500021,根据用户id查询用户身份; 根据用户id查询用户身份
+PCAPI-0331,POST,/zero-usercenter/,/app/user/identity/save,MULTIPLE_LITERAL_CANDIDATES,eeo_zero_user; agentin,3500195; 3500027,存储用户身份; 存储用户身份
+PCAPI-0332,POST,/zero-usercenter/app/user/activity,/recommend,NO_LITERAL_MATCH,,,
+PCAPI-0333,POST,/zero-usercenter,/sign/getJwt,UNIQUE_LITERAL_CANDIDATE,eeo_zero_user,3495280,用户获取jwt签名
+PCAPI-0334,UNKNOWN,UNKNOWN,/agent-api/app/agent/chat,METHOD_UNKNOWN,,,
+PCAPI-0335,UNKNOWN,UNKNOWN,/agent-api/app/agent/regenerate,METHOD_UNKNOWN,,,
+PCAPI-0336,POST,UNKNOWN,/api/echo.api.php?action=generate_sign,NO_LITERAL_MATCH,,,
+PCAPI-0337,UNKNOWN,UNKNOWN,/apix/collection/page/level-list,METHOD_UNKNOWN,,,
+PCAPI-0338,UNKNOWN,UNKNOWN,/apix/lambda/node/batch-copy-paste,METHOD_UNKNOWN,,,
+PCAPI-0339,UNKNOWN,UNKNOWN,/apix/lambda/node/copy-paste,METHOD_UNKNOWN,,,
+PCAPI-0340,UNKNOWN,UNKNOWN,/apix/lambda/node/delete,METHOD_UNKNOWN,,,
+PCAPI-0341,UNKNOWN,UNKNOWN,/apix/lambda/node/move,METHOD_UNKNOWN,,,
+PCAPI-0342,UNKNOWN,UNKNOWN,/apix/lambda/page/add,METHOD_UNKNOWN,,,
+PCAPI-0343,UNKNOWN,UNKNOWN,/apix/node/nav-paths?nodeId=${dynamic},METHOD_UNKNOWN,,,
+PCAPI-0344,UNKNOWN,UNKNOWN,/business/app/auth,METHOD_UNKNOWN,,,
+PCAPI-0345,UNKNOWN,UNKNOWN,/business/app/collection/list-organization?groupId=${dynamic},METHOD_UNKNOWN,,,
+PCAPI-0346,UNKNOWN,UNKNOWN,/business/app/collection/list-personal,METHOD_UNKNOWN,,,
+PCAPI-0347,UNKNOWN,UNKNOWN,/business/app/org/list-organize,METHOD_UNKNOWN,,,
+PCAPI-0348,POST,UNKNOWN,${dynamic}/files/list_folder,NO_LITERAL_MATCH,,,
+PCAPI-0349,POST,UNKNOWN,${dynamic}/files/search_v2,NO_LITERAL_MATCH,,,
+PCAPI-0350,GET,UNKNOWN,${dynamic}/root/search(q='${dynamic}'),NO_LITERAL_MATCH,,,

@@ -5,3 +5,5 @@ export type { GuidedExplanationPreviewContent } from './GuidedExplanationPreview
 export { useOptionalWorkBuddyIm, useWorkBuddyIm } from './workbuddy-im-store';
 export { createImmediateWorkBuddyImExperienceScheduler } from './workbuddy-im-experience';
 export type { WorkBuddyImTarget } from '@contracts/workbuddy/im-conversation-run';
+
+export { ImSidecarAgentSurface } from './ImSidecarAgentSurface';

@@ -13,7 +13,7 @@
 - 可操作产品基座与未来生产代码：`src/`、`tests/`；
 - 原型说明、评审记录和导出快照：`prototype/`。
 
-当前代码同时承载教师端与学生端的可运行 PC Demo；TeachBuddy 只进入教师端。它用于结构、状态和交互验证，不伪装成生产服务或真实 ClassIn 集成。
+当前代码同时承载教师端与学生端的可运行 PC Demo；TeachBuddy 只进入教师端。D-155 授权 ClassIn 测试接入，D-156 将其回归原消息工作区并允许未接入能力明确模拟；模拟、真实测试读取与真实交付分别标记，不暗示生产就绪。
 
 ## 2. 事实优先级
 
@@ -57,7 +57,7 @@
 
 1. **Discover**：定位决策、Spec、研究、实现和测试；
 2. **Scope**：写明本次改变、明确不改变和 Write Set；
-3. **Specify**：复杂行为先更新 Feature Spec 或架构决策；
+3. **Specify**：按 PRD → Feature Spec → Tickets 顺序落盘需求、契约、Write Set 和验收条件，再进入实现；
 4. **Implement**：优先完成一条可复现的纵向闭环；
 5. **Verify**：运行静态检查、契约检查和适用的浏览器/视觉验收；
 6. **Record**：把结论写回唯一事实源，聊天不是事实源。
@@ -86,7 +86,7 @@ domain/contracts -> no React, DOM or browser dependency
 
 ## 8. 数据与安全
 
-- 只使用脱敏、固定版本、可重置的模拟数据；
+- 默认使用脱敏、固定版本、可重置的模拟数据；D-155 限定的已授权测试接入使用真实测试 API，私有样本留在被忽略的受限运行目录；
 - 不提交真实学生信息、账号、Token、`.env` 或外部服务凭据；
 - 不把学生事实、教师推断和机构规则写入无治理的长期记忆；
 - 任何业务写回先变成 `ProposedAction`，经过策略、教师审批、领域校验和 `ExecutionReceipt`；
@@ -104,6 +104,8 @@ domain/contracts -> no React, DOM or browser dependency
 - 未验证内容和剩余风险已明确记录。
 
 ## 10. 触发式参考
+
+- ClassIn 测试接入、真实业务 Context、教学动态或 IM 传输：先读 `docs/04-specs/features/classin-test-integration/PRD.md`，再按其中的 Spec → Tickets 链实现与记录验证；
 
 - 修改 `AGENTS.md`、`CLAUDE.md` 或其他 Agent 消费文档：先读取 `writing-for-agents` 技能；
 - 设计 Module、Interface、Seam 或 Adapter：读取 `codebase-design` 词汇和相关 Spec；

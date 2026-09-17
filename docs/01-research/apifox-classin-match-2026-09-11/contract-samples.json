@@ -1,0 +1,984 @@
+[
+  {
+    "projectId": 345169,
+    "endpointId": 3496948,
+    "name": "获取用户班级列表",
+    "path": "/app/member/course_list",
+    "method": "post",
+    "bodyType": "application/json",
+    "required": [
+      "states",
+      "page",
+      "pageSize",
+      "identitys",
+      "processing"
+    ],
+    "bodyParameters": [
+      {
+        "name": "states",
+        "type": "array",
+        "title": "在班级状态",
+        "description": "用户状态: 0正常, 1班级解散，2 离开班级"
+      },
+      {
+        "name": "page",
+        "type": "integer",
+        "title": "页码",
+        "description": null
+      },
+      {
+        "name": "pageSize",
+        "type": "integer",
+        "title": "每页展示条数",
+        "description": null
+      },
+      {
+        "name": "identitys",
+        "type": "array",
+        "title": null,
+        "description": null
+      },
+      {
+        "name": "processing",
+        "type": "integer",
+        "title": null,
+        "description": "1所有，2待处理"
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "schemaShape": {
+          "type": "object",
+          "required": [
+            "error_info",
+            "data"
+          ],
+          "properties": {
+            "error_info": {
+              "type": "object",
+              "required": [
+                "errno",
+                "error"
+              ],
+              "properties": {
+                "errno": {
+                  "type": "integer"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "data": {
+              "type": "object",
+              "required": [
+                "list",
+                "total"
+              ],
+              "properties": {
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "userId",
+                      "schoolUid",
+                      "joinTime",
+                      "nickname",
+                      "identity",
+                      "addCourseReplay",
+                      "deleteCourseReplay",
+                      "sort",
+                      "isTop",
+                      "createdAt",
+                      "updatedAt",
+                      "courseId",
+                      "courseName",
+                      "state",
+                      "coverImg",
+                      "courseIntroduce",
+                      "isDel",
+                      "courseAlias",
+                      "todoTotal",
+                      "noticeTotal",
+                      "coCreationTotal",
+                      "headImg",
+                      "courseImg",
+                      "courseSetting",
+                      "setting",
+                      "courseRole",
+                      "schoolName",
+                      "schoolInfo"
+                    ],
+                    "properties": {
+                      "userId": {
+                        "type": "integer"
+                      },
+                      "schoolUid": {
+                        "type": "integer"
+                      },
+                      "joinTime": {
+                        "type": "integer"
+                      },
+                      "nickname": {
+                        "type": "string"
+                      },
+                      "identity": {
+                        "type": "integer"
+                      },
+                      "addCourseReplay": {
+                        "type": "integer"
+                      },
+                      "deleteCourseReplay": {
+                        "type": "integer"
+                      },
+                      "sort": {
+                        "type": "integer"
+                      },
+                      "isTop": {
+                        "type": "integer"
+                      },
+                      "createdAt": {
+                        "type": "integer"
+                      },
+                      "updatedAt": {
+                        "type": "integer"
+                      },
+                      "courseId": {
+                        "type": "integer"
+                      },
+                      "courseName": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "integer"
+                      },
+                      "coverImg": {
+                        "type": "string"
+                      },
+                      "courseIntroduce": {
+                        "type": "string"
+                      },
+                      "isDel": {
+                        "type": "integer"
+                      },
+                      "courseAlias": {
+                        "type": "string"
+                      },
+                      "todoTotal": {
+                        "type": "integer"
+                      },
+                      "noticeTotal": {
+                        "type": "integer"
+                      },
+                      "coCreationTotal": {
+                        "type": "integer"
+                      },
+                      "headImg": {
+                        "type": "object",
+                        "required": [
+                          "imgSrc",
+                          "imgTextColor"
+                        ],
+                        "properties": {
+                          "imgSrc": {
+                            "type": "string"
+                          },
+                          "imgTextColor": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "courseImg": {
+                        "type": "object",
+                        "required": [
+                          "lPic",
+                          "mPic",
+                          "sPic"
+                        ],
+                        "properties": {
+                          "lPic": {
+                            "type": "string"
+                          },
+                          "mPic": {
+                            "type": "string"
+                          },
+                          "sPic": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "courseSetting": {
+                        "type": "object",
+                        "required": [
+                          "allowAddFriend",
+                          "allowTeacherAddClass",
+                          "allowStudentModifyNickname",
+                          "allowDeleteCourseStudentReplay",
+                          "allowCourseNotice",
+                          "allowTeacherCreateCourse",
+                          "allowStudentCreateCourse",
+                          "replayExpireType",
+                          "replayExpireTime",
+                          "allowTeacherAddFriend",
+                          "allowInitiativeJoin",
+                          "inviteState",
+                          "playbackLimitCount",
+                          "allowEditCoCreate",
+                          "addCourseStudentReply",
+                          "teachPlan",
+                          "learnPlan",
+                          "forbidChat",
+                          "appInviteState",
+                          "allowTeacherEditCoCreate"
+                        ],
+                        "properties": {
+                          "allowAddFriend": {
+                            "type": "integer"
+                          },
+                          "allowTeacherAddClass": {
+                            "type": "integer"
+                          },
+                          "allowStudentModifyNickname": {
+                            "type": "integer"
+                          },
+                          "allowDeleteCourseStudentReplay": {
+                            "type": "integer"
+                          },
+                          "allowCourseNotice": {
+                            "type": "integer"
+                          },
+                          "allowTeacherCreateCourse": {
+                            "type": "integer"
+                          },
+                          "allowStudentCreateCourse": {
+                            "type": "integer"
+                          },
+                          "replayExpireType": {
+                            "type": "integer"
+                          },
+                          "replayExpireTime": {
+                            "type": "integer"
+                          },
+                          "allowTeacherAddFriend": {
+                            "type": "integer"
+                          },
+                          "allowInitiativeJoin": {
+                            "type": "integer"
+                          },
+                          "inviteState": {
+                            "type": "string"
+                          },
+                          "playbackLimitCount": {
+                            "type": "integer"
+                          },
+                          "allowEditCoCreate": {
+                            "type": "integer"
+                          },
+                          "addCourseStudentReply": {
+                            "type": "integer"
+                          },
+                          "teachPlan": {
+                            "type": "integer"
+                          },
+                          "learnPlan": {
+                            "type": "integer"
+                          },
+                          "forbidChat": {
+                            "type": "integer"
+                          },
+                          "appInviteState": {
+                            "type": "integer"
+                          },
+                          "allowTeacherEditCoCreate": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "setting": {
+                        "type": "object",
+                        "required": [
+                          "switchNotice",
+                          "switchTodo",
+                          "switchChat",
+                          "switchCoCreation"
+                        ],
+                        "properties": {
+                          "switchNotice": {
+                            "type": "integer"
+                          },
+                          "switchTodo": {
+                            "type": "integer"
+                          },
+                          "switchChat": {
+                            "type": "integer"
+                          },
+                          "switchCoCreation": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "courseRole": {
+                        "type": "integer"
+                      },
+                      "schoolName": {
+                        "type": "string"
+                      },
+                      "schoolInfo": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "schoolUid",
+                          "userAccount",
+                          "schoolName",
+                          "type",
+                          "accountName",
+                          "schoolLogo",
+                          "schoolKind",
+                          "serviceVersion",
+                          "serviceState",
+                          "schoolProperty",
+                          "expireTime",
+                          "initStatus",
+                          "trialStatus",
+                          "contractSubject",
+                          "contractMode",
+                          "contractType",
+                          "firstRecharge",
+                          "authStatus",
+                          "secret",
+                          "apiStatus"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "schoolUid": {
+                            "type": "integer"
+                          },
+                          "userAccount": {
+                            "type": "string"
+                          },
+                          "schoolName": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "integer"
+                          },
+                          "accountName": {
+                            "type": "string"
+                          },
+                          "schoolLogo": {
+                            "type": "string"
+                          },
+                          "schoolKind": {
+                            "type": "integer"
+                          },
+                          "serviceVersion": {
+                            "type": "integer"
+                          },
+                          "serviceState": {
+                            "type": "integer"
+                          },
+                          "schoolProperty": {
+                            "type": "integer"
+                          },
+                          "expireTime": {
+                            "type": "integer"
+                          },
+                          "initStatus": {
+                            "type": "integer"
+                          },
+                          "trialStatus": {
+                            "type": "integer"
+                          },
+                          "contractSubject": {
+                            "type": "string"
+                          },
+                          "contractMode": {
+                            "type": "integer"
+                          },
+                          "contractType": {
+                            "type": "integer"
+                          },
+                          "firstRecharge": {
+                            "type": "integer"
+                          },
+                          "authStatus": {
+                            "type": "integer"
+                          },
+                          "secret": {
+                            "type": "string"
+                          },
+                          "apiStatus": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "code": null,
+        "schemaShape": {}
+      }
+    ],
+    "businessCallVerified": false
+  },
+  {
+    "projectId": 345129,
+    "endpointId": 3471069,
+    "name": "活动 - 作业 - 学生",
+    "path": "/app/activity/homework/students",
+    "method": "post",
+    "bodyType": "application/x-www-form-urlencoded",
+    "required": [],
+    "bodyParameters": [],
+    "responses": [
+      {
+        "code": 200,
+        "schemaShape": {
+          "type": "object",
+          "required": [
+            "error_info",
+            "data"
+          ],
+          "properties": {
+            "error_info": {
+              "type": "object",
+              "required": [
+                "errno",
+                "error"
+              ],
+              "properties": {
+                "errno": {
+                  "type": "integer"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "studentUid",
+                  "isScore",
+                  "rate",
+                  "gradeMethod",
+                  "stStatus",
+                  "isCream",
+                  "isRevised",
+                  "readover",
+                  "reform",
+                  "warn",
+                  "thTime",
+                  "refTime",
+                  "chTime",
+                  "rdChTime",
+                  "updateTime",
+                  "isDraft",
+                  "isEmend",
+                  "showGrade",
+                  "shareSign",
+                  "isBindRule",
+                  "isReformScore",
+                  "aiReviewStatus"
+                ],
+                "properties": {
+                  "studentUid": {
+                    "type": "integer"
+                  },
+                  "isScore": {
+                    "type": "integer"
+                  },
+                  "rate": {
+                    "type": "string"
+                  },
+                  "gradeMethod": {
+                    "type": "integer"
+                  },
+                  "stStatus": {
+                    "type": "integer"
+                  },
+                  "isCream": {
+                    "type": "integer"
+                  },
+                  "isRevised": {
+                    "type": "integer"
+                  },
+                  "readover": {
+                    "type": "integer"
+                  },
+                  "reform": {
+                    "type": "integer"
+                  },
+                  "warn": {
+                    "type": "integer"
+                  },
+                  "thTime": {
+                    "type": "integer"
+                  },
+                  "refTime": {
+                    "type": "integer"
+                  },
+                  "chTime": {
+                    "type": "integer"
+                  },
+                  "rdChTime": {
+                    "type": "integer"
+                  },
+                  "updateTime": {
+                    "type": "integer"
+                  },
+                  "isDraft": {
+                    "type": "integer"
+                  },
+                  "isEmend": {
+                    "type": "integer"
+                  },
+                  "showGrade": {
+                    "type": "string"
+                  },
+                  "shareSign": {
+                    "type": "string"
+                  },
+                  "isBindRule": {
+                    "type": "integer"
+                  },
+                  "isReformScore": {
+                    "type": "integer"
+                  },
+                  "aiReviewStatus": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "businessCallVerified": false,
+    "formParameters": [
+      {
+        "name": "activityId",
+        "type": "integer",
+        "required": true,
+        "description": "活动id"
+      },
+      {
+        "name": "identity",
+        "type": "string",
+        "required": false,
+        "description": "视图类型，1 老师 2 学生"
+      },
+      {
+        "name": "courseId",
+        "type": "string",
+        "required": true,
+        "description": "课程id"
+      }
+    ]
+  },
+  {
+    "projectId": 345129,
+    "endpointId": 3499108,
+    "name": "活动 - 作业 - 学生作答详情",
+    "path": "/app/activity/homework/student/detail",
+    "method": "post",
+    "bodyType": "application/x-www-form-urlencoded",
+    "required": [
+      "courseId",
+      "activityId"
+    ],
+    "bodyParameters": [
+      {
+        "name": "courseId",
+        "type": "integer",
+        "title": "班级ID",
+        "description": "班级ID"
+      },
+      {
+        "name": "activityId",
+        "type": "integer",
+        "title": null,
+        "description": null
+      }
+    ],
+    "responses": [
+      {
+        "code": 200,
+        "schemaShape": {
+          "type": "object",
+          "required": [
+            "data",
+            "error_info",
+            "01K3691MZ77G42M0C0ASWWB8F0"
+          ],
+          "properties": {
+            "data": {
+              "type": "object",
+              "required": [
+                "aiReviewStatus",
+                "stu_homework_detail"
+              ],
+              "properties": {
+                "aiReviewStatus": {
+                  "type": "integer"
+                },
+                "stu_homework_detail": {
+                  "type": "object",
+                  "required": [
+                    "stu_homework_id",
+                    "homework_id",
+                    "student_uid",
+                    "is_cream",
+                    "status",
+                    "reform",
+                    "readover",
+                    "warn",
+                    "score",
+                    "content",
+                    "image",
+                    "video",
+                    "audio",
+                    "stu_homework_desc",
+                    "th_content",
+                    "th_image",
+                    "th_audio",
+                    "th_video",
+                    "comment",
+                    "is_del",
+                    "th_time",
+                    "comment_time",
+                    "show_time",
+                    "update_time",
+                    "add_time",
+                    "th_num",
+                    "score_type",
+                    "course_id",
+                    "school_uid",
+                    "th_uid",
+                    "docs",
+                    "th_docs",
+                    "comment_audio",
+                    "is_startd",
+                    "is_revised",
+                    "is_draft",
+                    "ref_time",
+                    "is_reform",
+                    "ch_time",
+                    "rd_ch_time",
+                    "correct",
+                    "wrong",
+                    "admire",
+                    "belittle",
+                    "score_p",
+                    "au_warn",
+                    "emend",
+                    "stu_homework_share_key",
+                    "read",
+                    "homework_title",
+                    "log",
+                    "ability_score_record_id",
+                    "scoreText"
+                  ],
+                  "properties": {
+                    "stu_homework_id": {
+                      "type": "integer"
+                    },
+                    "homework_id": {
+                      "type": "integer"
+                    },
+                    "student_uid": {
+                      "type": "integer"
+                    },
+                    "is_cream": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "reform": {
+                      "type": "integer"
+                    },
+                    "readover": {
+                      "type": "integer"
+                    },
+                    "warn": {
+                      "type": "integer"
+                    },
+                    "score": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "image": {
+                      "type": "string"
+                    },
+                    "video": {
+                      "type": "string"
+                    },
+                    "audio": {
+                      "type": "string"
+                    },
+                    "stu_homework_desc": {
+                      "type": "string"
+                    },
+                    "th_content": {
+                      "type": "string"
+                    },
+                    "th_image": {
+                      "type": "string"
+                    },
+                    "th_audio": {
+                      "type": "string"
+                    },
+                    "th_video": {
+                      "type": "string"
+                    },
+                    "comment": {
+                      "type": "string"
+                    },
+                    "is_del": {
+                      "type": "integer"
+                    },
+                    "th_time": {
+                      "type": "integer"
+                    },
+                    "comment_time": {
+                      "type": "integer"
+                    },
+                    "show_time": {
+                      "type": "integer"
+                    },
+                    "update_time": {
+                      "type": "integer"
+                    },
+                    "add_time": {
+                      "type": "integer"
+                    },
+                    "th_num": {
+                      "type": "integer"
+                    },
+                    "score_type": {
+                      "type": "integer"
+                    },
+                    "course_id": {
+                      "type": "integer"
+                    },
+                    "school_uid": {
+                      "type": "integer"
+                    },
+                    "th_uid": {
+                      "type": "integer"
+                    },
+                    "docs": {
+                      "type": "string"
+                    },
+                    "th_docs": {
+                      "type": "string"
+                    },
+                    "comment_audio": {
+                      "type": "string"
+                    },
+                    "is_startd": {
+                      "type": "integer"
+                    },
+                    "is_revised": {
+                      "type": "integer"
+                    },
+                    "is_draft": {
+                      "type": "integer"
+                    },
+                    "ref_time": {
+                      "type": "integer"
+                    },
+                    "is_reform": {
+                      "type": "integer"
+                    },
+                    "ch_time": {
+                      "type": "integer"
+                    },
+                    "rd_ch_time": {
+                      "type": "integer"
+                    },
+                    "correct": {
+                      "type": "integer"
+                    },
+                    "wrong": {
+                      "type": "integer"
+                    },
+                    "admire": {
+                      "type": "integer"
+                    },
+                    "belittle": {
+                      "type": "integer"
+                    },
+                    "score_p": {
+                      "type": "string"
+                    },
+                    "au_warn": {
+                      "type": "integer"
+                    },
+                    "emend": {
+                      "type": "integer"
+                    },
+                    "stu_homework_share_key": {
+                      "type": "string"
+                    },
+                    "read": {
+                      "type": "integer"
+                    },
+                    "homework_title": {
+                      "type": "string"
+                    },
+                    "log": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "uid": {
+                            "type": "integer"
+                          },
+                          "homework_id": {
+                            "type": "integer"
+                          },
+                          "stu_homework_id": {
+                            "type": "integer"
+                          },
+                          "info": {
+                            "type": "string"
+                          },
+                          "comment": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
+                          },
+                          "image": {
+                            "type": "string"
+                          },
+                          "video": {
+                            "type": "string"
+                          },
+                          "audio": {
+                            "type": "string"
+                          },
+                          "stu_homework_desc": {
+                            "type": "string"
+                          },
+                          "stu_homework_status": {
+                            "type": "integer"
+                          },
+                          "readover": {
+                            "type": "integer"
+                          },
+                          "reform": {
+                            "type": "integer"
+                          },
+                          "score": {
+                            "type": "string"
+                          },
+                          "add_time": {
+                            "type": "integer"
+                          },
+                          "score_type": {
+                            "type": "integer"
+                          },
+                          "docs": {
+                            "type": "string"
+                          },
+                          "comment_audio": {
+                            "type": "string"
+                          },
+                          "correct": {
+                            "type": "integer"
+                          },
+                          "wrong": {
+                            "type": "integer"
+                          },
+                          "admire": {
+                            "type": "integer"
+                          },
+                          "belittle": {
+                            "type": "integer"
+                          },
+                          "score_p": {
+                            "type": "string"
+                          },
+                          "scoreText": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "ability_score_record_id": {
+                      "type": "integer"
+                    },
+                    "scoreText": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "error_info": {
+              "type": "object",
+              "required": [
+                "errno",
+                "error"
+              ],
+              "properties": {
+                "errno": {
+                  "type": "integer"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            },
+            "01K3691MZ77G42M0C0ASWWB8F0": {}
+          }
+        }
+      }
+    ],
+    "businessCallVerified": false,
+    "formParameters": [
+      {
+        "name": "activityId",
+        "type": "integer",
+        "required": true,
+        "description": "活动id"
+      },
+      {
+        "name": "studentUid",
+        "type": "integer",
+        "required": true,
+        "description": "学生uid"
+      },
+      {
+        "name": "courseId",
+        "type": "integer",
+        "required": true,
+        "description": "班级id"
+      }
+    ]
+  }
+]

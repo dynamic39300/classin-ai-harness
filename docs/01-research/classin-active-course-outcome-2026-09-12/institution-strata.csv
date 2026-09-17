@@ -1,0 +1,4 @@
+stratum,institutions,scheduled_n,opened_n,cancelled_n,min_opened,max_opened,q1,q2
+high,14395,1708898,1159160,549738,4,29854,1,3
+low,15695,16981,15695,1286,1,1,1,3
+mid,13721,34070,31938,2132,2,3,1,3

@@ -72,6 +72,8 @@ export type MessageThread = {
   entries: MessageEntry[];
   olderEntries?: MessageEntry[];
   notice?: MessageNotice;
+  /** Display-only integration provenance; does not grant access. */
+  integration?: Readonly<{ label: string; detailsPath: string; teacherName: string; members?: readonly Readonly<{ id: string; name: string; roleLabel: string }>[]; capturedAt?: string }>;
 };
 
 export function prependOlderMessagePage(thread: MessageThread, pageSize = 6): MessageThread {

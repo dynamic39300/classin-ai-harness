@@ -14,6 +14,13 @@ export const TEACHING_STAGE_LABELS: Readonly<Record<TeachingStageId, string>> = 
   summary: '总结',
 });
 
+export const TEACHING_STAGE_EMPTY_LABELS: Readonly<Record<TeachingStageId, string>> = Object.freeze({
+  before: '当前没有需要处理的课前事项',
+  during: '当前没有正在上课的课堂',
+  after: '当前没有待提醒或待处理的课后任务',
+  summary: '当前没有可生成的课堂或阶段总结',
+});
+
 export type TeachingStageProjection = Readonly<{
   id: TeachingStageId;
   label: string;
@@ -33,11 +40,16 @@ export function isTeachingDynamicActionable(item: TeachingDynamicItem) {
 
 export function normalizeTeachingDynamics(snapshot: TeachingDynamicsSnapshot): TeachingDynamicsSnapshot {
   const seen = new Set<string>();
+  const seenRecommendations = new Set<string>();
   const stages: TeachingDynamicStage[] = TEACHING_STAGE_ORDER.map((stageId) => {
     const source = snapshot.stages.find(({ id }) => id === stageId);
     const items = sortItems((source?.items ?? []).filter((item) => {
-      if (item.stage !== stageId || seen.has(item.id)) return false;
+      const recommendationIdentity = item.recommendationKey
+        ? `${snapshot.version}:${item.recommendationKey}:${item.objectRef ?? ''}`
+        : null;
+      if (item.stage !== stageId || seen.has(item.id) || (recommendationIdentity && seenRecommendations.has(recommendationIdentity))) return false;
       seen.add(item.id);
+      if (recommendationIdentity) seenRecommendations.add(recommendationIdentity);
       return true;
     }));
     return Object.freeze({ id: stageId, items: Object.freeze(items) });

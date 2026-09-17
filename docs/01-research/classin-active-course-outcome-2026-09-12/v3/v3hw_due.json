@@ -1,0 +1,42 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 3,
+  "truncated": false,
+  "execution_time_ms": 16608,
+  "data": [
+    {
+      "deadline_group": "due",
+      "activity_n": 13963,
+      "assigned_summary_n": 108673,
+      "submitted_summary_n": 52000,
+      "reviewed_summary_n": 36649,
+      "unsubmitted_summary_n": 56673,
+      "submitted_unreviewed_summary_n": 15351,
+      "all_submitted_activity_n": 2454,
+      "zero_submitted_activity_n": 6174
+    },
+    {
+      "deadline_group": "no_deadline",
+      "activity_n": 6803,
+      "assigned_summary_n": 57554,
+      "submitted_summary_n": 15078,
+      "reviewed_summary_n": 8448,
+      "unsubmitted_summary_n": 42476,
+      "submitted_unreviewed_summary_n": 6630,
+      "all_submitted_activity_n": 676,
+      "zero_submitted_activity_n": 4028
+    },
+    {
+      "deadline_group": "not_due",
+      "activity_n": 17186,
+      "assigned_summary_n": 171167,
+      "submitted_summary_n": 37195,
+      "reviewed_summary_n": 23087,
+      "unsubmitted_summary_n": 133972,
+      "submitted_unreviewed_summary_n": 14108,
+      "all_submitted_activity_n": 1231,
+      "zero_submitted_activity_n": 10085
+    }
+  ]
+}

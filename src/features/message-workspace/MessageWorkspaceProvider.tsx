@@ -1,3 +1,4 @@
+import { createClientId } from '@shared/client-id';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   appendLocalMessage,
@@ -16,6 +17,7 @@ import {
   MessageWorkspaceContext,
   type MessageWorkspaceActions,
   type MessageWorkspaceState,
+  type MessageWorkspaceExtension,
 } from './message-workspace-store';
 import {
   mockConversationResourceRepository,
@@ -71,6 +73,7 @@ type MessageWorkspaceProviderProps = {
   directoryAdapter?: MessageDirectoryAdapter;
   temporaryClassroomAdapter?: TemporaryClassroomAdapter;
   lifecyclePort?: MessageLifecyclePort;
+  extension?: MessageWorkspaceExtension;
 };
 
 const DEFAULT_SCENARIO: MessageWorkspaceScenario = {
@@ -89,6 +92,7 @@ export function MessageWorkspaceProvider({
   directoryAdapter,
   temporaryClassroomAdapter,
   lifecyclePort,
+  extension,
 }: MessageWorkspaceProviderProps) {
   const [defaultMediaAdapter] = useState(() => mediaAdapter ?? createBrowserMessageMediaAdapter());
   const activeMediaAdapter = mediaAdapter ?? defaultMediaAdapter;
@@ -100,7 +104,21 @@ export function MessageWorkspaceProvider({
   const activeTemporaryClassroomAdapter = temporaryClassroomAdapter ?? defaultTemporaryClassroomAdapter;
   const initialThreads = scenario.status === 'ready' ? scenario.threads : [];
   const [defaultLifecyclePort] = useState(() => lifecyclePort ?? createMemoryMessageLifecyclePort(initialThreads));
-  const activeLifecyclePort = lifecyclePort ?? defaultLifecyclePort;
+  const activeLifecyclePort = useMemo<MessageLifecyclePort>(() => {
+    const fallback = lifecyclePort ?? defaultLifecyclePort;
+    if (!extension) return fallback;
+    const ids = new Set(extension.threads.map((thread) => thread.id));
+    const port = (id: string) => ids.has(id) ? extension.lifecyclePort : fallback;
+    return {
+      getConnection: () => fallback.getConnection(), reconnect: () => fallback.reconnect(),
+      getThreadAccess: (role, id) => port(id).getThreadAccess(role, id),
+      getCurrentThreadVersion: (id) => port(id).getCurrentThreadVersion(id),
+      getInitialHistoryCursor: (id) => port(id).getInitialHistoryCursor(id),
+      submit: (request) => port(request.threadId).submit(request),
+      syncThread: (id) => port(id).syncThread(id),
+      loadHistory: (request) => port(request.threadId).loadHistory(request),
+    };
+  }, [defaultLifecyclePort, extension, lifecyclePort]);
   const [threads, setThreads] = useState<ReadonlyArray<MessageThread>>(
     () => scenario.status === 'ready' ? scenario.threads : [],
   );
@@ -125,11 +143,30 @@ export function MessageWorkspaceProvider({
     activeLifecyclePort.getCurrentThreadVersion(thread.id),
   ])));
   const requestByMessageIdRef = useRef(new Map<string, MessageSubmitRequest>());
-  const requestSequenceRef = useRef(0);
 
   useEffect(() => {
     threadsRef.current = threads;
   }, [threads]);
+
+  const previousExtensionPort = useRef<MessageLifecyclePort | undefined>(undefined);
+  const previousExtensionIds = useRef<ReadonlySet<string>>(new Set());
+  useEffect(() => {
+    if (!extension && previousExtensionIds.current.size === 0) return;
+    const preserveHistory = previousExtensionPort.current === extension?.lifecyclePort;
+    previousExtensionPort.current = extension?.lifecyclePort;
+    if (extension && !preserveHistory) for (const thread of extension.threads) threadVersionByIdRef.current.set(thread.id, extension.lifecyclePort.getCurrentThreadVersion(thread.id));
+    const ids = new Set([...(previousExtensionIds.current), ...(extension?.threads.map((thread) => thread.id) ?? [])]);
+    previousExtensionIds.current = new Set(extension?.threads.map((thread) => thread.id) ?? []);
+    setThreads((current) => {
+      return [...current.filter((thread) => !ids.has(thread.id)), ...(extension?.threads ?? []).map((thread) => {
+        const previous = current.find(({ id }) => id === thread.id);
+        const entries = previous && preserveHistory ? previous.entries : extension?.readEntries?.(thread.id) ?? thread.entries;
+        return { ...thread, entries, updatedAt: entries.at(-1)?.sentAt ?? thread.updatedAt };
+      })];
+    });
+  }, [extension]);
+
+  useEffect(() => { extension?.persist(threads); }, [extension, threads]);
 
   useEffect(() => {
     if (scenario !== DEFAULT_SCENARIO) return;
@@ -247,8 +284,13 @@ export function MessageWorkspaceProvider({
 
   const submitMessage = useCallback<MessageWorkspaceActions['submitMessage']>(async (options) => {
     const clientRequestId = options.clientRequestId
-      ?? `message-request-${++requestSequenceRef.current}`;
-    const messageId = options.messageId ?? `pending-${clientRequestId}`;
+      ?? createClientId('message-request');
+    const existing = threadsRef.current.find((thread) => thread.id === options.threadId)?.entries.find((entry) => entry.delivery?.clientRequestId === clientRequestId);
+    const messageId = existing?.id ?? options.messageId ?? `pending-${clientRequestId}`;
+    if (activeLifecyclePort.getThreadAccess(options.role, options.threadId).mode !== 'write') return { status: 'failed', code: 'permission-denied', message: '当前账号无法在此会话发送消息。' };
+    const attachments = extension?.threads.some((thread) => thread.id === options.threadId)
+      ? options.attachments?.map((attachment) => ({ ...attachment, contentRef: activeMediaAdapter.resolveContent(attachment.contentRef) ?? attachment.contentRef }))
+      : options.attachments;
     const sending = createSendingMessageDelivery(clientRequestId, options.sentAt);
     const request: MessageSubmitRequest = Object.freeze({
       clientRequestId,
@@ -263,14 +305,14 @@ export function MessageWorkspaceProvider({
         kind: options.kind ?? 'text',
         replyTo: options.replyTo,
         resources: options.resources,
-        attachments: options.attachments,
+        attachments,
         mentions: options.mentions,
         objectCards: options.objectCards,
       }),
     });
     requestByMessageIdRef.current.set(messageId, request);
     setThreads((current) => current.map((thread) => thread.id === options.threadId
-      ? appendLocalMessage(
+      ? thread.entries.some((entry) => entry.delivery?.clientRequestId === clientRequestId) ? thread : appendLocalMessage(
         options.role,
         options.authorName,
         thread,
@@ -283,14 +325,14 @@ export function MessageWorkspaceProvider({
         options.contentReference,
         options.replyTo,
         options.resources,
-        options.attachments,
+        attachments,
         options.mentions,
         options.objectCards,
         sending,
       )
       : thread));
     return runSubmission(messageId, request, sending);
-  }, [activeLifecyclePort, runSubmission]);
+  }, [activeLifecyclePort, activeMediaAdapter, extension, runSubmission]);
 
   const retryMessage = useCallback<MessageWorkspaceActions['retryMessage']>(async (role, threadId, messageId) => {
     const thread = threadsRef.current.find(({ id }) => id === threadId);

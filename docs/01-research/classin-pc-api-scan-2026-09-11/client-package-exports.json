@@ -1,0 +1,1703 @@
+[
+  {
+    "name": "activityCheckZhuanYeBanVerifiedStatus",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 121
+  },
+  {
+    "name": "activityShowCloseButton",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 166
+  },
+  {
+    "name": "batchDownloadFileByUrls",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 197
+  },
+  {
+    "name": "caminCommonApi",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 228
+  },
+  {
+    "name": "caminRefreshInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 250
+  },
+  {
+    "name": "cancelWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 274
+  },
+  {
+    "name": "changeTitle",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 294
+  },
+  {
+    "name": "changeWindowSize",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 313
+  },
+  {
+    "name": "classinWidgetOpenSubWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 336
+  },
+  {
+    "name": "classroomOrClassperiod",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 370
+  },
+  {
+    "name": "clientPostMessage",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 400
+  },
+  {
+    "name": "closeLmsWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 425
+  },
+  {
+    "name": "closeSubWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 447
+  },
+  {
+    "name": "closeUrlShareInClassroom",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 468
+  },
+  {
+    "name": "closeUserGuidance",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 500
+  },
+  {
+    "name": "closeVerifyWidget",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 525
+  },
+  {
+    "name": "closeWidget",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 550
+  },
+  {
+    "name": "closeWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 569
+  },
+  {
+    "name": "cloudDiskCheckCameraPermissions",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 587
+  },
+  {
+    "name": "cloudDiskLinkView",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 626
+  },
+  {
+    "name": "cloudImgsUpload",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 651
+  },
+  {
+    "name": "contactManager",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 674
+  },
+  {
+    "name": "cookieGet",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 696
+  },
+  {
+    "name": "cookieSet",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 713
+  },
+  {
+    "name": "createClientApi",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 730
+  },
+  {
+    "name": "createEdb",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 752
+  },
+  {
+    "name": "createMicrolecture",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 769
+  },
+  {
+    "name": "delPrivateBookMark",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 795
+  },
+  {
+    "name": "downLoadReport",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 821
+  },
+  {
+    "name": "download",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 843
+  },
+  {
+    "name": "downloadFileByUrl",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 859
+  },
+  {
+    "name": "downloadFiles",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 883
+  },
+  {
+    "name": "downloadFilesWithCbk",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 903
+  },
+  {
+    "name": "exitStudyRoom",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 930
+  },
+  {
+    "name": "followServiceAccount",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 951
+  },
+  {
+    "name": "generateHeaders",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 979
+  },
+  {
+    "name": "generateSignKey",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1002
+  },
+  {
+    "name": "generateToken",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1025
+  },
+  {
+    "name": "getAndroidChannel",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1046
+  },
+  {
+    "name": "getAppProductEnv",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1071
+  },
+  {
+    "name": "getBackgroundImg",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1095
+  },
+  {
+    "name": "getClassList",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1119
+  },
+  {
+    "name": "getClientCookie",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1139
+  },
+  {
+    "name": "getClientInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1162
+  },
+  {
+    "name": "getClusterInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1183
+  },
+  {
+    "name": "getCourseInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1205
+  },
+  {
+    "name": "getCourseName",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1226
+  },
+  {
+    "name": "getCourseUserInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1247
+  },
+  {
+    "name": "getDecodeBgCfg",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1272
+  },
+  {
+    "name": "getDecodeWebDataAgentInFeatures",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1294
+  },
+  {
+    "name": "getDecodeWebDataAgentInIOS",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1333
+  },
+  {
+    "name": "getFullCourseInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1367
+  },
+  {
+    "name": "getGroupUserInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1392
+  },
+  {
+    "name": "getIsAgentAdminAuth",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1416
+  },
+  {
+    "name": "getIsAgentAdminAuthFeatures",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1443
+  },
+  {
+    "name": "getIsAgentCreateFeatures",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1478
+  },
+  {
+    "name": "getIsAgentInFeatures",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1510
+  },
+  {
+    "name": "getIsReload",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1538
+  },
+  {
+    "name": "getIsShowSeiue",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1557
+  },
+  {
+    "name": "getLessonDetail",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1579
+  },
+  {
+    "name": "getLessonInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1602
+  },
+  {
+    "name": "getLessonInfos",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1623
+  },
+  {
+    "name": "getLmsClassroomInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1645
+  },
+  {
+    "name": "getLmsLessonInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1672
+  },
+  {
+    "name": "getRoomUserType",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1696
+  },
+  {
+    "name": "getSchoolInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1719
+  },
+  {
+    "name": "getSignKey",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1740
+  },
+  {
+    "name": "getSnapshotLessonInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1758
+  },
+  {
+    "name": "getSomeClusterInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1787
+  },
+  {
+    "name": "getStorage",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1813
+  },
+  {
+    "name": "getTeacherName",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1831
+  },
+  {
+    "name": "getTeacherNames",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1853
+  },
+  {
+    "name": "getTodoNums",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1876
+  },
+  {
+    "name": "getUrl",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1895
+  },
+  {
+    "name": "getUserInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1909
+  },
+  {
+    "name": "getVideoNums",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1928
+  },
+  {
+    "name": "getVolume",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1948
+  },
+  {
+    "name": "getWeixinNotice_BgCfg",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1965
+  },
+  {
+    "name": "getWeixinNotice_ScaleData",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 1994
+  },
+  {
+    "name": "hasClientApi",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2027
+  },
+  {
+    "name": "hasClientApiSync",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2047
+  },
+  {
+    "name": "hideTeacherInTestBackHuiDu",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2071
+  },
+  {
+    "name": "imgsView",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2105
+  },
+  {
+    "name": "insertBase64ToClassroom",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2121
+  },
+  {
+    "name": "isBrowserAllowedForTeen",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2152
+  },
+  {
+    "name": "isHideTransEdocModal",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2183
+  },
+  {
+    "name": "isHideTransEpptModal",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2211
+  },
+  {
+    "name": "isShowAITeacher",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2239
+  },
+  {
+    "name": "isShowEDoc",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2262
+  },
+  {
+    "name": "isShowEMp4",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2280
+  },
+  {
+    "name": "isShowRecordMicroLecture",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2298
+  },
+  {
+    "name": "jsNotifyATokenInvalid",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2330
+  },
+  {
+    "name": "jsNotifyToOpenUrl",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2359
+  },
+  {
+    "name": "jumpToClass",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2384
+  },
+  {
+    "name": "launchWXMiniProgram",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2403
+  },
+  {
+    "name": "linkShare",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2430
+  },
+  {
+    "name": "linkView",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2447
+  },
+  {
+    "name": "lmsActivityStatusChange",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2463
+  },
+  {
+    "name": "lmsActivityStatusGet",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2494
+  },
+  {
+    "name": "lmsAudioUpload",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2522
+  },
+  {
+    "name": "lmsAudioView",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2544
+  },
+  {
+    "name": "lmsCanTeacherAddLesson",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2564
+  },
+  {
+    "name": "lmsChangeMaximizedState",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2594
+  },
+  {
+    "name": "lmsCookieGet",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2625
+  },
+  {
+    "name": "lmsCookieSet",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2645
+  },
+  {
+    "name": "lmsDataDownloadV2",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2665
+  },
+  {
+    "name": "lmsEnableVideoFullScreen",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2690
+  },
+  {
+    "name": "lmsFileDownload",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2722
+  },
+  {
+    "name": "lmsGetAudioInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2745
+  },
+  {
+    "name": "lmsGetClusterInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2768
+  },
+  {
+    "name": "lmsGetFullCourseInfoPromise",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2793
+  },
+  {
+    "name": "lmsGetFullSchoolInfoPromise",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2828
+  },
+  {
+    "name": "lmsGetGroupUserInfoPromise",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2863
+  },
+  {
+    "name": "lmsGetHttpDynamicConfigPromise",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2897
+  },
+  {
+    "name": "lmsGetScaleFactor",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2935
+  },
+  {
+    "name": "lmsGetSchoolSettingPromise",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2960
+  },
+  {
+    "name": "lmsGetSomeClusterInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 2994
+  },
+  {
+    "name": "lmsGetStealRecordStatePromise",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3023
+  },
+  {
+    "name": "lmsGoUpgradeClient",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3060
+  },
+  {
+    "name": "lmsGotoChargePage",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3086
+  },
+  {
+    "name": "lmsHomeworkFileView",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3111
+  },
+  {
+    "name": "lmsHomeworkImgsView",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3138
+  },
+  {
+    "name": "lmsHomeworkImgsViewCb",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3165
+  },
+  {
+    "name": "lmsImgsView",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3194
+  },
+  {
+    "name": "lmsMinimize",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3213
+  },
+  {
+    "name": "lmsOpenConfirmMessageDialog",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3232
+  },
+  {
+    "name": "lmsOpenCourseClassWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3267
+  },
+  {
+    "name": "lmsOpenCourseClassWindowWithClose",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3299
+  },
+  {
+    "name": "lmsOpenMessageDialog",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3340
+  },
+  {
+    "name": "lmsOpenNativeCreateGroupWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3368
+  },
+  {
+    "name": "lmsOpenSubWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3406
+  },
+  {
+    "name": "lmsOpenUrlInClassroom",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3430
+  },
+  {
+    "name": "lmsSaveBase64ImgToLocalOrClipboard",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3459
+  },
+  {
+    "name": "lmsSchoolInfoAbnormalPopup",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3501
+  },
+  {
+    "name": "lmsSelectCloudDiskFiles",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3535
+  },
+  {
+    "name": "lmsSelectCloudFolderPath",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3566
+  },
+  {
+    "name": "lmsSelectHomeworkResource",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3598
+  },
+  {
+    "name": "lmsShowActivityCreatingProgressWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3631
+  },
+  {
+    "name": "lmsSkipServiceVersionUpgrade",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3676
+  },
+  {
+    "name": "lmsWebUserInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3712
+  },
+  {
+    "name": "lmsWidgetAntiRecordWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3734
+  },
+  {
+    "name": "lmsWidgetOpenMicroLectureRecord",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3767
+  },
+  {
+    "name": "lmsWidgetOpenStudyReport",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3806
+  },
+  {
+    "name": "lmsWidgetShowRefreshButton",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3838
+  },
+  {
+    "name": "loadFinish",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3872
+  },
+  {
+    "name": "loadHtmlFinished",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3890
+  },
+  {
+    "name": "loadUrl",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3914
+  },
+  {
+    "name": "localeCompare",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3929
+  },
+  {
+    "name": "login",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3950
+  },
+  {
+    "name": "myExamChangeMaximizedState",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3963
+  },
+  {
+    "name": "myExamCloseWidget",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 3997
+  },
+  {
+    "name": "myExamDownload",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4022
+  },
+  {
+    "name": "myExamExportFiles",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4044
+  },
+  {
+    "name": "myExamImgsView",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4069
+  },
+  {
+    "name": "myExamPhotoImgsUpload",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4091
+  },
+  {
+    "name": "myExamQuestionImageUpload",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4120
+  },
+  {
+    "name": "myExamWebShare",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4153
+  },
+  {
+    "name": "noticeClose",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4175
+  },
+  {
+    "name": "notifyDocCreated",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4194
+  },
+  {
+    "name": "offerClientShareInfo",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4218
+  },
+  {
+    "name": "onPaySuccess",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4246
+  },
+  {
+    "name": "onVerifyAccess",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4266
+  },
+  {
+    "name": "openActivityDetail",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4288
+  },
+  {
+    "name": "openEdpx",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4314
+  },
+  {
+    "name": "openFileByUrl",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4330
+  },
+  {
+    "name": "openFiles",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4351
+  },
+  {
+    "name": "openGames",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4368
+  },
+  {
+    "name": "openHelpDocDetails",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4385
+  },
+  {
+    "name": "openHomework",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4411
+  },
+  {
+    "name": "openHomeworkWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4431
+  },
+  {
+    "name": "openLocalFile",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4457
+  },
+  {
+    "name": "openModule",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4478
+  },
+  {
+    "name": "openPaper",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4496
+  },
+  {
+    "name": "openPaperWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4513
+  },
+  {
+    "name": "openServerNumberWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4536
+  },
+  {
+    "name": "openSubWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4566
+  },
+  {
+    "name": "openUrlShareInClassroom",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4586
+  },
+  {
+    "name": "openUrlWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4617
+  },
+  {
+    "name": "openWindowByUrlInBrowser",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4638
+  },
+  {
+    "name": "pageConfirm",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4670
+  },
+  {
+    "name": "pageLoadFinished",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4689
+  },
+  {
+    "name": "pageMessage",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4713
+  },
+  {
+    "name": "pause",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4732
+  },
+  {
+    "name": "paySuccessToResult",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4745
+  },
+  {
+    "name": "phoneCall",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4771
+  },
+  {
+    "name": "play",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4788
+  },
+  {
+    "name": "popupWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4800
+  },
+  {
+    "name": "previewImages",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4819
+  },
+  {
+    "name": "privateBookmark",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4840
+  },
+  {
+    "name": "registerCallBack",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4863
+  },
+  {
+    "name": "registerInvoke",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4887
+  },
+  {
+    "name": "reloadMainWidgetExam",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4909
+  },
+  {
+    "name": "reloadMainWidgetHomework",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4937
+  },
+  {
+    "name": "removeCloseButton",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4969
+  },
+  {
+    "name": "resetServiceAccountGuide",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 4994
+  },
+  {
+    "name": "resume",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5026
+  },
+  {
+    "name": "returnBackFound",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5040
+  },
+  {
+    "name": "selectFile",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5063
+  },
+  {
+    "name": "selectFolder",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5081
+  },
+  {
+    "name": "sendEmail",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5101
+  },
+  {
+    "name": "setCbKeyData",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5118
+  },
+  {
+    "name": "setExamReloadMainWidgetCbKey",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5137
+  },
+  {
+    "name": "setHomeworkReloadMainWidgetCbKey",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5173
+  },
+  {
+    "name": "setLmsCbKeyData",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5213
+  },
+  {
+    "name": "setStorage",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5236
+  },
+  {
+    "name": "setVolume",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5254
+  },
+  {
+    "name": "shareFiles",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5271
+  },
+  {
+    "name": "shareFilesWithCbk",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5289
+  },
+  {
+    "name": "shareSingleFileToChatWithFileId",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5313
+  },
+  {
+    "name": "shareToIm",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5352
+  },
+  {
+    "name": "showImages",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5369
+  },
+  {
+    "name": "showTeacherIn",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5387
+  },
+  {
+    "name": "startCountDown",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5408
+  },
+  {
+    "name": "stopCountDown",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5430
+  },
+  {
+    "name": "stopCountDownOnce",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5451
+  },
+  {
+    "name": "storageGet",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5476
+  },
+  {
+    "name": "storageRemove",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5494
+  },
+  {
+    "name": "storageSet",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5515
+  },
+  {
+    "name": "switchInputArea",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5533
+  },
+  {
+    "name": "switchToAbilityAnalysisTab",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5556
+  },
+  {
+    "name": "toAuth",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5590
+  },
+  {
+    "name": "toPay",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5604
+  },
+  {
+    "name": "toRechargeLMSStorage",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5617
+  },
+  {
+    "name": "toRechargeProfessionalBalance",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5645
+  },
+  {
+    "name": "toastTip",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5682
+  },
+  {
+    "name": "todoActivityJumpClass",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5698
+  },
+  {
+    "name": "todoHasMenu",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5727
+  },
+  {
+    "name": "todoShowToast",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5746
+  },
+  {
+    "name": "universalPayment",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5767
+  },
+  {
+    "name": "viewTodoList",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5791
+  },
+  {
+    "name": "viewVideoList",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5811
+  },
+  {
+    "name": "webShareInResource",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5832
+  },
+  {
+    "name": "whetherServiceAccountGuide",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5858
+  },
+  {
+    "name": "widgetCancel",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5892
+  },
+  {
+    "name": "widgetCloseWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5912
+  },
+  {
+    "name": "widgetEnableVideoFullScreen",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5937
+  },
+  {
+    "name": "widgetGetFullSchoolInfoPromise",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 5972
+  },
+  {
+    "name": "widgetLinkView",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 6010
+  },
+  {
+    "name": "widgetLinkViewWithCtoken",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 6032
+  },
+  {
+    "name": "widgetOpenSubWindow",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 6064
+  },
+  {
+    "name": "widgetWeblog",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 6091
+  },
+  {
+    "name": "writeBase64ToLocal",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 6111
+  },
+  {
+    "name": "writeToClipboard",
+    "kind": "CLIENT_PACKAGE_EXPORT_NOT_HTTP",
+    "teacherPermission": "UNVERIFIED",
+    "sourceFile": "classin-api-c63e0376.7324ddcf27d5116585e6.js",
+    "sourceOffset": 6137
+  }
+]

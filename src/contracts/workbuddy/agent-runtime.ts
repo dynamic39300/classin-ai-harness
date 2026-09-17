@@ -1,7 +1,7 @@
 import type { ConversationRunEvent } from './conversation-run';
 import type { SessionFileFormat } from './session-files';
 
-export type RuntimeScope = 'ideal-full' | 'classin-mvp' | 'standalone-teacher';
+export type RuntimeScope = 'ideal-full' | 'classin-mvp' | 'standalone-teacher' | 'classin-test';
 export type RuntimeHealth = Readonly<{
   status: 'ready' | 'unconfigured' | 'offline';
   message: string;
@@ -35,7 +35,7 @@ export type RuntimeSession = Readonly<{
   events: readonly ConversationRunEvent[];
   artifacts: readonly RuntimeArtifact[];
   error?: string;
-  failureCode?: 'vision-permission' | 'model-history-invalid';
+  failureCode?: 'vision-permission' | 'model-history-invalid' | 'model-rate-limited' | 'context-window-exceeded';
 }>;
 export interface AgentRuntimeAdapter {
   health(): Promise<RuntimeHealth>;

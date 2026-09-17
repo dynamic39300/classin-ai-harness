@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { chromium } from 'playwright';
 import { solutionImageHtml } from '../runtime/harness/solution-image.mjs';
+import { closeRenderBrowser } from './render-browser-cleanup.ts';
 
 const require = createRequire(import.meta.url);
 const cssPath = require.resolve('katex/dist/katex.min.css');
@@ -22,8 +23,9 @@ export async function renderSolutionPng(content: string): Promise<Buffer> {
   const html = solutionImageHtml(JSON.parse(content), mathCSS);
   pending++;
   try {
-    const browser = await chromium.launch({ channel: 'chrome', headless: true });
+    const browserServer = await chromium.launchServer({ channel: 'chrome', headless: true, host: '127.0.0.1', timeout: 15000 });
     try {
+      const browser = await chromium.connect(browserServer.wsEndpoint(), { timeout: 15000 });
       const context = await browser.newContext({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 1, javaScriptEnabled: false, serviceWorkers: 'block' });
       await context.route('**/*', route => route.abort());
       const page = await context.newPage();
@@ -31,8 +33,8 @@ export async function renderSolutionPng(content: string): Promise<Buffer> {
       await page.evaluate('document.fonts.ready');
       await page.evaluate(`for (const element of document.querySelectorAll('.formula')) {
         const math = element.querySelector('.katex-html');
-        if (math && math.getBoundingClientRect().width > element.clientWidth) {
-          element.style.fontSize = Math.max(16, 23 * element.clientWidth / math.getBoundingClientRect().width) + 'px';
+        if (math && math.scrollWidth > element.clientWidth) {
+          element.style.fontSize = Math.max(16, 23 * element.clientWidth / math.scrollWidth) + 'px';
         }
       }`);
       const overflow = await page.evaluate<boolean>("[...document.querySelectorAll('header, section, .formula, .conclusion, .slide')].some(element => element.scrollWidth > element.clientWidth + 2 || (!element.classList.contains('formula') && element.scrollHeight > element.clientHeight + 4))");
@@ -41,6 +43,6 @@ export async function renderSolutionPng(content: string): Promise<Buffer> {
       if (cache.size >= 8) cache.delete(cache.keys().next().value!);
       cache.set(key, png);
       return png;
-    } finally { await browser.close(); }
+    } finally { await closeRenderBrowser(browserServer); }
   } finally { pending--; }
 }

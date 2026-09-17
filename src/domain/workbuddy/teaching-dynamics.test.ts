@@ -50,4 +50,16 @@ describe('teaching dynamics projection', () => {
     expect(projectTeachingPrompts(crowded)).toHaveLength(4);
     expect(teachingDynamicsCompactLabel(crowded)).toBe('教学动态｜6 项建议');
   });
+
+  it('deduplicates a stable recommendation for the same object and context version', () => {
+    const duplicated = normalizeTeachingDynamics({
+      ...snapshot,
+      stages: [{ id: 'after', items: [
+        { id: 'first', recommendationKey: 'P05', objectRef: 'homework-1', stage: 'after', kind: 'attention', title: '第一次', detail: '同一建议', priority: 20, action: { label: '提醒', teacherRequest: '提醒' } },
+        { id: 'second', recommendationKey: 'P05', objectRef: 'homework-1', stage: 'after', kind: 'attention', title: '第二次', detail: '应去重', priority: 10, action: { label: '提醒', teacherRequest: '提醒' } },
+      ] }],
+    });
+
+    expect(duplicated.stages.find(({ id }) => id === 'after')?.items.map(({ id }) => id)).toEqual(['first']);
+  });
 });

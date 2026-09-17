@@ -4,7 +4,7 @@ type Projection = {
   events: ConversationRunEvent[];
   status?: 'idle' | 'running' | 'stopped' | 'failed';
   error?: string;
-  failureCode?: 'vision-permission' | 'model-history-invalid';
+  failureCode?: 'vision-permission' | 'model-history-invalid' | 'model-rate-limited' | 'context-window-exceeded';
 };
 type RawEvent = { seq: number; time: number; type: string; data: Record<string, unknown> };
 type Step = {
@@ -14,6 +14,7 @@ type Step = {
 };
 
 const GENERATION_ERROR = '生成未能完成，请稍后重试。';
+const MODEL_BUSY_ERROR = '模型服务当前繁忙，请稍后重试。已经生成的内容会继续保留。';
 const VISION_PERMISSION_ERROR = '当前模型凭据未开通图片理解，请联系服务管理员开通 DeepSeek 视觉模型后重试。';
 const TOOL_ERROR = '工具执行失败，请重试。';
 
@@ -57,13 +58,22 @@ function rawEvent(entry: unknown): RawEvent | undefined {
   return { seq: event.seq, time: event.time, type: event.type, data };
 }
 
-function generationError(raw: RawEvent): { error: string; failureCode?: 'vision-permission' | 'model-history-invalid' } {
+function generationError(raw: RawEvent): { error: string; failureCode?: 'vision-permission' | 'model-history-invalid' | 'model-rate-limited' | 'context-window-exceeded' } {
   const chunk = record(raw.data.chunk);
   const reason = record(chunk?.reason) ?? record(raw.data.reason);
   const failure = record(reason?.failure) ?? record(reason?.error);
   const message = typeof failure?.message === 'string' ? failure.message : '';
+  if (failure?.code === 'CONTEXT_WINDOW_EXCEEDED') {
+    return { error: '本轮对话内容过长，历史消息仍保留。请重新发送本次具体要求；如需分析之前的图片，请重新附图。', failureCode: 'context-window-exceeded' };
+  }
+  if (failure?.code === 'TRANSPORT') {
+    return { error: 'AI 服务连接失败，请检查服务连接后重试。已输入的内容和历史消息仍保留。' };
+  }
   if (/missing.*thought_signature|thought_signature.*missing/iu.test(message)) {
     return { error: '此前生成记录无法继续，请重新添加图片并发送，系统会自动开启新的处理记录。', failureCode: 'model-history-invalid' };
+  }
+  if (/\b429\b|rate.?limit|serving capacity|throttling_error/iu.test(message)) {
+    return { error: MODEL_BUSY_ERROR, failureCode: 'model-rate-limited' };
   }
   return /not allowed to access model|does not support image input/iu.test(message) && /vision|image/iu.test(message)
     ? { error: VISION_PERMISSION_ERROR, failureCode: 'vision-permission' }
@@ -245,7 +255,7 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
       if (typeof data.callId !== 'string' || !data.callId || typeof data.name !== 'string' || !data.name) continue;
       put(`tool:${stepRef}:${data.callId}`, raw, {
         actor: 'tool', kind: 'capability_call', state: 'running',
-        title: data.name === 'create_teaching_draft' ? '生成教学文稿' : '执行任务', summary: '正在执行',
+        title: data.name === 'create_teaching_draft' ? '生成教学文稿' : data.name === 'read_classin_context' ? '读取测试课程数据' : '执行任务', summary: '正在执行',
       }, turn, stepRef, [{ type: 'capability', id: data.name }]);
       projection.status ??= 'running';
     } else if (raw.type === 'tool/result') {
@@ -264,7 +274,7 @@ export function projectHarnessEvents(sessionId: string, entries: unknown[]): Pro
         actor: 'tool', kind: 'capability_call', state: failed ? 'failed' : 'completed',
         title: previous.title,
         summary: failed ? TOOL_ERROR : previous.objectRefs.some(ref => ref.id === 'create_teaching_draft')
-          ? '教学文稿已生成，等待审阅。' : '任务已完成。',
+          ? '教学文稿已生成，等待审阅。' : previous.objectRefs.some(ref => ref.id === 'read_classin_context') ? '已读取测试课程证据。' : '任务已完成。',
       }, turn, stepRef, previous.objectRefs);
     }
   }

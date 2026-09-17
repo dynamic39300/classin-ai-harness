@@ -39,7 +39,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
 
   if (!direct && timestamp < CORRECTION_DUE) {
     items.push({
-      id: 'physics-study-plan-overview', stage: 'before', kind: 'progress', priority: 90,
+      id: 'physics-study-plan-overview', recommendationKey: 'P01', stage: 'before', kind: 'progress', priority: 90,
       contextLabel: '高二物理 · 3 门课',
       title: '3 门课已学 8 讲，还剩 4 讲', detail: '动量守恒学到碰撞模型；接下来学习电磁感应',
       courseRef: 'physics-momentum', objectRef: 'period-current-unit',
@@ -49,7 +49,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
 
   if (timestamp < PHYSICS_LESSON_START) {
     items.push({
-      id: 'physics-upcoming-momentum-class', stage: 'before', kind: 'attention', priority: 100,
+      id: 'physics-upcoming-momentum-class', recommendationKey: 'P02', stage: 'before', kind: 'attention', priority: 100,
       contextLabel: direct ? '李明 · 动量守恒模型 · 私聊' : `${classLabel} · 动量守恒模型 · 在线课堂`,
       title: '今天 14:30 开课', detail: direct ? '可提前确认李明能否按时进入课堂' : '提醒全班提前进入课堂，准备讲义和练习单',
       courseRef: 'physics-momentum', objectRef: 'lesson-momentum-0809',
@@ -61,7 +61,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
 
   if (!direct && timestamp < CORRECTION_DUE) {
     items.push({
-      id: 'physics-upcoming-induction-class', stage: 'before', kind: 'attention', priority: 75,
+      id: 'physics-upcoming-induction-class', recommendationKey: 'P02', stage: 'before', kind: 'attention', priority: 75,
       contextLabel: `${classLabel} · 电磁感应 · 明天 19:00 在线课堂`,
       title: '明天 19:00 开课', detail: '提醒全班提前进入课堂，准备讲义和预习单',
       courseRef: 'physics-induction', objectRef: 'lesson-induction-0810',
@@ -71,7 +71,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
 
   if (timestamp >= PHYSICS_LESSON_START && timestamp < PHYSICS_LESSON_END) {
     items.push({
-      id: 'physics-live-attendance', stage: 'during', kind: direct ? 'confirmation' : 'attention', priority: 110,
+      id: 'physics-live-attendance', recommendationKey: direct ? undefined : 'P03', stage: 'during', kind: direct ? 'confirmation' : 'attention', priority: 110,
       contextLabel: direct ? '李明 · 动量守恒模型 · 在线课堂' : `${classLabel} · 动量守恒模型 · 在线课堂`,
       title: direct ? '李明已进入课堂' : '已上课 10 分钟，3 人未进入',
       detail: direct ? '当前无需发送到课提醒' : '李明、周然、陈晨尚未进入课堂，可发送一条尊重、不责备的提醒',
@@ -92,7 +92,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
 
   if (!direct && timestamp < CORRECTION_DUE) {
     items.push({
-      id: 'physics-learning-tasks', stage: 'after', kind: 'attention', priority: 108,
+      id: 'physics-learning-tasks', recommendationKey: 'P04', stage: 'after', kind: 'attention', priority: 108,
       contextLabel: '机械波基础 · 8月8日课后任务',
       title: '本讲安排了 3 份作业、1 次测验', detail: '已下课，可向全班同步任务内容和截止时间',
       courseRef: 'physics-wave', objectRef: 'lesson-wave-0808',
@@ -102,7 +102,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
 
   if (timestamp < HOMEWORK_DUE) {
     items.push({
-      id: 'physics-new-homework', stage: 'after', kind: 'attention', priority: 105,
+      id: 'physics-new-homework', recommendationKey: 'P05', stage: 'after', kind: 'attention', priority: 105,
       contextLabel: direct ? '李明 · 动量守恒作业 A 组 · 私聊' : `${classLabel} · 动量守恒作业 A 组`,
       title: direct ? '李明尚未提交，明天 18:00 截止' : '明天 18:00 截止，6 人未交',
       detail: direct ? '可提醒李明按时提交，有困难可以先反馈' : '李明、周然等 6 人尚未提交，可发送一条作业提醒',
@@ -115,7 +115,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
 
   if (!direct && timestamp < QUIZ_DUE) {
     items.push({
-      id: 'physics-quiz-submission', stage: 'after', kind: 'attention', priority: 100,
+      id: 'physics-quiz-submission', recommendationKey: 'P06', stage: 'after', kind: 'attention', priority: 100,
       contextLabel: '动量守恒随堂测验',
       title: '今晚 21:00 截止，5 人未交', detail: '周然、陈晨等 5 人尚未提交，可发送一条测验提醒',
       courseRef: 'physics-momentum', objectRef: 'quiz-momentum-check',
@@ -136,7 +136,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
 
   if (!direct && timestamp < CORRECTION_DUE) {
     items.push({
-      id: 'physics-wrong-question-cards', stage: 'after', kind: 'teacher-task', priority: 80,
+      id: 'physics-wrong-question-cards', recommendationKey: 'P07', stage: 'after', kind: 'teacher-task', priority: 80,
       contextLabel: '最近 2 次作业 · 7 道高频错题',
       title: '5 位同学集中答错 7 道题', detail: '生成题面与解析双面错题卡，确认后发到班群', objectRef: 'homework-correction',
       action: action('生成错题卡', '请根据最近 2 次物理作业，整理 5 位同学集中答错的 7 道题，生成包含题面、典型错因和解题过程的双面错题卡，供我确认后发到班群。', undefined, ['wrong-question-set-physics-recent']),
@@ -145,7 +145,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
 
   if (direct) {
     items.push({
-      id: 'physics-class-recap', stage: 'summary', kind: 'progress', priority: 65,
+      id: 'physics-class-recap', recommendationKey: 'P08', stage: 'summary', kind: 'progress', priority: 65,
       contextLabel: '李明 · 动量守恒模型 · 8月8日课堂',
       title: '可以整理李明的本讲回顾', detail: '归纳本讲知识点、课堂练习和课后任务', objectRef: 'lesson-momentum-0808',
       action: action('生成回顾', '请根据动量守恒模型课的现有证据，为李明整理一份本讲课堂回顾。', {
@@ -153,7 +153,7 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
       }, ['student-001']),
     });
     items.push({
-      id: 'physics-learning-summary', stage: 'summary', kind: 'progress', priority: 35,
+      id: 'physics-learning-summary', recommendationKey: 'P10', stage: 'summary', kind: 'progress', priority: 35,
       contextLabel: '李明 · 高二物理 · 本周',
       title: '可以整理李明的本周学情', detail: '归纳阶段进展、困难和下一步', objectRef: 'period-this-week',
       action: action('个人总结', '请整理李明本周课堂、作业和互动证据，生成一份个人学情总结；只陈述可核验事实。', {
@@ -162,19 +162,19 @@ function physicsItems(now: Date, direct: boolean, classLabel: string): readonly 
     });
   } else {
     items.push({
-      id: 'physics-class-recap', stage: 'summary', kind: 'progress', priority: 80,
+      id: 'physics-class-recap', recommendationKey: 'P08', stage: 'summary', kind: 'progress', priority: 80,
       contextLabel: '机械波基础 · 8月8日课堂',
       title: '本讲回顾可以发给全班', detail: '整理知识点、课堂练习和课后任务', objectRef: 'lesson-wave-0808',
       action: action('生成回顾', '请根据机械波基础课的现有证据，整理本讲知识点、课堂练习和课后任务，生成一条可发到班群的课堂回顾。', undefined, ['physics-wave', 'lesson-wave-0808', 'task-plan-wave-0808']),
     });
     items.push({
-      id: 'physics-class-learning-summary', stage: 'summary', kind: 'progress', priority: 55,
+      id: 'physics-class-learning-summary', recommendationKey: 'P09', stage: 'summary', kind: 'progress', priority: 55,
       contextLabel: '高二物理 · 本周学情',
       title: '可以整理本班阶段学情', detail: '汇总 3 门课的进度、共性问题和下一步', objectRef: 'period-this-week',
       action: action('整班总结', '请汇总本班 3 门物理课的课堂、作业和测验证据，整理学习进度、共性问题和下一步，生成一份可发到班群的阶段学情总结。', undefined, ['plan-physics-2026-summer', 'period-this-week']),
     });
     items.push({
-      id: 'physics-student-learning-summary', stage: 'summary', kind: 'progress', priority: 40,
+      id: 'physics-student-learning-summary', recommendationKey: 'P10', stage: 'summary', kind: 'progress', priority: 40,
       contextLabel: '李明 · 动量守恒单元',
       title: '可以整理李明的个人学情', detail: '归纳课堂表现、作业情况和下一步建议', objectRef: 'period-current-unit',
       action: action('个人总结', '请根据李明在动量守恒单元的课堂、作业和互动证据，整理个人学习进展、困难和下一步建议；只陈述可核验事实。', {

@@ -29,7 +29,7 @@ import type {
 const SAFE_ID = /^[a-zA-Z0-9_-]{1,120}$/;
 const SAFE_FILE_ID = /^sf-[a-f0-9]{40}$/;
 const MAX_FILE_BYTES = 512 * 1024;
-const scopes = new Set<RuntimeScope>(['ideal-full', 'classin-mvp', 'standalone-teacher']);
+const scopes = new Set<RuntimeScope>(['ideal-full', 'classin-mvp', 'standalone-teacher', 'classin-test']);
 const formats: Readonly<Record<SessionFileFormat, Readonly<{
   extension: SessionFile['extension'];
   mediaType: string;

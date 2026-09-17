@@ -1,0 +1,36 @@
+{
+  "instance": "starrocks_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 3,
+  "truncated": false,
+  "execution_time_ms": 8060,
+  "data": [
+    {
+      "biz_type": 3,
+      "action": "handin_exam",
+      "event_n": 36323,
+      "student_activity_n": 36323,
+      "student_n": 17789,
+      "activity_n": 6145,
+      "school_n": 345
+    },
+    {
+      "biz_type": 3,
+      "action": "looked_activity",
+      "event_n": 26210,
+      "student_activity_n": 26210,
+      "student_n": 13277,
+      "activity_n": 5843,
+      "school_n": 313
+    },
+    {
+      "biz_type": 3,
+      "action": "readover_exam_st",
+      "event_n": 35315,
+      "student_activity_n": 35132,
+      "student_n": 17326,
+      "activity_n": 5969,
+      "school_n": 339
+    }
+  ]
+}

@@ -8,7 +8,9 @@ export default tseslint.config(
   { ignores: ['.agents', '.scratch', '.codex-tmp', '.runtime', 'dist', 'coverage', 'playwright-report', 'test-results', 'vendor'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  { files: ['scripts/**/*.mjs', 'runtime/**/*.mjs'], languageOptions: { globals: globals.node } },
+  { files: ['**/*.cjs'], languageOptions: { sourceType: 'commonjs', globals: globals.node }, rules: { '@typescript-eslint/no-require-imports': 'off' } },
+  { files: ['scripts/**/*.mjs', 'runtime/**/*.mjs', 'tools/copilot-api-review-lab/**/*.mjs'], languageOptions: { globals: globals.node } },
+  { files: ['tools/copilot-api-review-lab/public/*.js'], languageOptions: { globals: globals.browser } },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {

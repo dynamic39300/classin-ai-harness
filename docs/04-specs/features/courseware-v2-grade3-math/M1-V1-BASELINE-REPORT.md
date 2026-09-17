@@ -5,6 +5,7 @@ version: v1.0
 date: 2026-09-06
 milestone: M1
 baseline: Courseware Generation Version 1
+follow_up: PENDING
 ---
 
 # M1 固定任务、量规与 V1 基线报告
@@ -13,11 +14,13 @@ baseline: Courseware Generation Version 1
 
 M1 的 8 个固定任务、Rubric v0.1、真实 Harness V1 运行快照、Agent 试评和 1440×900 视觉检查均已完成。当前结论为：
 
-> **M1 COMPLETE_USER_AUTHORIZED; V1 content gate failed; M2 unblocked but not started.**
+> **M1 COMPLETE_USER_AUTHORIZED; V1 content gate failed; M2 is technically unblocked and currently PENDING under D-158.**
 
 这不是坏结果。M1 的目的就是在修改生成方法之前建立可复现比较基线。当前证据已经足以解释 V1 的主要失分，并能把教学内容、输入澄清、运行可靠性和视觉表达问题分开。用户于 2026-09-06 明确授权 M1 过程中所有需要审阅的事项默认确认，并在产出完成后统一复审最终结果；据此 M1 显式 Gate 已关闭，M2 已解锁但尚未启动。
 
 首轮评分者为 Codex，角色是依据 M0 固定课程合同进行证据试评，不是教师或教研人员。以下分数不能解释为真实课堂效果。用户授权接受的是 M1 对照基线和阶段 Gate，不等于教师/教研专业量规已经完成校准。
+
+> **后续状态（2026-09-16）**：用户当前暂不投入精力跟进课件路线，M1 最终复审、教师/教研校准和 M2 启动统一标记为 `PENDING`。M1 的完成状态、原始 Session、Artifact、失败、哈希和评分继续冻结，不因暂缓而回退或改写。
 
 ## 2. Write Set 与不变项
 
@@ -126,7 +129,7 @@ M1-C06 在 600 秒内没有产生 Agent 正文或 Tool Artifact；运行器按�
 | 教师/教研校准 | `DEFERRED_NOT_REQUIRED_FOR_M1_CLOSE` | 当前没有教师或教研人员样本；继续作为 M7 真实质量 Gate，不得伪装为已完成 |
 | 用户 Review | `COMPLETE_BY_DELEGATED_AUTHORIZATION` | 用户授权 M1 过程中所有审阅默认确认，最终结果交付后统一复审 |
 
-**最终判定**：`M1 COMPLETE_USER_AUTHORIZED — M2 UNBLOCKED_NOT_STARTED`。
+**阶段判定**：`M1 COMPLETE_USER_AUTHORIZED`。M2 的技术前置已经满足；当前项目优先级判定为 `FOLLOW_UP_AND_M2_PENDING`（D-158）。
 
 ## 9. 用户授权与 Review Receipt
 

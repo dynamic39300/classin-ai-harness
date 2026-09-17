@@ -1,0 +1,16 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 2922,
+  "data": [
+    {
+      "ended_lesson_n": 1206793,
+      "ended_school_n": 43811,
+      "mapped_lesson_n": 1171172,
+      "unmapped_lesson_n": 35621,
+      "multi_category_lesson_n": 0
+    }
+  ]
+}

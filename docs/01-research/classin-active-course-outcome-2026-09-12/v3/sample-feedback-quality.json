@@ -1,0 +1,102 @@
+[
+  {
+    "sample_label": "H01",
+    "records_n": 1,
+    "students_n": 1,
+    "submitted_n": 0,
+    "reviewed_n": 0,
+    "viewed_after_review_n": 0,
+    "feedback_presence_candidate_n": 0,
+    "with_judgments_n": 0
+  },
+  {
+    "sample_label": "H02",
+    "records_n": 17,
+    "students_n": 17,
+    "submitted_n": 10,
+    "reviewed_n": 0,
+    "viewed_after_review_n": 0,
+    "feedback_presence_candidate_n": 0,
+    "with_judgments_n": 0
+  },
+  {
+    "sample_label": "H03",
+    "records_n": 1,
+    "students_n": 1,
+    "submitted_n": 0,
+    "reviewed_n": 0,
+    "viewed_after_review_n": 0,
+    "feedback_presence_candidate_n": 0,
+    "with_judgments_n": 0
+  },
+  {
+    "sample_label": "H04",
+    "records_n": 40,
+    "students_n": 40,
+    "submitted_n": 6,
+    "reviewed_n": 0,
+    "viewed_after_review_n": 0,
+    "feedback_presence_candidate_n": 0,
+    "with_judgments_n": 0
+  },
+  {
+    "sample_label": "H05",
+    "records_n": 1,
+    "students_n": 1,
+    "submitted_n": 1,
+    "reviewed_n": 1,
+    "viewed_after_review_n": 0,
+    "feedback_presence_candidate_n": 1,
+    "with_judgments_n": 0
+  },
+  {
+    "sample_label": "H06",
+    "records_n": 15,
+    "students_n": 15,
+    "submitted_n": 3,
+    "reviewed_n": 1,
+    "viewed_after_review_n": 0,
+    "feedback_presence_candidate_n": 0,
+    "with_judgments_n": 0
+  },
+  {
+    "sample_label": "H07",
+    "records_n": 6,
+    "students_n": 6,
+    "submitted_n": 3,
+    "reviewed_n": 1,
+    "viewed_after_review_n": 0,
+    "feedback_presence_candidate_n": 1,
+    "with_judgments_n": 0
+  },
+  {
+    "sample_label": "H08",
+    "records_n": 29,
+    "students_n": 29,
+    "submitted_n": 22,
+    "reviewed_n": 20,
+    "viewed_after_review_n": 3,
+    "feedback_presence_candidate_n": 20,
+    "with_judgments_n": 8
+  },
+  {
+    "sample_label": "H09",
+    "records_n": 1,
+    "students_n": 1,
+    "submitted_n": 0,
+    "reviewed_n": 0,
+    "viewed_after_review_n": 0,
+    "feedback_presence_candidate_n": 0,
+    "with_judgments_n": 0
+  },
+  {
+    "sample_label": "H10",
+    "records_n": 1,
+    "students_n": 1,
+    "submitted_n": 0,
+    "reviewed_n": 0,
+    "viewed_after_review_n": 0,
+    "feedback_presence_candidate_n": 0,
+    "with_judgments_n": 0
+  }
+]

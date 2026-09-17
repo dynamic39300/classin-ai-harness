@@ -1,0 +1,16 @@
+{
+  "instance": "starrocks_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 4099,
+  "data": [
+    {
+      "biz_type": 4,
+      "configured_course_n": 3766,
+      "configured_school_n": 799,
+      "activity_n": 40906,
+      "week_candidate_course_n": 3595
+    }
+  ]
+}

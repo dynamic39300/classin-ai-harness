@@ -1,0 +1,5022 @@
+[
+  {
+    "scanId": "PCAPI-0001",
+    "base": "//question-bank-business-service",
+    "path": "/paper/relation",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496922,
+        "name": "试卷绑定关系",
+        "method": "post",
+        "path": "/paper/relation",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0002",
+    "base": "/",
+    "path": "/schedule-bff/class_schedule/courser/search",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345370,
+        "projectName": "eeo_schedule_bff",
+        "endpointId": 3499146,
+        "name": "获取课程名称搜索",
+        "method": "post",
+        "path": "schedule-bff/class_schedule/courser/search",
+        "docStatus": "developing",
+        "matchBasis": "prefix_join_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0003",
+    "base": "/",
+    "path": "/schedule-bff/class_schedule/get",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0004",
+    "base": "/",
+    "path": "/schedule-bff/class_schedule/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345370,
+        "projectName": "eeo_schedule_bff",
+        "endpointId": 3493820,
+        "name": "获取课程表列表",
+        "method": "post",
+        "path": "schedule-bff/class_schedule/list",
+        "docStatus": "developing",
+        "matchBasis": "prefix_join_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0005",
+    "base": "/",
+    "path": "/schedule-bff/class_schedule/lock_info",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0006",
+    "base": "/agent-api/app/",
+    "path": "/message/deployTrialAgent",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0007",
+    "base": "/agent-api",
+    "path": "/app/agent/cos/presignUrl",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3498541,
+        "name": "cos预签名url-上传和下载",
+        "method": "post",
+        "path": "/app/agent/cos/presignUrl",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0008",
+    "base": "/agent-api",
+    "path": "/app/agent/selection/page",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0009",
+    "base": "/agent-api",
+    "path": "/app/attachment/del",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3502869,
+        "name": "agent产物修删除",
+        "method": "post",
+        "path": "/app/attachment/del",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0010",
+    "base": "/agent-api",
+    "path": "/app/attachment/download",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3502861,
+        "name": "附件下载",
+        "method": "post",
+        "path": "/app/attachment/download",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0011",
+    "base": "/agent-api",
+    "path": "/app/attachment/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3502753,
+        "name": "agent产物列表",
+        "method": "post",
+        "path": "/app/attachment/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0012",
+    "base": "/agent-api",
+    "path": "/app/attachment/update",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3502867,
+        "name": "agent产物修改",
+        "method": "post",
+        "path": "/app/attachment/update",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0013",
+    "base": "/agent-api",
+    "path": "/app/config/welcome",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345469,
+        "projectName": "course_ai_assistant_service",
+        "endpointId": 3497919,
+        "name": "欢迎语/引导问题",
+        "method": "post",
+        "path": "/app/config/welcome",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3498621,
+        "name": "ai学情-欢迎语/引导问题",
+        "method": "post",
+        "path": "/app/config/welcome",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0014",
+    "base": "/agent-api",
+    "path": "/app/feedback/add",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3500551,
+        "name": "添加反馈",
+        "method": "post",
+        "path": "/app/feedback/add",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0015",
+    "base": "/agent-api",
+    "path": "/app/feedback/getConfig",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3500587,
+        "name": "反馈配置",
+        "method": "post",
+        "path": "/app/feedback/getConfig",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0016",
+    "base": "/agent-api",
+    "path": "/app/message/answerUseful",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345469,
+        "projectName": "course_ai_assistant_service",
+        "endpointId": 3497908,
+        "name": "回答赞踩",
+        "method": "post",
+        "path": "/app/message/answerUseful",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3498487,
+        "name": "回答赞踩",
+        "method": "post",
+        "path": "/app/message/answerUseful",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0017",
+    "base": "/agent-api",
+    "path": "/app/message/list",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345469,
+        "projectName": "course_ai_assistant_service",
+        "endpointId": 3497922,
+        "name": "问答列表",
+        "method": "post",
+        "path": "/app/message/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3498480,
+        "name": "会话详情",
+        "method": "post",
+        "path": "/app/message/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0018",
+    "base": "/agent-api",
+    "path": "/app/session/del",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3498654,
+        "name": "会话删除",
+        "method": "post",
+        "path": "/app/session/del",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0019",
+    "base": "/agent-api",
+    "path": "/app/session/list",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345469,
+        "projectName": "course_ai_assistant_service",
+        "endpointId": 3497918,
+        "name": "会话列表",
+        "method": "post",
+        "path": "/app/session/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3498479,
+        "name": "会话列表",
+        "method": "post",
+        "path": "/app/session/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0020",
+    "base": "/agent-api",
+    "path": "/app/session/studentList",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345469,
+        "projectName": "course_ai_assistant_service",
+        "endpointId": 3497921,
+        "name": "学生会话量列表",
+        "method": "post",
+        "path": "/app/session/studentList",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3498791,
+        "name": "学生会话量列表",
+        "method": "post",
+        "path": "/app/session/studentList",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0021",
+    "base": "/agent-api",
+    "path": "/app/skill/get",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3502767,
+        "name": "获取skill",
+        "method": "post",
+        "path": "/app/skill/get",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0022",
+    "base": "/agent-api",
+    "path": "/app/task/generateStudentReports",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345479,
+        "projectName": "agent_api",
+        "endpointId": 3503375,
+        "name": "创建生成报告任务",
+        "method": "post",
+        "path": "/app/task/generateStudentReports",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0023",
+    "base": "/agentin/",
+    "path": "/app/collect/agent/add",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499647,
+        "name": "添加业务智能体",
+        "method": "post",
+        "path": "/app/collect/agent/add",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0024",
+    "base": "/agentin/",
+    "path": "/app/collect/agent/delete",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499649,
+        "name": "删除业务智能体",
+        "method": "post",
+        "path": "/app/collect/agent/delete",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0025",
+    "base": "/agentin/",
+    "path": "/app/collect/agent/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499651,
+        "name": "业务智能体收藏列表",
+        "method": "post",
+        "path": "/app/collect/agent/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0026",
+    "base": "/agentin/",
+    "path": "/app/collect/agent/top",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500549,
+        "name": "置顶/取消 业务智能体",
+        "method": "post",
+        "path": "/app/collect/agent/top",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0027",
+    "base": "/agentin/",
+    "path": "/app/index/recommend_agent",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500061,
+        "name": "推荐智能体--推荐智能体",
+        "method": "post",
+        "path": "/app/index/recommend_agent",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0028",
+    "base": "/agentin/",
+    "path": "/app/orchestration/get_category_list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499416,
+        "name": "智能体编排--获取分类列表",
+        "method": "post",
+        "path": "/app/orchestration/get_category_list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0029",
+    "base": "/agentin/",
+    "path": "/app/self_agent/delete",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499353,
+        "name": "我创建的--删除个人智能体（导入 + 自建）",
+        "method": "post",
+        "path": "/app/self_agent/delete",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0030",
+    "base": "/agentin/",
+    "path": "/app/self_agent/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499359,
+        "name": "我创建的--智能体列表（导入 + 自建）",
+        "method": "post",
+        "path": "/app/self_agent/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0031",
+    "base": "/agentin/",
+    "path": "/app/self_agent/off_shelf",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499360,
+        "name": "我创建的--下架智能体（下架）",
+        "method": "post",
+        "path": "/app/self_agent/off_shelf",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0032",
+    "base": "/agentin/",
+    "path": "/app/user/identity",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3500199,
+        "name": "根据用户id查询用户身份",
+        "method": "post",
+        "path": "/app/user/identity",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500021,
+        "name": "根据用户id查询用户身份",
+        "method": "post",
+        "path": "/app/user/identity",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0033",
+    "base": "/agentin/",
+    "path": "/app/user/identity/list",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3500197,
+        "name": "获取身份列表（客户端）",
+        "method": "post",
+        "path": "/app/user/identity/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500029,
+        "name": "获取身份列表（客户端）",
+        "method": "post",
+        "path": "/app/user/identity/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0034",
+    "base": "/agentin/",
+    "path": "/app/user/identity/save",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3500195,
+        "name": "存储用户身份",
+        "method": "post",
+        "path": "/app/user/identity/save",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500027,
+        "name": "存储用户身份",
+        "method": "post",
+        "path": "/app/user/identity/save",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0035",
+    "base": "/agentin/",
+    "path": "/person/modify",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0036",
+    "base": "/agentin/",
+    "path": "app/agent/category",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3498869,
+        "name": "商店--智能体分类-树形结构",
+        "method": "post",
+        "path": "/app/agent/category",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499421,
+        "name": "商店--智能体分类",
+        "method": "post",
+        "path": "/app/agent/category",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0037",
+    "base": "/agentin",
+    "path": "/app/agent/detail",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499237,
+        "name": "商店--公开智能体详情",
+        "method": "post",
+        "path": "/app/agent/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499422,
+        "name": "商店--公开智能体详情",
+        "method": "post",
+        "path": "/app/agent/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0038",
+    "base": "/agentin",
+    "path": "/app/agent/get_category_list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500339,
+        "name": "商店--获取分类列表",
+        "method": "post",
+        "path": "/app/agent/get_category_list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0039",
+    "base": "/agentin/",
+    "path": "app/agent/list",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499423,
+        "name": "商店--根据分类获取智能体列表",
+        "method": "post",
+        "path": "/app/agent/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3498871,
+        "name": "商店--根据分类获取智能体列表",
+        "method": "post",
+        "path": "/app/agent/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0040",
+    "base": "/agentin/",
+    "path": "app/agent/person/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499429,
+        "name": "商店--个人智能体列表",
+        "method": "post",
+        "path": "/app/agent/person/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0041",
+    "base": "/agentin/",
+    "path": "app/agent/person/query_flowin_agent_detail",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499235,
+        "name": "商店--查询flowin智能体详情",
+        "method": "post",
+        "path": "/app/agent/person/query_flowin_agent_detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0042",
+    "base": "/agentin/",
+    "path": "app/agent/search",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3502465,
+        "name": "商店--按名称搜索智能体",
+        "method": "post",
+        "path": "/app/agent/search",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0043",
+    "base": "/agentin/",
+    "path": "app/agent/tag",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499418,
+        "name": "商店--智能体标签-列表",
+        "method": "post",
+        "path": "/app/agent/tag",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0044",
+    "base": "/agentin",
+    "path": "/app/course/agent/add",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3498877,
+        "name": "添加业务智能体(个人、班级)",
+        "method": "post",
+        "path": "/app/course/agent/add",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499432,
+        "name": "添加业务智能体(个人、班级)",
+        "method": "post",
+        "path": "/app/course/agent/add",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0045",
+    "base": "/agentin/app/course/agent",
+    "path": "/delete",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0046",
+    "base": "/agentin/app/",
+    "path": "course/agent/delete",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0047",
+    "base": "/agentin/app/course/agent",
+    "path": "/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0048",
+    "base": "/agentin/app/",
+    "path": "course/agent/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0049",
+    "base": "/agentin",
+    "path": "/app/course/publicagent/detail",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499425,
+        "name": "业务商店智能体详情(班级、个人)",
+        "method": "post",
+        "path": "/app/course/publicagent/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3498872,
+        "name": "业务商店智能体详情(班级、个人)",
+        "method": "post",
+        "path": "/app/course/publicagent/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0050",
+    "base": "/agentin/",
+    "path": "app/index/banner_list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500059,
+        "name": "首页--Banner列表",
+        "method": "post",
+        "path": "/app/index/banner_list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0051",
+    "base": "/agentin",
+    "path": "/app/newbee/content/is_empty",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500161,
+        "name": "判断创建者说内容是否为空",
+        "method": "post",
+        "path": "/app/newbee/content/is_empty",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0052",
+    "base": "/agentin",
+    "path": "/app/newbee/creater_token/get",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500007,
+        "name": "获取创建者说访问token",
+        "method": "post",
+        "path": "/app/newbee/creater_token/get",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0053",
+    "base": "/agentin",
+    "path": "/app/newbee/space/read_token",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3502759,
+        "name": "获取 Newbee 空间只读访问 Token",
+        "method": "post",
+        "path": "/app/newbee/space/read_token",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0054",
+    "base": "/agentin",
+    "path": "/app/newbee/wisehub/batch_study_status",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3501263,
+        "name": "Wisehub 批量学习状态",
+        "method": "post",
+        "path": "/app/newbee/wisehub/batch_study_status",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0055",
+    "base": "/agentin/",
+    "path": "app/notification/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3502513,
+        "name": "通知--前台通知列表（已上架，按更新时间倒序）",
+        "method": "post",
+        "path": "/app/notification/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0056",
+    "base": "/agentin/",
+    "path": "app/notification/read",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3502529,
+        "name": "通知--标记已读",
+        "method": "post",
+        "path": "/app/notification/read",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0057",
+    "base": "/agentin",
+    "path": "/app/options/all",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500595,
+        "name": "获取静态配置",
+        "method": "post",
+        "path": "/app/options/all",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0058",
+    "base": "/agentin",
+    "path": "/app/orchestration/get_category_list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499416,
+        "name": "智能体编排--获取分类列表",
+        "method": "post",
+        "path": "/app/orchestration/get_category_list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0059",
+    "base": "/agentin",
+    "path": "/app/orchestration/get_llm_config",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499366,
+        "name": "智能体编排--获取系统LLM配置",
+        "method": "post",
+        "path": "/app/orchestration/get_llm_config",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0060",
+    "base": "/agentin",
+    "path": "/app/orchestration/get_tag_list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499417,
+        "name": "智能体编排--获取标签列表",
+        "method": "post",
+        "path": "/app/orchestration/get_tag_list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0061",
+    "base": "/agentin/",
+    "path": "app/personal/publish/history",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499274,
+        "name": "个人发布历史列表",
+        "method": "post",
+        "path": "/app/personal/publish/history",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0062",
+    "base": "/agentin/",
+    "path": "app/personal/publish/history/read",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499397,
+        "name": "个人发布历史列表已读",
+        "method": "post",
+        "path": "/app/personal/publish/history/read",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0063",
+    "base": "/agentin",
+    "path": "/app/publish/history",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499275,
+        "name": "应用发布历史+草稿",
+        "method": "post",
+        "path": "/app/publish/history",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0064",
+    "base": "/agentin",
+    "path": "/app/ranking_list/detail",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499991,
+        "name": "客户端-榜单详情",
+        "method": "post",
+        "path": "/app/ranking_list/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0065",
+    "base": "/agentin",
+    "path": "/app/ranking_list/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499993,
+        "name": "客户端-榜单列表",
+        "method": "post",
+        "path": "/app/ranking_list/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0066",
+    "base": "/agentin",
+    "path": "/app/self_agent/arrangement/detail",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500645,
+        "name": "我创建的--获取智能体编排信息(已发布版本)",
+        "method": "post",
+        "path": "/app/self_agent/arrangement/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0067",
+    "base": "/agentin",
+    "path": "/app/self_agent/avatar/generate",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500647,
+        "name": "我创建的--生成 AI 头像",
+        "method": "post",
+        "path": "/app/self_agent/avatar/generate",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0068",
+    "base": "/agentin",
+    "path": "/app/self_agent/content/audit",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500649,
+        "name": "我创建的--智能体内容审核",
+        "method": "post",
+        "path": "/app/self_agent/content/audit",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0069",
+    "base": "/agentin",
+    "path": "/app/self_agent/create",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499352,
+        "name": "我创建的--创建应用（创建应用）",
+        "method": "post",
+        "path": "/app/self_agent/create",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0070",
+    "base": "/agentin",
+    "path": "/app/self_agent/detail",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499563,
+        "name": "我创建的--个人智能体详情[已发布后使用]（导入 + 自建）",
+        "method": "post",
+        "path": "/app/self_agent/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0071",
+    "base": "/agentin",
+    "path": "/app/self_agent/draft_box/detail",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499355,
+        "name": "我创建的--获取草稿箱详情（自建智能体编辑回显）",
+        "method": "post",
+        "path": "/app/self_agent/draft_box/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0072",
+    "base": "/agentin",
+    "path": "/app/self_agent/draft_box/save",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499356,
+        "name": "我创建的--智能体保存到草稿箱（定时保存）",
+        "method": "post",
+        "path": "/app/self_agent/draft_box/save",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0073",
+    "base": "/agentin/",
+    "path": "app/self_agent/import/add",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499357,
+        "name": "我创建的--添加个人智能体（导入）",
+        "method": "post",
+        "path": "/app/self_agent/import/add",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0074",
+    "base": "/agentin/",
+    "path": "app/self_agent/import/modify",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499358,
+        "name": "我创建的--修改个人智能体（导入）",
+        "method": "post",
+        "path": "/app/self_agent/import/modify",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0075",
+    "base": "/agentin",
+    "path": "/app/self_agent/publish",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499361,
+        "name": "我创建的--发布智能体（点击发布）",
+        "method": "post",
+        "path": "/app/self_agent/publish",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0076",
+    "base": "/agentin",
+    "path": "/app/self_agent/publish/details",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499561,
+        "name": "我创建的--发布详情页信息（语言、平台）",
+        "method": "post",
+        "path": "/app/self_agent/publish/details",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0077",
+    "base": "/agentin",
+    "path": "/app/template/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3499323,
+        "name": "端上模板列表",
+        "method": "post",
+        "path": "/app/template/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0078",
+    "base": "/agentin/app/",
+    "path": "user/configure/getWebData",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0079",
+    "base": "/agentin",
+    "path": "/get/knowledge",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0080",
+    "base": "/agentin",
+    "path": "/save/knowledge",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0081",
+    "base": "/api",
+    "path": "/classin.api.php?action=addClassStudent",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0082",
+    "base": "/api",
+    "path": "/classin.api.php?action=addSuggest",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0083",
+    "base": "/api",
+    "path": "/classin.api.php?action=getMySchoolList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0084",
+    "base": "/api",
+    "path": "/classin.api.php?action=uploadImage",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0085",
+    "base": "/api/",
+    "path": "exam.api.php?action=getTextbookTree",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0086",
+    "base": "/api",
+    "path": "classin.api.php?action=delCourseAudit",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0087",
+    "base": "/api",
+    "path": "classin.api.php?action=delCourseStudent",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0088",
+    "base": "/api",
+    "path": "classin.api.php?action=deleteCourseTeacher",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0089",
+    "base": "/api",
+    "path": "classin.api.php?action=editClusterMemberNicknames",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0090",
+    "base": "/api",
+    "path": "classin.api.php?action=editCourse",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0091",
+    "base": "/api",
+    "path": "classin.api.php?action=getLoginUserStatus",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0092",
+    "base": "/api",
+    "path": "classin.api.php?action=getQuitClusterStatus",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0093",
+    "base": "/api",
+    "path": "classin.api.php?action=getSchoolAuthInfo",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0094",
+    "base": "/api",
+    "path": "classin.api.php?action=quitCluster",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0095",
+    "base": "/api",
+    "path": "classin.api.php?action=studentBecomeTeacher",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0096",
+    "base": "/api",
+    "path": "classin.api.php?action=teacherBecomeStudent",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0097",
+    "base": "/classroom/app",
+    "path": "/classInfo/simpleInfo",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0098",
+    "base": "/classroom",
+    "path": "/web/class/open/get",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345171,
+        "projectName": "eeo_classroom_business",
+        "endpointId": 3497930,
+        "name": "页面搜索-公开课详情",
+        "method": "post",
+        "path": "/web/class/open/get",
+        "docStatus": "testing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0099",
+    "base": "/classroom",
+    "path": "/web/class/open/students",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345171,
+        "projectName": "eeo_classroom_business",
+        "endpointId": 3497931,
+        "name": "页面搜索-公开课学生列表",
+        "method": "post",
+        "path": "/web/class/open/students",
+        "docStatus": "testing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0100",
+    "base": "/client-base-api/",
+    "path": "/user/sources",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0101",
+    "base": "/clouddisk/api",
+    "path": "/batchDel",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0102",
+    "base": "/clouddisk/api",
+    "path": "/beike/create",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0103",
+    "base": "/clouddisk/api",
+    "path": "/course/createFolder",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0104",
+    "base": "/clouddisk/api",
+    "path": "/createFolder",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0105",
+    "base": "/clouddisk/api",
+    "path": "/delAuthBySid",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0106",
+    "base": "/clouddisk/api",
+    "path": "/getAuthorizedInfo",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0107",
+    "base": "/clouddisk/api",
+    "path": "/getFileInfo",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0108",
+    "base": "/clouddisk/api",
+    "path": "/getFilesTransitionState",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0109",
+    "base": "/clouddisk/api",
+    "path": "/getFolderList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0110",
+    "base": "/clouddisk/api",
+    "path": "/onlinedoc/create",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0111",
+    "base": "/clouddisk/api",
+    "path": "/renameFile",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0112",
+    "base": "/clouddisk/api",
+    "path": "/renameFolder",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0113",
+    "base": "/clouddisk/api",
+    "path": "/resource/getMyResource",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0114",
+    "base": "/clouddisk/api",
+    "path": "/saveAuthFile",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0115",
+    "base": "/clouddisk/web",
+    "path": "/resource/getResourceAuth",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0116",
+    "base": "/clouddisk/web",
+    "path": "/resource/setResourceAuthWithAction",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0117",
+    "base": "/cloudspace/api",
+    "path": "/course/breadcrumb",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0118",
+    "base": "/cloudspace/api",
+    "path": "/course/getSubFolderList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0119",
+    "base": "/cloudspace/api",
+    "path": "/eppt/create",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0120",
+    "base": "/cloudspace/api",
+    "path": "/home/getBannerListNew",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0121",
+    "base": "/cloudspace/api",
+    "path": "/logs",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0122",
+    "base": "/cloudspace/api",
+    "path": "/organization/auth/get",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0123",
+    "base": "/cloudspace/api",
+    "path": "/organization/auth/set/download",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0124",
+    "base": "/cloudspace/api",
+    "path": "/organization/auth/setWithAction",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0125",
+    "base": "/cloudspace/api",
+    "path": "/organization/breadcrumb",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0126",
+    "base": "/cloudspace/api",
+    "path": "/organization/copy",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0127",
+    "base": "/cloudspace/api",
+    "path": "/organization/delete",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0128",
+    "base": "/cloudspace/api",
+    "path": "/organization/disk/create",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0129",
+    "base": "/cloudspace/api",
+    "path": "/organization/disk/delete",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0130",
+    "base": "/cloudspace/api",
+    "path": "/organization/disk/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0131",
+    "base": "/cloudspace/api",
+    "path": "/organization/disk/rename",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0132",
+    "base": "/cloudspace/api",
+    "path": "/organization/edoc/create",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0133",
+    "base": "/cloudspace/api",
+    "path": "/organization/eppt/create",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0134",
+    "base": "/cloudspace/api",
+    "path": "/organization/file/rename",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0135",
+    "base": "/cloudspace/api",
+    "path": "/organization/file/upload",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0136",
+    "base": "/cloudspace/api",
+    "path": "/organization/fileinfo/get",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0137",
+    "base": "/cloudspace/api",
+    "path": "/organization/folder/create",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0138",
+    "base": "/cloudspace/api",
+    "path": "/organization/folder/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0139",
+    "base": "/cloudspace/api",
+    "path": "/organization/folder/rename",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0140",
+    "base": "/cloudspace/api",
+    "path": "/organization/homework/upload",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0141",
+    "base": "/cloudspace/api",
+    "path": "/organization/move",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0142",
+    "base": "/cloudspace/api",
+    "path": "/organization/my2organization",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0143",
+    "base": "/cloudspace/api",
+    "path": "/organization/ppt/upgrade",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0144",
+    "base": "/cloudspace/api",
+    "path": "/organization/saveAuthFile",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0145",
+    "base": "/cloudspace/api",
+    "path": "/organization/school/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0146",
+    "base": "/cloudspace/api",
+    "path": "/organization/search",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0147",
+    "base": "/cloudspace/api",
+    "path": "/user/addRecentOpen",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0148",
+    "base": "/cloudspace/api",
+    "path": "/user/auth/breadcrumb",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0149",
+    "base": "/cloudspace/api",
+    "path": "/user/batchAddRecentOpenRecord",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0150",
+    "base": "/cloudspace/api",
+    "path": "/user/batchCopyto",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0151",
+    "base": "/cloudspace/api",
+    "path": "/user/batchMove",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0152",
+    "base": "/cloudspace/api",
+    "path": "/user/breadcrumb",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0153",
+    "base": "/cloudspace/api",
+    "path": "/user/delRecentOpenRecord",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0154",
+    "base": "/cloudspace/api",
+    "path": "/user/getBannerList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0155",
+    "base": "/cloudspace/api",
+    "path": "/user/getFolderList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0156",
+    "base": "/cloudspace/api",
+    "path": "/user/getNavigationPreference",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0157",
+    "base": "/cloudspace/api",
+    "path": "/user/getRecentOpenList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0158",
+    "base": "/cloudspace/api",
+    "path": "/user/getSubFolderList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0159",
+    "base": "/cloudspace/api",
+    "path": "/user/getTransStateByOriginId",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0160",
+    "base": "/cloudspace/api",
+    "path": "/user/pin",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0161",
+    "base": "/cloudspace/api",
+    "path": "/user/reTransFile",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0162",
+    "base": "/cloudspace/api",
+    "path": "/user/saveNavigationPreference",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0163",
+    "base": "/cloudspace/api",
+    "path": "/user/search/files",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0164",
+    "base": "/cloudspace/api",
+    "path": "/user/uploadFileMix",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0165",
+    "base": "/cloudspace/api",
+    "path": "user/batchDelRecentOpenRecord",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0166",
+    "base": "/cloudspace/storage",
+    "path": "/org/limit/info",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0167",
+    "base": "/cloudspace/storage",
+    "path": "/org/usage/detail",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0168",
+    "base": "/cloudspace/web",
+    "path": "/organization/auth/get",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0169",
+    "base": "/cloudspace/web",
+    "path": "/organization/auth/setWithAction",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0170",
+    "base": "/cloudspace/web",
+    "path": "/organization/disk/create",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0171",
+    "base": "/coreapi/app",
+    "path": "/getClientVersionShowItems",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0172",
+    "base": "/coreapi/app",
+    "path": "/getDepartmentList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0173",
+    "base": "/coreapi/app",
+    "path": "/getDepartmentUpdateVersion",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3492932,
+        "name": "获取组织架构更新版本",
+        "method": "post",
+        "path": "/coreapi/app/getDepartmentUpdateVersion",
+        "docStatus": "released",
+        "matchBasis": "prefix_join_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0174",
+    "base": "/coreapi/app",
+    "path": "/getSchoolInfos",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0175",
+    "base": "/coreapi/app",
+    "path": "/getStorageReminderMsg",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0176",
+    "base": "/coreapi/app",
+    "path": "/getVersionMultilingual",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0177",
+    "base": "/coreapi/app",
+    "path": "/school/getSubListAuth",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3496484,
+        "name": "获取机构子账号权限",
+        "method": "post",
+        "path": "/school/getSubListAuth",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0178",
+    "base": "/coreapi/app",
+    "path": "/schoolUser/getSchoolStudentList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0179",
+    "base": "/coreapi/app",
+    "path": "/schoolUser/getSchoolTeacherList",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3496718,
+        "name": "获取老师列表",
+        "method": "post",
+        "path": "/schoolUser/getSchoolTeacherList",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0180",
+    "base": "/coreapi/app",
+    "path": "/schoolUser/getStudentTree",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0181",
+    "base": "/coreapi/app",
+    "path": "/schoolUser/getTeacherDepartmentList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0182",
+    "base": "/coreapi",
+    "path": "/category/student/tree",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3470032,
+        "name": "学生分类树",
+        "method": "post",
+        "path": "category/student/tree",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0183",
+    "base": "/coreapi",
+    "path": "/department/getSchoolTeacherTree",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3498988,
+        "name": "获取教师组织架构树 - 中小学",
+        "method": "post",
+        "path": "/department/getSchoolTeacherTree",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0184",
+    "base": "/coreapi",
+    "path": "/school/getSubListAuth?authType=orgCloudAuth",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0185",
+    "base": "/coreapi",
+    "path": "/schoolUser/getSchoolTeacherList",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3496718,
+        "name": "获取老师列表",
+        "method": "post",
+        "path": "/schoolUser/getSchoolTeacherList",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0186",
+    "base": "/coreapi",
+    "path": "/student/getStudentList",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3470024,
+        "name": "获取学生（搜索）列表",
+        "method": "post",
+        "path": "/coreapi/student/getStudentList",
+        "docStatus": "integrating",
+        "matchBasis": "prefix_join_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0187",
+    "base": "/course-ai-assistant/app",
+    "path": "/config/welcome",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0188",
+    "base": "/course-ai-assistant/app",
+    "path": "/course/checkStatus",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0189",
+    "base": "/course-ai-assistant/app",
+    "path": "/file/suggestedQuestions",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0190",
+    "base": "/course-ai-assistant/app",
+    "path": "/message/answerUseful",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0191",
+    "base": "/course-ai-assistant/app",
+    "path": "/message/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0192",
+    "base": "/course-ai-assistant/app",
+    "path": "/session/delete",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345527,
+        "projectName": "class-claw",
+        "endpointId": 3501033,
+        "name": "删除历史 session",
+        "method": "post",
+        "path": "/session/delete",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0193",
+    "base": "/course-ai-assistant/app",
+    "path": "/session/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0194",
+    "base": "/course-ai-assistant/app",
+    "path": "/session/studentList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0195",
+    "base": "/course",
+    "path": "/app/course/add",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3497871,
+        "name": "添加班级",
+        "method": "post",
+        "path": "app/course/add",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0196",
+    "base": "/course",
+    "path": "/app/course/addCourseStudent",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3497906,
+        "name": "班级添加学生",
+        "method": "post",
+        "path": "/app/course/addCourseStudent",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0197",
+    "base": "/course",
+    "path": "/app/course/detail",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3497881,
+        "name": "班级详情",
+        "method": "post",
+        "path": "/app/course/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0198",
+    "base": "/course",
+    "path": "/app/course/detail/by-no",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3499132,
+        "name": "通过cno获取班级详情",
+        "method": "post",
+        "path": "/app/course/detail/by-no",
+        "docStatus": "testing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0199",
+    "base": "/course",
+    "path": "/app/course/edit",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3497852,
+        "name": "编辑班级",
+        "method": "post",
+        "path": "/app/course/edit",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0200",
+    "base": "/course",
+    "path": "/app/course/end",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3498436,
+        "name": "结课",
+        "method": "post",
+        "path": "/app/course/end",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0201",
+    "base": "/course",
+    "path": "/app/course/get-invite-url",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3499130,
+        "name": "获取班级分享链接",
+        "method": "post",
+        "path": "/app/course/get-invite-url",
+        "docStatus": "testing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0202",
+    "base": "/course",
+    "path": "/app/course/lessons/stats",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3499500,
+        "name": "获取班级课节统计信息",
+        "method": "post",
+        "path": "/app/course/lessons/stats",
+        "docStatus": "testing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0203",
+    "base": "/course",
+    "path": "/app/course/member/edit",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3497894,
+        "name": "编辑班级成员",
+        "method": "post",
+        "path": "/app/course/member/edit",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0204",
+    "base": "/course",
+    "path": "/app/course/member/info",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3497966,
+        "name": "班级成员详情",
+        "method": "post",
+        "path": "/app/course/member/info",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0205",
+    "base": "/course",
+    "path": "/app/course/member/setting",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3497893,
+        "name": "班级成员设置 ",
+        "method": "post",
+        "path": "/app/course/member/setting",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0206",
+    "base": "/course/app/course",
+    "path": "/rechargeReminder",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0207",
+    "base": "/course",
+    "path": "/app/course/setting",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3497892,
+        "name": "班级设置",
+        "method": "post",
+        "path": "/app/course/setting",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0208",
+    "base": "/course",
+    "path": "/app/member/course_list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3496948,
+        "name": "获取用户班级列表",
+        "method": "post",
+        "path": "/app/member/course_list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0209",
+    "base": "/course",
+    "path": "/app/member/course_pin",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3497855,
+        "name": "班级置顶",
+        "method": "post",
+        "path": "/app/member/course_pin",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0210",
+    "base": "/course",
+    "path": "/app/member/course/move",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3498238,
+        "name": "移动班级",
+        "method": "post",
+        "path": "/app/member/course/move",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0211",
+    "base": "/course",
+    "path": "/app/school/user/course-list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3499089,
+        "name": "获取机构用户班级列表",
+        "method": "post",
+        "path": "/app/school/user/course-list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0212",
+    "base": "/course",
+    "path": "/app/user/teacher-courses",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345169,
+        "projectName": "eeo_course_business",
+        "endpointId": 3500047,
+        "name": "获取老师班级列表",
+        "method": "post",
+        "path": "/app/user/teacher-courses",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0213",
+    "base": "/finance/app/metering",
+    "path": "/getUsageInfo",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345571,
+        "projectName": "商业化",
+        "endpointId": 3502917,
+        "name": "获取机构余量信息",
+        "method": "post",
+        "path": "/finance/app/metering/getUsageInfo",
+        "docStatus": "developing",
+        "matchBasis": "prefix_join_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0214",
+    "base": "/infra",
+    "path": "/short-url/api/get",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345310,
+        "projectName": "infra-bff",
+        "endpointId": 3490430,
+        "name": "短连接获取长链接信息",
+        "method": "post",
+        "path": "/short-url/api/get",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0215",
+    "base": "/lms-ai-service",
+    "path": "/app/ai/generate",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345478,
+        "projectName": "lms_ai_service",
+        "endpointId": 3498443,
+        "name": "AI 智能问答",
+        "method": "post",
+        "path": "/app/ai/generate",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0216",
+    "base": "/lms",
+    "path": "/app/activity/class/get",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345129,
+        "projectName": "lms",
+        "endpointId": 3471071,
+        "name": "活动 - 课堂 - 详情",
+        "method": "post",
+        "path": "/app/activity/class/get",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0217",
+    "base": "/lms/app",
+    "path": "/activity/class/get",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0218",
+    "base": "/lms",
+    "path": "/app/activity/learningMaterials/get",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345129,
+        "projectName": "lms",
+        "endpointId": 3471040,
+        "name": "学习资料 - 详情",
+        "method": "post",
+        "path": "/app/activity/learningMaterials/get",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0219",
+    "base": "/lms",
+    "path": "/app/activity/recordClass/get",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345129,
+        "projectName": "lms",
+        "endpointId": 3471030,
+        "name": "录播课 - 详情",
+        "method": "post",
+        "path": "/app/activity/recordClass/get",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0220",
+    "base": "/lms/app",
+    "path": "/activity/sort",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0221",
+    "base": "/lms/app",
+    "path": "/category/getActivityCountByCategory",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0222",
+    "base": "/lms/app",
+    "path": "/category/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487376,
+        "name": "分类列表",
+        "method": "post",
+        "path": "/category/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0223",
+    "base": "/lms/app",
+    "path": "/category/sort",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0224",
+    "base": "/lms/app/content",
+    "path": "/collection/detail",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0225",
+    "base": "/lms/app/content",
+    "path": "/collection/getCollectionId",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0226",
+    "base": "/lms/app",
+    "path": "/content/collection/getCollectionId",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0227",
+    "base": "/lms/app/content",
+    "path": "/collection/setNodeReadonly",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0228",
+    "base": "/lms/app",
+    "path": "/content/flowin/getToken",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0229",
+    "base": "/lms/app/content",
+    "path": "/notice/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0230",
+    "base": "/lms/app/content",
+    "path": "/notice/mention/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0231",
+    "base": "/lms/app",
+    "path": "/content/notice/mention/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345129,
+        "projectName": "lms",
+        "endpointId": 3497942,
+        "name": "获取mention人员信息",
+        "method": "post",
+        "path": "/content/notice/mention/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0232",
+    "base": "/lms/app/content",
+    "path": "/notice/mention/submit",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0233",
+    "base": "/lms/app/content",
+    "path": "/notice/read",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0234",
+    "base": "/lms/app/content",
+    "path": "/notice/read/all",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0235",
+    "base": "/lms/app/content",
+    "path": "/notice/unread/count",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0236",
+    "base": "/lms/app",
+    "path": "/copy/createActivityFromOtherCourse",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0237",
+    "base": "/lms/app",
+    "path": "/copy/createActivityToOtherCourses",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0238",
+    "base": "/lms/app",
+    "path": "/course/getTeacherCourses",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0239",
+    "base": "/lms/app",
+    "path": "/share/shareParamDecrypt",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0240",
+    "base": "/lms/app",
+    "path": "/share/short",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0241",
+    "base": "/lms/app",
+    "path": "/teacherIn/saveToTeacherIn",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0242",
+    "base": "/lms/app",
+    "path": "/teacherIn/teacherInOwnerList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0243",
+    "base": "/lms/app",
+    "path": "/unit/getUnits",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0244",
+    "base": "/lms/app",
+    "path": "/unit/sort",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0245",
+    "base": "/lms/app/user",
+    "path": "/getCreateActivityMemo",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0246",
+    "base": "/lms/app",
+    "path": "activity/delete",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0247",
+    "base": "/lms/app",
+    "path": "activity/end",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0248",
+    "base": "/lms/app",
+    "path": "activity/homework/get",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345130,
+        "projectName": "homework",
+        "endpointId": 3492626,
+        "name": "作业详情",
+        "method": "post",
+        "path": "/lms/app/activity/homework/get",
+        "docStatus": "developing",
+        "matchBasis": "prefix_join_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0249",
+    "base": "/lms/app",
+    "path": "activity/release",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0250",
+    "base": "/lms/app",
+    "path": "category/create",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487374,
+        "name": "分类创建",
+        "method": "post",
+        "path": "/category/create",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0251",
+    "base": "/lms/app",
+    "path": "category/delete",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3470019,
+        "name": "删除分类",
+        "method": "post",
+        "path": "category/delete",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487380,
+        "name": "分类删除",
+        "method": "post",
+        "path": "/category/delete",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0252",
+    "base": "/lms/app",
+    "path": "category/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487376,
+        "name": "分类列表",
+        "method": "post",
+        "path": "/category/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0253",
+    "base": "/lms/app",
+    "path": "category/update",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3470038,
+        "name": "更新分类信息",
+        "method": "post",
+        "path": "category/update",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487378,
+        "name": "分类编辑",
+        "method": "post",
+        "path": "/category/update",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0254",
+    "base": "/lms/app",
+    "path": "common/pollingAsyncResult",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0255",
+    "base": "/lms/app",
+    "path": "content/teachPlan/isShow",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0256",
+    "base": "/lms/app",
+    "path": "course/classActivityList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0257",
+    "base": "/lms/app",
+    "path": "course/getCourseAllUnits",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0258",
+    "base": "/lms/app",
+    "path": "course/getCourseUnitsActivities",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0259",
+    "base": "/lms/app",
+    "path": "course/studentUnitActivityList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0260",
+    "base": "/lms/app",
+    "path": "course/studentUnitList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0261",
+    "base": "/lms/app",
+    "path": "course/unitActivityList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0262",
+    "base": "/lms/app",
+    "path": "course/unitList",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0263",
+    "base": "/lms/app",
+    "path": "unit/delete",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0264",
+    "base": "/lms/app",
+    "path": "unit/mergeUnit",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0265",
+    "base": "/lms/app",
+    "path": "unit/publish",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0266",
+    "base": "/mix/app",
+    "path": "/getCosTempToken",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345324,
+        "projectName": "eeo_mix_business",
+        "endpointId": 3492000,
+        "name": "获取cos桶的临时密钥",
+        "method": "post",
+        "path": "/mix/app/getCosTempToken",
+        "docStatus": "developing",
+        "matchBasis": "prefix_join_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0267",
+    "base": "/mix/app",
+    "path": "/gray/v2/batchGetGrayVal",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0268",
+    "base": "/mix/app",
+    "path": "/gray/v2/getGrayVal",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0269",
+    "base": "/question-bank-business-service/",
+    "path": "/paper/saveAsVerify",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3499560,
+        "name": "试卷转存-前置校验",
+        "method": "post",
+        "path": "/paper/saveAsVerify",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0270",
+    "base": "/question-bank-business-service/",
+    "path": "bankTag/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0271",
+    "base": "/question-bank-business-service/",
+    "path": "category/create",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487374,
+        "name": "分类创建",
+        "method": "post",
+        "path": "/category/create",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0272",
+    "base": "/question-bank-business-service/",
+    "path": "category/delete",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3470019,
+        "name": "删除分类",
+        "method": "post",
+        "path": "category/delete",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487380,
+        "name": "分类删除",
+        "method": "post",
+        "path": "/category/delete",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0273",
+    "base": "/question-bank-business-service/",
+    "path": "category/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487376,
+        "name": "分类列表",
+        "method": "post",
+        "path": "/category/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0274",
+    "base": "/question-bank-business-service/",
+    "path": "category/order",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3494488,
+        "name": "分类排序",
+        "method": "post",
+        "path": "/category/order",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0275",
+    "base": "/question-bank-business-service/",
+    "path": "category/update",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345112,
+        "projectName": "eeo_core_business",
+        "endpointId": 3470038,
+        "name": "更新分类信息",
+        "method": "post",
+        "path": "category/update",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487378,
+        "name": "分类编辑",
+        "method": "post",
+        "path": "/category/update",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0276",
+    "base": "/question-bank-business-service/",
+    "path": "paper/copy",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496498,
+        "name": "试卷复制",
+        "method": "post",
+        "path": "/paper/copy",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0277",
+    "base": "/question-bank-business-service/",
+    "path": "paper/create",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487336,
+        "name": "试卷创建",
+        "method": "post",
+        "path": "/paper/create",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0278",
+    "base": "/question-bank-business-service/",
+    "path": "paper/get",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487366,
+        "name": "试卷详情",
+        "method": "post",
+        "path": "/paper/get",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0279",
+    "base": "/question-bank-business-service/",
+    "path": "paper/move",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496496,
+        "name": "试卷移动",
+        "method": "post",
+        "path": "/paper/move",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0280",
+    "base": "/question-bank-business-service/",
+    "path": "paper/update",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487368,
+        "name": "试卷编辑",
+        "method": "post",
+        "path": "/paper/update",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0281",
+    "base": "/question-bank-business-service/",
+    "path": "subject/deleteBank",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496188,
+        "name": "删除学科学段以及对应的题库",
+        "method": "post",
+        "path": "subject/deleteBank",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0282",
+    "base": "/question-bank-business-service/",
+    "path": "subject/getSection",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496420,
+        "name": "k12获取章节列表",
+        "method": "post",
+        "path": "/subject/getSection",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0283",
+    "base": "/question-bank-business-service/",
+    "path": "subject/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496186,
+        "name": "创建了题库的学科学段列表",
+        "method": "post",
+        "path": "/subject/list",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0284",
+    "base": "/question-bank-business-service/",
+    "path": "subject/updateBank",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496406,
+        "name": "编辑学科对应题库的状态",
+        "method": "post",
+        "path": "subject/updateBank",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0285",
+    "base": "/question-bank-business-service/",
+    "path": "subjectiveQuestionName/list",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0286",
+    "base": "/question-bank-business-service/",
+    "path": "topic/batchCreate",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487312,
+        "name": "试题创建(批量)",
+        "method": "post",
+        "path": "/topic/batchCreate",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0287",
+    "base": "/question-bank-business-service/",
+    "path": "topic/batchCreateTemp",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496784,
+        "name": "试题创建(批量) -不保存题库",
+        "method": "post",
+        "path": "/topic/batchCreateTemp",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0288",
+    "base": "/question-bank-business-service/",
+    "path": "topic/batchGet",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487332,
+        "name": "试题详情(批量)",
+        "method": "post",
+        "path": "/topic/batchGet",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0289",
+    "base": "/question-bank-business-service/",
+    "path": "topic/copy",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496178,
+        "name": "试题复制",
+        "method": "post",
+        "path": "/topic/copy",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0290",
+    "base": "/question-bank-business-service/",
+    "path": "topic/incrementalUpdate",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0291",
+    "base": "/question-bank-business-service/",
+    "path": "topic/move",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3496176,
+        "name": "试题移动",
+        "method": "post",
+        "path": "/topic/move",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0292",
+    "base": "/question-bank-business-service/",
+    "path": "topic/update",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345268,
+        "projectName": "eeo_lms_question_bank_business_go",
+        "endpointId": 3487316,
+        "name": "试题编辑",
+        "method": "post",
+        "path": "/topic/update",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0293",
+    "base": "/saasajax",
+    "path": "/school.ajax.php?action=getLoginUserStatus",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0294",
+    "base": "/saasajax",
+    "path": "/server.ajax.php?action=getNServeTime",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0295",
+    "base": "/",
+    "path": "saasajax/server.ajax.php?action=getNServeTime",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0296",
+    "base": "/schedule-bff",
+    "path": "/api/class/announcement/entrance/detail",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345370,
+        "projectName": "eeo_schedule_bff",
+        "endpointId": 3497810,
+        "name": "（班级公告）入口公告详情 ",
+        "method": "post",
+        "path": "/api/class/announcement/entrance/detail",
+        "docStatus": "testing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0297",
+    "base": "/schedule-bff",
+    "path": "/api/class/announcement/list",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345370,
+        "projectName": "eeo_schedule_bff",
+        "endpointId": 3497809,
+        "name": "（班级公告）公告列表",
+        "method": "post",
+        "path": "/api/class/announcement/list",
+        "docStatus": "testing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0298",
+    "base": "/school",
+    "path": "/setting/batchGet",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345477,
+        "projectName": "eeo_school",
+        "endpointId": 3498441,
+        "name": "获取机构设置信息",
+        "method": "post",
+        "path": "/setting/batchGet",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0299",
+    "base": "/",
+    "path": "todocenter/todo/list/complete",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0300",
+    "base": "/todocenter",
+    "path": "/todo/list/course",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345332,
+        "projectName": "待办中心(eeo_todo_business)",
+        "endpointId": 3496842,
+        "name": "列表-班级待办",
+        "method": "post",
+        "path": "/todo/list/course",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0301",
+    "base": "/todocenter",
+    "path": "/todo/list/index",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345332,
+        "projectName": "待办中心(eeo_todo_business)",
+        "endpointId": 3496808,
+        "name": "列表-首页待办",
+        "method": "post",
+        "path": "/todo/list/index",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0302",
+    "base": "/todocenter",
+    "path": "/todo/red-dot/get",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345332,
+        "projectName": "待办中心(eeo_todo_business)",
+        "endpointId": 3492264,
+        "name": "红点-获取红点数",
+        "method": "post",
+        "path": "/todo/red-dot/get",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345332,
+        "projectName": "待办中心(eeo_todo_business)",
+        "endpointId": 3497905,
+        "name": "红点-获取红点数",
+        "method": "post",
+        "path": "/todo/red-dot/get",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0303",
+    "base": "/",
+    "path": "todocenter/todo/search-options",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0304",
+    "base": "/",
+    "path": "todocenter/todo/status/batch-complete",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0305",
+    "base": "/",
+    "path": "todocenter/todo/status/info",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0306",
+    "base": "/",
+    "path": "todocenter/todo/status/update",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0307",
+    "base": "/todocenter",
+    "path": "/todo/todo-list/detail",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345332,
+        "projectName": "待办中心(eeo_todo_business)",
+        "endpointId": 3492260,
+        "name": "详情-待办详情",
+        "method": "post",
+        "path": "/todo/todo-list/detail",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0308",
+    "base": "/todocenter",
+    "path": "/todo/v6/list/future/main",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345332,
+        "projectName": "待办中心(eeo_todo_business)",
+        "endpointId": 3498956,
+        "name": "列表-预计处理-首次加载",
+        "method": "post",
+        "path": "/todo/v6/list/future/main",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345430,
+        "projectName": "eeo_todo_service_go",
+        "endpointId": 3498952,
+        "name": "列表-预计待办6.0-首页",
+        "method": "post",
+        "path": "/todo/v6/list/future/main",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0309",
+    "base": "/",
+    "path": "todocenter/todo/v6/list/future/page",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0310",
+    "base": "/todocenter",
+    "path": "/todo/v6/list/main",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345332,
+        "projectName": "待办中心(eeo_todo_business)",
+        "endpointId": 3497846,
+        "name": "列表-首次加载",
+        "method": "post",
+        "path": "/todo/v6/list/main",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0311",
+    "base": "/",
+    "path": "todocenter/todo/v6/list/pending",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0312",
+    "base": "/",
+    "path": "todocenter/todo/v6/status/future/batch-complete",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0313",
+    "base": "/uc",
+    "path": "/classin_uc.php?action=getUserInfoByQrCodeIn",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0314",
+    "base": "/uc",
+    "path": "/classin_uc.php?action=getUserQrCodeIn",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0315",
+    "base": "/usercenter",
+    "path": "/user/getRedirectUrl",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345322,
+        "projectName": "用户中心（eeo_usercenter_business）",
+        "endpointId": 3491458,
+        "name": "跳转登录-获取跳转登录链接",
+        "method": "post",
+        "path": "/user/getRedirectUrl",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0316",
+    "base": "/usercenter",
+    "path": "/user/parnter/xiyue/getRedirectUrl",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345322,
+        "projectName": "用户中心（eeo_usercenter_business）",
+        "endpointId": 3491594,
+        "name": "获取希悦跳转地址",
+        "method": "post",
+        "path": "/user/parnter/xiyue/getRedirectUrl",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0317",
+    "base": "/usercenter",
+    "path": "/v2/app/user-info/getUserInfoByUid",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345322,
+        "projectName": "用户中心（eeo_usercenter_business）",
+        "endpointId": 3491466,
+        "name": "根据uid获取用户信息",
+        "method": "post",
+        "path": "/v2/app/user-info/getUserInfoByUid",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0318",
+    "base": "/useroperating/api/v1/activity_resource",
+    "path": "/deliver",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0319",
+    "base": "/useroperating/api/v1/activity_resource",
+    "path": "/reserve",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0320",
+    "base": "/zero-user-wx",
+    "path": "/cloud/accountUrl",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0321",
+    "base": "/zero-user-wx",
+    "path": "/cloud/authorized",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0322",
+    "base": "/zero-user-wx",
+    "path": "/cloud/getAccessToken",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0323",
+    "base": "/zero-user-wx",
+    "path": "/cloud/unbind",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0324",
+    "base": "/zero-user-wx",
+    "path": "/google/getAccessToken",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3492056,
+        "name": "获取access token",
+        "method": "post",
+        "path": "/zero-user-wx/google/getAccessToken",
+        "docStatus": "developing",
+        "matchBasis": "prefix_join_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0325",
+    "base": "/",
+    "path": "zero-user-wx/public/checkDisplay",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0326",
+    "base": "/",
+    "path": "zero-user-wx/public/info",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3492042,
+        "name": "获取公众号内容",
+        "method": "post",
+        "path": "/zero-user-wx/public/info",
+        "docStatus": "developing",
+        "matchBasis": "prefix_join_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0327",
+    "base": "/zero-usercenter/",
+    "path": "/app/category/list",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345129,
+        "projectName": "lms",
+        "endpointId": 3496924,
+        "name": "课程分类列表",
+        "method": "post",
+        "path": "/app/category/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3500193,
+        "name": "获取学段、年级、学科配置信息列表",
+        "method": "post",
+        "path": "/app/category/list",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0328",
+    "base": "/zero-usercenter/",
+    "path": "/app/user/guidance/task",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3501057,
+        "name": "新手引导任务活动查询（返回 user_guidance_task 表字段及派生字段）",
+        "method": "post",
+        "path": "/app/user/guidance/task",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0329",
+    "base": "/zero-usercenter/",
+    "path": "/app/user/guidance/task/set",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3501059,
+        "name": "新手引导任务上报/设置（里程碑置 1、体验完成、领取奖励）",
+        "method": "post",
+        "path": "/app/user/guidance/task/set",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0330",
+    "base": "/zero-usercenter/",
+    "path": "/app/user/identity",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3500199,
+        "name": "根据用户id查询用户身份",
+        "method": "post",
+        "path": "/app/user/identity",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500021,
+        "name": "根据用户id查询用户身份",
+        "method": "post",
+        "path": "/app/user/identity",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0331",
+    "base": "/zero-usercenter/",
+    "path": "/app/user/identity/save",
+    "method": "POST",
+    "status": "MULTIPLE_LITERAL_CANDIDATES",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3500195,
+        "name": "存储用户身份",
+        "method": "post",
+        "path": "/app/user/identity/save",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      },
+      {
+        "projectId": 345484,
+        "projectName": "agentin",
+        "endpointId": 3500027,
+        "name": "存储用户身份",
+        "method": "post",
+        "path": "/app/user/identity/save",
+        "docStatus": "released",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0332",
+    "base": "/zero-usercenter/app/user/activity",
+    "path": "/recommend",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0333",
+    "base": "/zero-usercenter",
+    "path": "/sign/getJwt",
+    "method": "POST",
+    "status": "UNIQUE_LITERAL_CANDIDATE",
+    "matches": [
+      {
+        "projectId": 345326,
+        "projectName": "eeo_zero_user",
+        "endpointId": 3495280,
+        "name": "用户获取jwt签名",
+        "method": "post",
+        "path": "/sign/getJwt",
+        "docStatus": "developing",
+        "matchBasis": "call_path_literal"
+      }
+    ],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0334",
+    "base": "UNKNOWN",
+    "path": "/agent-api/app/agent/chat",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0335",
+    "base": "UNKNOWN",
+    "path": "/agent-api/app/agent/regenerate",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0336",
+    "base": "UNKNOWN",
+    "path": "/api/echo.api.php?action=generate_sign",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0337",
+    "base": "UNKNOWN",
+    "path": "/apix/collection/page/level-list",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0338",
+    "base": "UNKNOWN",
+    "path": "/apix/lambda/node/batch-copy-paste",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0339",
+    "base": "UNKNOWN",
+    "path": "/apix/lambda/node/copy-paste",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0340",
+    "base": "UNKNOWN",
+    "path": "/apix/lambda/node/delete",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0341",
+    "base": "UNKNOWN",
+    "path": "/apix/lambda/node/move",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0342",
+    "base": "UNKNOWN",
+    "path": "/apix/lambda/page/add",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0343",
+    "base": "UNKNOWN",
+    "path": "/apix/node/nav-paths?nodeId=${dynamic}",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0344",
+    "base": "UNKNOWN",
+    "path": "/business/app/auth",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0345",
+    "base": "UNKNOWN",
+    "path": "/business/app/collection/list-organization?groupId=${dynamic}",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0346",
+    "base": "UNKNOWN",
+    "path": "/business/app/collection/list-personal",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0347",
+    "base": "UNKNOWN",
+    "path": "/business/app/org/list-organize",
+    "method": "UNKNOWN",
+    "status": "METHOD_UNKNOWN",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0348",
+    "base": "UNKNOWN",
+    "path": "${dynamic}/files/list_folder",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0349",
+    "base": "UNKNOWN",
+    "path": "${dynamic}/files/search_v2",
+    "method": "POST",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  },
+  {
+    "scanId": "PCAPI-0350",
+    "base": "UNKNOWN",
+    "path": "${dynamic}/root/search(q='${dynamic}')",
+    "method": "GET",
+    "status": "NO_LITERAL_MATCH",
+    "matches": [],
+    "teacherPermission": "UNVERIFIED"
+  }
+]

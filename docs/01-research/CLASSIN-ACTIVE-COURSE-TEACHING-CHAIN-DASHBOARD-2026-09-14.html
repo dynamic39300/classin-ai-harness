@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>活跃上课课程：教学活动与学习闭环</title>
+    <style>
+      :root {
+        --ink: #17202a;
+        --muted: #657384;
+        --line: #dfe6ed;
+        --soft: #f5f8fb;
+        --paper: #ffffff;
+        --blue: #2674db;
+        --blue-soft: #e9f2ff;
+        --teal: #008c85;
+        --teal-soft: #e5f7f4;
+        --amber: #bd6a00;
+        --amber-soft: #fff3dd;
+        --rose: #bd3e56;
+        --rose-soft: #fff0f2;
+        --slate: #8491a0;
+        --shadow: 0 10px 35px rgba(23, 32, 42, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #edf2f6;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+
+      .shell { width: min(1440px, calc(100% - 40px)); margin: 0 auto; }
+      header {
+        color: white;
+        background: radial-gradient(circle at 79% 12%, #3e99f8 0, transparent 26%), linear-gradient(122deg, #102c50, #174e88 60%, #0d6392);
+        padding: 42px 0 34px;
+      }
+      .eyebrow, .label {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .eyebrow { color: #b7dbff; }
+      h1 { margin: 10px 0 9px; font-size: clamp(28px, 4vw, 46px); letter-spacing: -0.04em; }
+      .subtitle { max-width: 850px; margin: 0; color: #dcecff; font-size: 16px; line-height: 1.65; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+      .chip { padding: 7px 10px; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; background: rgba(255,255,255,.1); color: #eaf5ff; font-size: 12px; }
+
+      main { padding: 26px 0 48px; }
+      .notice {
+        display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center;
+        margin: 0 0 24px; padding: 16px 18px; border: 1px solid #b8d7fa; border-radius: 12px;
+        color: #1e4d7d; background: #f1f8ff;
+      }
+      .notice strong { display: block; margin-bottom: 3px; }
+      .notice svg { width: 30px; height: 30px; fill: var(--blue); }
+
+      .section { margin-top: 26px; }
+      .section-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin: 0 0 12px; }
+      h2 { margin: 0; font-size: 22px; letter-spacing: -0.025em; }
+      .section-head p, .caption { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+      .legend { display: flex; flex-wrap: wrap; gap: 10px; color: var(--muted); font-size: 12px; }
+      .legend span { display: inline-flex; align-items: center; gap: 6px; }
+      .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+      .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+      .mapping { padding: 24px; overflow-x: auto; }
+      .mapping-track { min-width: 1050px; display: grid; grid-template-columns: 1.25fr 40px 1.25fr 40px 1.25fr 40px 1fr; align-items: center; }
+      .arrow { color: #aebcca; font-size: 27px; text-align: center; }
+      .node { min-height: 160px; padding: 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--soft); }
+      .node.blue { border-color: #a9d0fb; background: var(--blue-soft); }
+      .node.teal { border-color: #9edfd8; background: var(--teal-soft); }
+      .node.pending { border-color: #e8c782; background: var(--amber-soft); }
+      .node .label { color: var(--muted); }
+      .node.blue .label { color: #2674b6; }
+      .node.teal .label { color: #08736d; }
+      .node.pending .label { color: #9b5a06; }
+      .node .value { display: block; margin: 9px 0 5px; font-size: 31px; font-weight: 780; letter-spacing: -0.04em; }
+      .node p { margin: 0; color: #4f6071; font-size: 13px; line-height: 1.5; }
+      .mapping-note { display: flex; gap: 10px; align-items: center; margin-top: 17px; padding: 12px 13px; border-radius: 10px; background: #f7f9fb; color: #536374; font-size: 13px; }
+
+      .coverage { display: grid; grid-template-columns: minmax(300px, 1.05fr) minmax(420px, 1.95fr); gap: 16px; }
+      .hero-metric { padding: 23px; background: linear-gradient(145deg, #173d69, #216aa5); color: white; }
+      .hero-metric .label { color: #b9d9f6; }
+      .hero-metric .value { margin: 10px 0 5px; font-size: 44px; font-weight: 790; letter-spacing: -0.055em; }
+      .hero-metric p { margin: 0; color: #dcecff; line-height: 1.55; font-size: 14px; }
+      .bar { height: 11px; margin: 21px 0 9px; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,.24); }
+      .bar > i { display: block; width: 8.56%; height: 100%; border-radius: 99px; background: #83caff; }
+      .coverage-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 16px; }
+      .coverage-card { min-height: 150px; padding: 15px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfd; }
+      .coverage-card .type { color: var(--muted); font-size: 13px; }
+      .coverage-card strong { display: block; margin: 11px 0 4px; font-size: 25px; letter-spacing: -0.04em; }
+      .coverage-card span { color: var(--muted); font-size: 12px; }
+      .tiny-bar { height: 5px; margin-top: 15px; overflow: hidden; border-radius: 99px; background: #e8eef4; }
+      .tiny-bar i { display: block; height: 100%; border-radius: 99px; background: var(--blue); }
+
+      .two-col { display: grid; grid-template-columns: 1.15fr .85fr; gap: 16px; }
+      .behavior { padding: 20px; }
+      .behavior-list { display: grid; gap: 10px; margin-top: 12px; }
+      .behavior-row { display: grid; grid-template-columns: 112px 1fr 122px; gap: 13px; align-items: center; padding: 12px; border-radius: 11px; background: var(--soft); }
+      .behavior-row strong { font-size: 13px; }
+      .behavior-row .stack { display: flex; height: 12px; overflow: hidden; border-radius: 99px; background: #dfe6ee; }
+      .behavior-row .stack i { display: block; height: 100%; background: var(--teal); }
+      .behavior-row .count { color: #304152; font-size: 13px; text-align: right; }
+      .behavior-row .count small { display: block; color: var(--muted); font-size: 11px; }
+      .lens { padding: 20px; }
+      .lens h3 { margin: 0 0 10px; font-size: 16px; }
+      .lens ul { margin: 0; padding-left: 20px; color: #526273; font-size: 13px; line-height: 1.8; }
+      .lens .line { height: 1px; margin: 16px 0; background: var(--line); }
+
+      .funnel { padding: 22px; }
+      .funnel-title { display: flex; justify-content: space-between; gap: 15px; align-items: baseline; }
+      .funnel-title h3 { margin: 0; font-size: 18px; }
+      .funnel-title span { color: var(--muted); font-size: 12px; }
+      .funnel-grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr; gap: 10px; margin-top: 18px; }
+      .funnel-stage { position: relative; min-height: 150px; padding: 16px; border-radius: 13px; color: #17344e; background: var(--blue-soft); }
+      .funnel-stage:nth-child(2) { background: var(--teal-soft); }
+      .funnel-stage:nth-child(3) { background: var(--amber-soft); }
+      .funnel-stage:nth-child(4) { background: var(--rose-soft); }
+      .funnel-stage .label { color: #55728d; }
+      .funnel-stage strong { display: block; margin: 10px 0 4px; font-size: 29px; letter-spacing: -0.045em; }
+      .funnel-stage p { margin: 0; font-size: 12px; line-height: 1.5; color: #536575; }
+      .branch { display: grid; grid-template-columns: 1.45fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+      .branch > div { padding: 13px 15px; border-radius: 10px; background: var(--soft); font-size: 13px; }
+      .branch b { display: block; margin-bottom: 3px; font-size: 19px; letter-spacing: -.03em; }
+      .branch span { color: var(--muted); font-size: 12px; }
+      .funnel-foot { margin: 15px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+
+      .gaps { display: grid; grid-template-columns: 1.1fr 1.2fr; gap: 16px; }
+      .finding { padding: 22px; }
+      .finding h3 { margin: 0 0 10px; font-size: 18px; }
+      .finding p { color: #526273; line-height: 1.65; font-size: 14px; }
+      .actions { display: grid; gap: 9px; margin-top: 15px; }
+      .action { display: grid; grid-template-columns: 28px 1fr; gap: 9px; align-items: start; padding: 11px; border-radius: 10px; background: var(--soft); color: #3f5163; font-size: 13px; line-height: 1.45; }
+      .action b { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--blue); color: white; font-size: 12px; }
+      .unknown { padding: 22px; background: #f8fafc; }
+      .unknown h3 { margin: 0 0 12px; font-size: 18px; }
+      .unknown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+      .unknown-grid div { padding: 11px 12px; border: 1px dashed #c5d0db; border-radius: 10px; color: #657384; background: white; font-size: 13px; }
+
+      details { margin-top: 17px; border-top: 1px solid var(--line); }
+      summary { padding-top: 13px; color: var(--blue); cursor: pointer; font-size: 13px; font-weight: 650; }
+      details p { margin: 9px 0 0; font-size: 13px; }
+      footer { padding: 22px 0 34px; color: #748395; font-size: 12px; line-height: 1.65; }
+      a { color: inherit; }
+
+      @media (max-width: 980px) {
+        .coverage, .two-col, .gaps { grid-template-columns: 1fr; }
+        .coverage-grid { grid-template-columns: repeat(3, 1fr); }
+      }
+      @media (max-width: 650px) {
+        .shell { width: min(100% - 24px, 1440px); }
+        header { padding-top: 30px; }
+        .section-head { align-items: start; flex-direction: column; }
+        .coverage-grid, .funnel-grid, .branch { grid-template-columns: 1fr 1fr; }
+        .behavior-row { grid-template-columns: 82px 1fr; }
+        .behavior-row .count { grid-column: 1 / -1; text-align: left; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell">
+        <div class="eyebrow">ClassIn · 教学活动与学习闭环</div>
+        <h1>从上课，到配套，到学生反馈</h1>
+        <p class="subtitle">一张图看清现有数据能证明什么、不能证明什么，以及最值得优先修正的链路位置。这里不把不同分母的指标拼成虚假的单一漏斗。</p>
+        <div class="chips">
+          <span class="chip">观察窗：2026-09-05 至 2026-09-11</span>
+          <span class="chip">课堂日表 + 活动快照：2026-09-11</span>
+          <span class="chip">仅聚合数据，不含学生身份或内容</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <div class="notice">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"/></svg>
+        <div><strong>先纠正一个关键理解：35,621 节不是“没有班级的课堂”。</strong>每节课堂都已关联到班级；待诊断的是它为何未通过“课堂活动 → LMS 课程分类”的严格快照匹配。</div>
+      </div>
+
+      <section class="section">
+        <div class="section-head">
+          <div><h2>① 教学对象如何进入统计</h2><p>这层解决“课堂属于哪里”，还没有回答学生是否参与。</p></div>
+          <div class="legend"><span><i class="dot" style="background:#2674db"></i>已验证映射</span><span><i class="dot" style="background:#bd6a00"></i>待诊断映射</span></div>
+        </div>
+        <div class="panel mapping">
+          <div class="mapping-track">
+            <div class="node"><span class="label">观察到的已结束课堂</span><span class="value">1,206,793</span><p>来自 43,811 家机构。每条课节已有班级关联。</p></div>
+            <div class="arrow">→</div>
+            <div class="node blue"><span class="label">命中 LMS 课程分类</span><span class="value">1,171,172</span><p>97.05% 通过当前快照、发布、删除、时间和课程分类条件。</p></div>
+            <div class="arrow">→</div>
+            <div class="node teal"><span class="label">可统计的 LMS 课程分类</span><span class="value">660,657</span><p>来自 31,982 家机构；后续配套覆盖的主分母。</p></div>
+            <div class="arrow">＋</div>
+            <div class="node pending"><span class="label">待诊断的严格映射未命中</span><span class="value">35,621</span><p>2.95%。不是“无班级”或“无课程”的结论。</p></div>
+          </div>
+          <div class="mapping-note">ℹ️ 待诊断课堂可能是活动快照缺行、LMS 课程分类为空、活动被隐藏/删除，或课堂与活动时间不一致。只有拆解后才能决定是否恢复到课程覆盖分母。</div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><h2>② 课程是否配置了平台内教学配套</h2><p>分母是 660,657 门已映射 LMS 课程分类；“没有观察到”不代表没有线下教学安排。</p></div>
+          <p>这是课程配置视角，不是学生完成率。</p>
+        </div>
+        <div class="coverage">
+          <div class="panel hero-metric">
+            <span class="label">至少有一种非课堂配套</span>
+            <div class="value">56,566 <small style="font-size:16px;font-weight:600">/ 660,657</small></div>
+            <p>8.56% 的已映射课程观察到作业、测验、录播、资料、讨论或其他 LMS 配套。</p>
+            <div class="bar"><i></i></div>
+            <p><b>604,091 门 · 91.44%</b> 未观察到已发布、未删除的非课堂 LMS 配套。</p>
+          </div>
+          <div class="panel coverage-grid">
+            <div class="coverage-card"><div class="type">作业</div><strong>45,467</strong><span>6.88% 的课程</span><div class="tiny-bar"><i style="width:6.88%"></i></div></div>
+            <div class="coverage-card"><div class="type">学习资料</div><strong>8,397</strong><span>1.27% 的课程</span><div class="tiny-bar"><i style="width:1.27%"></i></div></div>
+            <div class="coverage-card"><div class="type">测验</div><strong>5,756</strong><span>0.87% 的课程</span><div class="tiny-bar"><i style="width:.87%"></i></div></div>
+            <div class="coverage-card"><div class="type">录播课</div><strong>3,766</strong><span>0.57% 的课程</span><div class="tiny-bar"><i style="width:.57%"></i></div></div>
+            <div class="coverage-card"><div class="type">讨论</div><strong>847</strong><span>0.13% 的课程</span><div class="tiny-bar"><i style="width:.13%"></i></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section two-col">
+        <div class="panel behavior">
+          <div class="section-head"><div><h2>③ 本周学生实际做了什么</h2><p>同一学生参加多个活动会产生多个“学生—活动组合”。</p></div></div>
+          <div class="behavior-list">
+            <div class="behavior-row"><strong>作业提交</strong><div class="stack"><i style="width:100%"></i></div><div class="count">149,304<small>组合 / 90,925 名学生</small></div></div>
+            <div class="behavior-row"><strong>学习资料查看</strong><div class="stack"><i style="width:32.5%"></i></div><div class="count">48,541<small>组合 / 26,377 名学生</small></div></div>
+            <div class="behavior-row"><strong>测验交卷</strong><div class="stack"><i style="width:24.3%"></i></div><div class="count">36,323<small>组合 / 17,789 名学生</small></div></div>
+            <div class="behavior-row"><strong>录播活动查看</strong><div class="stack"><i style="width:18.8%"></i></div><div class="count">28,079<small>组合 / 16,061 名学生</small></div></div>
+            <div class="behavior-row"><strong>讨论参与</strong><div class="stack"><i style="width:2.2%"></i></div><div class="count">3,277<small>组合 / 1,229 名学生</small></div></div>
+          </div>
+        </div>
+        <aside class="panel lens">
+          <h3>阅读这组数字时要避免的误判</h3>
+          <ul>
+            <li>提交/交卷次数不能除以当前班级人数，得出完成率。</li>
+            <li>资料“查看”不等于阅读完成；录播“查看”不等于看完。</li>
+            <li>没有事件记录，不等于学生没有发生平台外学习行为。</li>
+          </ul>
+          <div class="line"></div>
+          <h3>资料的补充观察</h3>
+          <p class="caption">62,090 项时间重叠资料累计配置 1,085,291 个学生—资料人次，其中 322,295 次已查看，累计查看比例 29.70%。尚未逐学生对账，不能称为阅读完成率。</p>
+        </aside>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><h2>④ 作业的可验证闭环：提交 → 批阅 → 查看反馈</h2><p>只使用“本周开始、已到期、逐作业对账通过”的 13,803 份作业。</p></div>
+          <p>这里是当前最完整的一段学生—教师链路。</p>
+        </div>
+        <div class="panel funnel">
+          <div class="funnel-title"><h3>当前学生—作业记录</h3><span>不同颜色表示不同观察阶段，不代表单一线性因果漏斗。</span></div>
+          <div class="funnel-grid">
+            <div class="funnel-stage"><span class="label">当前配置分母</span><strong>104,505</strong><p>70,465 名不同学生；已剔除配置人数为零的作业。</p></div>
+            <div class="funnel-stage"><span class="label">当前已提交</span><strong>49,524</strong><p>47.39% / 当前配置。仍有 54,981 条当前未提交记录。</p></div>
+            <div class="funnel-stage"><span class="label">已批阅</span><strong>34,941</strong><p>70.55% / 已提交。14,583 条提交尚未处于已批阅状态。</p></div>
+            <div class="funnel-stage"><span class="label">批阅后有查看记录</span><strong>8,885</strong><p>25.43% / 已批阅。表示观察到查看，不表示读懂或采纳。</p></div>
+          </div>
+          <div class="branch">
+            <div><b>39,507 · 37.80%</b><span>最后提交时间不晚于截止 / 当前配置</span></div>
+            <div><b>9,701 · 9.28%</b><span>最后提交时间晚于截止 / 当前配置</span></div>
+            <div><b>316</b><span>已提交但缺少有效最后提交时间，单列</span></div>
+          </div>
+          <p class="funnel-foot">“最后提交不晚于截止”不等于严格的首次按时提交；一次先按时、后修改的学生，最后提交可能晚于截止。日分区是当前状态快照，不是截止时刻的历史名单。</p>
+        </div>
+      </section>
+
+      <section class="section gaps">
+        <div class="panel finding">
+          <h3>目前最值得优先纠正的两段链路</h3>
+          <p>这不是对教学质量的排名，而是两处最清晰、可继续验证的业务落差。</p>
+          <div class="actions">
+            <div class="action"><b>1</b><div><strong>课堂后是否有合适的 LMS 配套</strong><br />先诊断 35,621 节课堂的课程分类映射，再判断哪些上课课程实际缺少平台配套。</div></div>
+            <div class="action"><b>2</b><div><strong>批阅完成后，学生能否看到反馈</strong><br />已批阅作业中只有 25.43% 观察到批阅后查看记录，应继续验证触达、提醒和学生端访问链路。</div></div>
+          </div>
+          <details><summary>查看“为什么不能直接把三个比例相乘”</summary><p>47.39% 的分母是当前配置学生—作业记录；70.55% 的分母是已提交记录；25.43% 的分母是已批阅记录。它们适合逐段看问题，不能乘成“最终完成率”或“学习效果”。</p></details>
+        </div>
+        <div class="panel unknown">
+          <h3>尚未得到可信答案的指标</h3>
+          <div class="unknown-grid">
+            <div>课堂学生到课率</div>
+            <div>测验到期未交与完成率</div>
+            <div>作业/测验总体正确率</div>
+            <div>可比较的总体得分率</div>
+            <div>录播看完率</div>
+            <div>严格首次按时提交率</div>
+            <div>教师反馈是否人工且个性化</div>
+            <div>反馈是否改善学习效果</div>
+          </div>
+          <details><summary>为什么这些指标先不显示数字</summary><p>这些指标需要完整的历史分配名单、题目级作答、评分类型和满分语义、播放进度或出勤明细。当前字段尚未形成可靠分母，显示数字会把“未知”伪装成“零”。</p></details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="shell">
+      数据窗口固定为 2026-09-05 至 2026-09-11。来源和完整口径见《活跃上课课程的教学活动覆盖与反馈闭环》及《课堂到 LMS 课程分类关联复核》。本页只重组已验证的聚合结果，不新增业务结论。
+    </footer>
+  </body>
+</html>

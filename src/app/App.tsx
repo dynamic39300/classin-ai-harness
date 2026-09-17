@@ -1,10 +1,17 @@
-import { useCallback, useMemo, type ReactNode } from 'react';
+import { createFixedImChatReader } from '@mocks/adapters/im-chat-reader';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import { RoleSessionProvider } from '@features/role-switch';
 import { ClassWorkspaceProvider, useClassWorkspaceStore } from '@features/class-workspace';
 import { HomeworkWorkspaceProvider, useHomeworkWorkspace } from '@features/homework-workspace';
 import { MessageWorkspaceProvider, useMessageWorkspaceStore } from '@features/message-workspace';
 import { WorkBuddyImProvider } from '@features/workbuddy-im-assistance';
+import {
+  ClassInMessageConnectionProvider,
+  createClassInAgentServices,
+  createSimulatedClassInDraftAdapter,
+  useClassInMessageConnection,
+} from '@features/classin-test';
 import { createHttpAgentRuntime } from '@features/agent-runtime';
 import { ClassAgentConversationProvider } from '@features/class-agent-conversation';
 import { parseWorkBuddyWorkspaceRoute, WorkBuddyWorkspaceProvider } from '@features/ai-agent-workspace';
@@ -13,6 +20,7 @@ import { WorkBuddyArtifactLibraryProvider, useWorkBuddyArtifactLibrary } from '@
 import { OpenCourseWorkspaceProvider, createOpenCourseSessionStore } from '@features/open-course-workspace';
 import { SpaceWorkspaceProvider } from '@features/space-workspace/SpaceWorkspaceProvider';
 import { addClassActivity, type ClassCourse } from '@domain/class/class';
+import { threadRef as classInThreadRef } from '@domain/classin-test/projections';
 import type { ClassAgentReply } from '@domain/class-agent/class-agent';
 import type { PublishedHomework } from '@domain/homework/homework';
 import { HOMEWORK_NOW } from '@mocks/scenarios/homework';
@@ -87,13 +95,18 @@ function ClassHomeworkBridge({ children }: { children: ReactNode }) {
 
 function ClassMessageBridge({ children }: { children: ReactNode }) {
   const { classes } = useClassWorkspaceStore();
-  return <MessageWorkspaceProvider classRecords={classes}>{children}</MessageWorkspaceProvider>;
+  const classInConnection = useClassInMessageConnection();
+  return <MessageWorkspaceProvider classRecords={classes} extension={classInConnection.extension}>{children}</MessageWorkspaceProvider>;
 }
 
 function WorkBuddyImBridge({ children }: { children: ReactNode }) {
   const homework = useHomeworkWorkspace();
-  const { actions: messageActions } = useMessageWorkspaceStore();
+  const [runtime] = useState(createHttpAgentRuntime);
+  const { actions: messageActions, state: messageState } = useMessageWorkspaceStore();
+  const chatReader = useMemo(() => createFixedImChatReader(), []);
+  useEffect(() => { chatReader.update(messageState.status === 'ready' ? messageState.threads : null); }, [chatReader, messageState]);
   const artifactLibrary = useWorkBuddyArtifactLibrary();
+  const classInConnection = useClassInMessageConnection();
   const adapter = useMemo(() => new MockWorkBuddyImHomeworkReminderAdapter({
     readSnapshot: ({ classId, classLabel }) => ({
       classId,
@@ -110,8 +123,8 @@ function WorkBuddyImBridge({ children }: { children: ReactNode }) {
     appendTeacherMessage: ({ id, threadId, authorName, body, sentAt, contentReference }) => messageActions.appendMessage({ role: 'teacher', authorName, threadId, body, sentAt, messageId: id, contentReference }),
   }), [messageActions]);
   const agentServices = useMemo(() => ({
-    runtime: createHttpAgentRuntime(),
-    businessContext: new FixedWorkBuddyImBusinessContextAdapter(() => TEACHING_DYNAMICS_DEMO_NOW),
+    runtime,
+    businessContext: new FixedWorkBuddyImBusinessContextAdapter(() => TEACHING_DYNAMICS_DEMO_NOW, chatReader.read),
     teachingDynamics: new FixedWorkBuddyImTeachingDynamicsAdapter(() => TEACHING_DYNAMICS_DEMO_NOW),
     messageDraft: new MockWorkBuddyImMessageDraftAdapter({
       now: () => new Date(),
@@ -122,9 +135,21 @@ function WorkBuddyImBridge({ children }: { children: ReactNode }) {
     actor: Object.freeze({ id: 'teacher-001', name: '王老师' }),
     tenantRef: 'classin-demo-school',
     scope: 'ideal-full' as const,
-  }), [messageActions]);
+  }), [messageActions, chatReader, runtime]);
+  const classInAgentServices = useMemo(() => {
+    if (classInConnection.status !== 'ready' || !classInConnection.scene) return undefined;
+    return createClassInAgentServices(
+      classInConnection.scene,
+      createSimulatedClassInDraftAdapter(classInConnection.scene, messageActions.submitMessage),
+      runtime,
+    );
+  }, [classInConnection.scene, classInConnection.status, messageActions.submitMessage, runtime]);
+  const realThreadId = classInConnection.scene ? classInThreadRef(classInConnection.scene) : null;
+  const resolveAgentServices = useCallback((target: Parameters<NonNullable<React.ComponentProps<typeof WorkBuddyImProvider>['resolveAgentServices']>>[0]) => (
+    target.threadId === realThreadId ? classInAgentServices : agentServices
+  ), [agentServices, classInAgentServices, realThreadId]);
   return (
-    <WorkBuddyImProvider adapter={adapter} guidedExplanationAdapter={guidedExplanationAdapter} agentServices={agentServices} onArtifactCreated={artifactLibrary.add} teacher={{ id: 'teacher-001', name: '王老师' }} now={() => HOMEWORK_NOW}>
+    <WorkBuddyImProvider adapter={adapter} guidedExplanationAdapter={guidedExplanationAdapter} agentServices={agentServices} resolveAgentServices={resolveAgentServices} onArtifactCreated={artifactLibrary.add} teacher={{ id: 'teacher-001', name: '王老师' }} now={() => HOMEWORK_NOW}>
       {children}
     </WorkBuddyImProvider>
   );
@@ -285,27 +310,29 @@ function StandaloneWorkBuddyBridge() {
 function ClassInProductComposition() {
   return (
     <RoleSessionProvider>
-      <OperationGuardProvider>
-        <ClassWorkspaceProvider>
-          <ClassHomeworkBridge>
-            <OpenCourseWorkspaceProvider store={OPEN_COURSE_SESSION}>
-              <WorkBuddyArtifactLibraryProvider>
-                <ClassMessageBridge>
-                  <ClassAgentBridge>
-                    <WorkBuddyImBridge>
-                      <SpaceWorkspaceProvider>
-                        <ClassInWorkBuddyBridge>
-                          <RootRouter />
-                        </ClassInWorkBuddyBridge>
-                      </SpaceWorkspaceProvider>
-                    </WorkBuddyImBridge>
-                  </ClassAgentBridge>
-                </ClassMessageBridge>
-              </WorkBuddyArtifactLibraryProvider>
-            </OpenCourseWorkspaceProvider>
-          </ClassHomeworkBridge>
-        </ClassWorkspaceProvider>
-      </OperationGuardProvider>
+      <ClassInMessageConnectionProvider>
+        <OperationGuardProvider>
+          <ClassWorkspaceProvider>
+            <ClassHomeworkBridge>
+              <OpenCourseWorkspaceProvider store={OPEN_COURSE_SESSION}>
+                <WorkBuddyArtifactLibraryProvider>
+                  <ClassMessageBridge>
+                    <ClassAgentBridge>
+                      <WorkBuddyImBridge>
+                        <SpaceWorkspaceProvider>
+                          <ClassInWorkBuddyBridge>
+                            <RootRouter />
+                          </ClassInWorkBuddyBridge>
+                        </SpaceWorkspaceProvider>
+                      </WorkBuddyImBridge>
+                    </ClassAgentBridge>
+                  </ClassMessageBridge>
+                </WorkBuddyArtifactLibraryProvider>
+              </OpenCourseWorkspaceProvider>
+            </ClassHomeworkBridge>
+          </ClassWorkspaceProvider>
+        </OperationGuardProvider>
+      </ClassInMessageConnectionProvider>
     </RoleSessionProvider>
   );
 }

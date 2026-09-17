@@ -1,0 +1,16 @@
+{
+  "instance": "starrocks_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 3762,
+  "data": [
+    {
+      "submitted_pair_n": 149304,
+      "subsequent_review_pair_n": 102814,
+      "review_after_last_submit_pair_n": 101710,
+      "no_same_week_review_pair_n": 46224,
+      "review_only_before_submit_pair_n": 266
+    }
+  ]
+}

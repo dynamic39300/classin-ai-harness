@@ -38,6 +38,13 @@ export function projectMessageGroupProfile(
   readOnlyReason?: string,
 ): MessageGroupProfile | null {
   if (thread.category !== 'class' || !thread.classId || !thread.visibleTo.includes(role)) return null;
+  if (thread.integration && role === 'teacher') return {
+    threadId: thread.id, classId: thread.classId, className: thread.titleByRole.teacher ?? '测试班级', classCode: '本机模拟会话（非真实群号）',
+    ownerName: '未核验', memberCount: thread.memberCount ?? 0, currentRoleLabel: '教师',
+    members: (thread.integration.members ?? []).map((member) => ({ ...member, displayName: member.name, relationship: '测试班名册（非真实IM关系）', currentUser: false })),
+    announcementTitle: null, announcementPreview: null, messagingStatus: readOnlyReason ? 'read-only' : 'normal',
+    messagingStatusLabel: readOnlyReason ?? '老师端模拟发送 · 学生不接收', updatedAt: thread.integration.capturedAt ?? thread.updatedAt, truthLabel: 'SIMULATED',
+  };
   const record = classes.find(({ id, visibleTo }) => id === thread.classId && visibleTo.includes(role));
   const directory = directoryClasses.find(({ id, visibleTo }) => id === thread.classId && visibleTo.includes(role));
   if (!record || !directory) return null;

@@ -1,10 +1,10 @@
 ---
 title: IM Copilot 产品设计与落地总里程碑计划
-status: FIRST_STAGE_IMPLEMENTED_PENDING_USER_REVIEW
-version: v2.7
-date: 2026-09-09
+status: FIRST_STAGE_COMPLETE_USER_ACCEPTED
+version: v2.8
+date: 2026-09-16
 scope: Part 1 入口与提醒闭环、三项能力复用、后续公开与私聊 Agent 体验
-current_milestone: IMCP-M6_USER_EXPERIENCE_REVIEW
+current_milestone: CLASSIN_REAL_API_MAPPING_REVIEW
 ---
 
 # IM Copilot 产品设计与落地总里程碑计划
@@ -53,7 +53,7 @@ flowchart TB
 | M3 | 技术规格与实施拆分 | `DONE` | PRD v0.23、Feature Spec v0.23、IM-031—035 与 D-142 已完成 |
 | M4 | 作业催交前端纵向闭环 | `IMPLEMENTED` | 可重置模拟数据、事项一键发起、自然语言沟通、草稿审阅、群聊发送与群转私聊链路可运行 |
 | M5 | 四教学时点与动态变化 | `IMPLEMENTED_SELF_REVIEWED` | 课前、课中、课后、总结的时钟过滤、确认态、未知降级、展开/紧凑与非打断刷新已落地并通过范围内自动化 |
-| M6 | 第一阶段完整验收 | `AUTOMATION_PASS_PENDING_USER_REVIEW` | 静态检查、领域/组件测试、6 条浏览器闭环、Sidecar axe 与 1440×900/紧凑视觉自审通过；等待用户实机体验审阅 |
+| M6 | 第一阶段完整验收 | `COMPLETE_USER_ACCEPTED` | 自动化、浏览器、视觉及后续源项目代码对齐完成；用户于 2026-09-16 确认最新验收无问题 |
 | M7 | 课堂回顾复用 | `PLANNED` | 内容证据和共用链路验收完成 |
 | M8 | 错题解析与再练复用 | `PLANNED` | 原题、解释、再练和交付验收完成 |
 | M9 | 学情总结与链路回归 | `PLANNED` | 四项能力的共用路径及独立内容验收完成 |
@@ -173,6 +173,6 @@ M10 单独设计群内公开 Agent 与人与 Agent 私聊。两者共享 Agent �
 - 入课与课中提醒在课堂结束后退出，作业催交在截止时间到达后退出；闭环事实同样由业务条件自动出现和退出，不要求教师回执；
 - 两个 IM 入口都已有默认聊天，本阶段不设计无聊天状态下的跨班 Copilot 首页；
 - [初始面详细交互设计](./COPILOT-INITIAL-SURFACE-DETAILED-DESIGN.md)已经用户确认，并按 PRD v0.23、Feature Spec v0.23 和 IM-031—035 完成实现；
-- M2—M5 已完成，M6 的自动化、axe 和视觉自审通过，进入 `AUTOMATION_PASS_PENDING_USER_REVIEW`。
+- M2—M5 已完成；M6 的自动化、axe、视觉自审和后续源项目代码对齐均已完成，2026-09-16 用户验收通过。
 
-下一步由用户整体审阅页面交互与视觉效果；根据审阅反馈修订后关闭 M6，再按顺序进入 M7—M9 的内容能力深化。
+当前不再等待 Copilot 页面验收。下一步以[真实 API 全量映射审阅稿](../classin-test-integration/IM-COPILOT-REAL-API-INVENTORY-REVIEW-2026-09-15.md)为主线；审阅收口后建立新的 PRD、Feature Spec 和 Tickets，再进入真实只读接入。

@@ -32,4 +32,22 @@ describe('projectImMessageDeliveryIntent', () => {
   ])('does not turn an informational request into a message draft: %s', (request) => {
     expect(projectImMessageDeliveryIntent(request)).toBe('none');
   });
+
+  it('inherits the selected numbered option when the prior answer offered a message task', () => {
+    const priorAnswer = [
+      '你可以继续处理：',
+      '1. 回复李明关于第5题的疑问',
+      '2. 提醒李明等人完成未提交的作业/测验',
+      '3. 其他内容',
+      '请说一声，我来生成对应的消息草稿。',
+    ].join('\n');
+    expect(projectImMessageDeliveryIntent('2', 'freeform', priorAnswer)).toBe('draft');
+    expect(projectImMessageDeliveryIntent('第二项', 'freeform', priorAnswer)).toBe('draft');
+    expect(projectImMessageDeliveryIntent('3', 'freeform', priorAnswer)).toBe('none');
+  });
+});
+
+it('treats parent wording as a draft intent without selecting a destination', () => {
+  expect(projectImMessageDeliveryIntent('根据李明的学情报告，帮我写一段给家长的话')).toBe('draft');
+  expect(projectImMessageDeliveryIntent('根据李明本周已核验的学情事实，起草一段仅供老师审阅的家长沟通内容')).toBe('draft');
 });

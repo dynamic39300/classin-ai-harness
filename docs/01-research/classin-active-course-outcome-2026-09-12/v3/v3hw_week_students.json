@@ -1,0 +1,14 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 7762,
+  "data": [
+    {
+      "configured_student_n": 184352,
+      "submitted_student_n": 68261,
+      "reviewed_student_n": 48191
+    }
+  ]
+}

@@ -19,3 +19,7 @@ create_solution_image({title, steps:[{title, explanation, formula?}], conclusion
 ## 验收
 
 工具合同校验、HTML转义、公式安全、幂等、scope路由、PNG实际1600×900、图片预览和下载、无溢出；真实Gemini工具→草稿→最终回答→PNG完整调用。明确测试替身与真实模型证据。
+
+## 2026-09-15 渲染进程清理
+
+关联测试接入 PRD R6 / CI-010a。本机渲染子进程通过专属 BrowserServer 管理，loopback绑定；PNG生成后的正常退出最多等2秒，超时只终止该次创建的进程。网络拦截、JavaScript禁用和公式布局不变。验收包含迟迟不退出的清理替身及真实PNG全量回归；用户Chrome不得受影响。

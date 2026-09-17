@@ -213,6 +213,30 @@ describe('projectHarnessEvents', () => {
     expect(resumed.events.filter(row => row.kind === 'error')).toHaveLength(1);
   });
 
+  it('classifies exhausted model context so the next submit can recover', () => {
+    const failure = { code: 'CONTEXT_WINDOW_EXCEEDED', message: 'pi-ai detected context overflow for model PRIVATE' };
+    const projected = project([
+      event(0, 'turn/start', { turn: 1 }),
+      chunk(1, { type: 'finish', reason: { kind: 'error', failure } }),
+      end(2, { kind: 'error', error: failure }),
+    ]);
+    expect(projected.failureCode).toBe('context-window-exceeded');
+    expect(projected.error).toContain('历史消息仍保留');
+    expect(JSON.stringify(projected)).not.toContain('PRIVATE');
+  });
+
+  it('reports model transport failure without exposing provider details', () => {
+    const failure = { code: 'TRANSPORT', message: 'Connection error. Bearer PRIVATE-KEY http://private.invalid' };
+    const projected = project([
+      event(0, 'turn/start', { turn: 1 }),
+      chunk(1, { type: 'finish', reason: { kind: 'error', failure } }),
+      end(2, { kind: 'error', error: failure }),
+    ]);
+    expect(projected.status).toBe('failed');
+    expect(projected.error).toBe('AI 服务连接失败，请检查服务连接后重试。已输入的内容和历史消息仍保留。');
+    expect(JSON.stringify(projected)).not.toMatch(/PRIVATE|Bearer|private/);
+  });
+
   it('turns a vision permission rejection into a safe recovery instruction', () => {
     const projected = project([
       event(0, 'turn/start', { turn: 1 }),
@@ -233,6 +257,18 @@ describe('projectHarnessEvents', () => {
     expect(resumed).not.toHaveProperty('failureCode');
   });
 
+  it('turns a provider capacity rejection into a safe retry instruction', () => {
+    const projected = project([
+      event(0, 'turn/start', { turn: 1 }),
+      chunk(1, { type: 'finish', reason: { kind: 'error', failure: {
+        code: 'RATE_LIMIT', message: '429 throttling_error: serving capacity limit at PRIVATE-UPSTREAM',
+      } } }),
+    ]);
+    expect(projected.error).toBe('模型服务当前繁忙，请稍后重试。已经生成的内容会继续保留。');
+    expect(projected.failureCode).toBe('model-rate-limited');
+    expect(JSON.stringify(projected)).not.toContain('PRIVATE-UPSTREAM');
+  });
+
   it('redacts failed tool result content, error metadata and custom views', () => {
     const projected = project([
       call(0, 'a'),
@@ -250,6 +286,7 @@ describe('projectHarnessEvents', () => {
 
   it.each([
     ['create_teaching_draft', '生成教学文稿', '教学文稿已生成，等待审阅。'],
+    ['read_classin_context', '读取测试课程数据', '已读取测试课程证据。'],
     ['internal_tool_v2', '执行任务', '任务已完成。'],
   ])('uses product copy for %s and keeps raw tool content out of the timeline', (name, title, summary) => {
     const dispatched = event(0, 'tool/call', { turn: 1, step: 1, callId: 'a', name, arguments: '{"internal":"PRIVATE"}' });

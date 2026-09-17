@@ -1,12 +1,14 @@
 ---
 title: TeachBuddy 教学阶段导航方案（二）实施验收
-status: AUTOMATION_PASS_PENDING_USER_REVIEW
-version: v0.5
+status: USER_ACCEPTED_VIA_FINAL_PARITY_REVIEW
+version: v0.6
 branch: codex/copilot-stage-nav-v2
-updated: 2026-09-10
+updated: 2026-09-16
 ---
 
 # TeachBuddy 教学阶段导航方案（二）实施验收
+
+> 2026-09-16：本实现已随 IM Copilot 最新源项目对齐版本完成用户验收。当前验收事实统一引用[最终对齐验收](./IM-COPILOT-SOURCE-PARITY-IMPLEMENTATION-REVIEW-2026-09-15.md)，下文保留阶段实施证据。
 
 ## 实施结果
 

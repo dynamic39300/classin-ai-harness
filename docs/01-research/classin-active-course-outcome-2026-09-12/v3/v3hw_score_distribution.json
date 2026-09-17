@@ -1,0 +1,27 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 2,
+  "truncated": false,
+  "execution_time_ms": 7737,
+  "data": [
+    {
+      "score_type": 4,
+      "reviewed_n": 7528,
+      "nonnull_score_n": 20,
+      "min_score_p": 0.9599999785423279,
+      "max_score_p": 1,
+      "bounded_score_n": 20,
+      "mean_bounded_score": 0.9979999989271164
+    },
+    {
+      "score_type": 5,
+      "reviewed_n": 28852,
+      "nonnull_score_n": 28740,
+      "min_score_p": 0,
+      "max_score_p": 1,
+      "bounded_score_n": 28740,
+      "mean_bounded_score": 0.9228971185111522
+    }
+  ]
+}

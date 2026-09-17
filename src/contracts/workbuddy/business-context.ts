@@ -1,6 +1,9 @@
 import type { AgentRuntimeAdapter, RuntimeScope } from './agent-runtime';
+import type { GeneralQuestionAvailability } from './general-question-guidance';
+import type { ImChatContext } from './im-chat-context';
 import type { WorkBuddyImTarget } from './im-conversation-run';
 import type { TeachingDynamicsAdapter } from './teaching-dynamics';
+import type { ClassInToolRouteReceipt } from '../classin-test/copilot-context';
 
 export type BusinessContextSourceKind = 'fixed-demo' | 'dw-hunter' | 'classin-api';
 export type BusinessContextUse = 'private-assistance' | 'message-draft';
@@ -24,6 +27,8 @@ export type LearningContextCatalog = Readonly<{
   periods: readonly LearningContextOption[];
   reminderReasons: readonly LearningContextOption[];
   lockedStudentRef?: string;
+  questionGuidance?: GeneralQuestionAvailability;
+  mentionLabels?: readonly string[];
   version: string;
   truthLabel: 'fixed-demo' | 'read-only-business-data';
 }>;
@@ -64,6 +69,10 @@ export type BusinessContextSnapshot = Readonly<{
   threadRef: string;
   channel: 'class' | 'direct';
   use: BusinessContextUse;
+  /** Business objects captured for this snapshot and reused by freshness rechecks. */
+  focusRefs?: readonly string[];
+  /** Auditable deterministic/model-assisted route used to obtain this snapshot. */
+  toolRoute?: ClassInToolRouteReceipt;
   sources: readonly BusinessContextSource[];
   items: readonly BusinessContextItem[];
   recentMessages: readonly Readonly<{
@@ -71,6 +80,7 @@ export type BusinessContextSnapshot = Readonly<{
     authorName: string;
     body: string;
   }>[];
+  chatContext?: ImChatContext;
   excludedSensitiveCount: number;
   truthLabel: 'fixed-demo' | 'read-only-business-data';
 }>;
@@ -84,6 +94,8 @@ export type BusinessContextRequest = Readonly<{
   focusRefs?: readonly string[];
   /** Teacher wording used by a fixed or production Adapter to retrieve relevant evidence. */
   query?: string;
+  /** Exact IM message selected by the teacher through “引用给AI”. */
+  referencedMessageId?: string;
 }>;
 
 export interface BusinessContextAdapter {
@@ -155,7 +167,9 @@ export type ImSidecarAgentServices = Readonly<{
   businessContext: BusinessContextAdapter;
   teachingDynamics: TeachingDynamicsAdapter;
   messageDraft: ClassInMessageDraftAdapter;
+  deliveryUnavailableReason?: string;
+  deliveryNotice?: string;
   actor: Readonly<{ id: string; name: string }>;
   tenantRef: string;
-  scope: Extract<RuntimeScope, 'ideal-full'>;
+  scope: Extract<RuntimeScope, 'ideal-full' | 'classin-test'>;
 }>;

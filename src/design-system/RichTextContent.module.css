@@ -84,6 +84,7 @@
 .response th,
 .response td { min-width: 6.5rem; padding: var(--space-xs) var(--space-sm); border-bottom: var(--rule-thin) solid var(--color-line-subtle); text-align: left; vertical-align: top; }
 .response th { background: var(--color-surface-muted); color: var(--color-ink); font-weight: var(--font-weight-semibold); }
+.response tbody td:first-child { color: var(--color-ink); font-weight: var(--font-weight-semibold); }
 .response tr:last-child td { border-bottom: 0; }
 
 .response a { color: var(--color-action-strong); text-decoration: underline; text-underline-offset: .16em; }
@@ -110,3 +111,14 @@
 /* Column rules complement the existing outer frame and row rules. */
 .response th + th,
 .response td + td { border-left: var(--rule-thin) solid var(--color-line-subtle); }
+
+.mention {
+  display: inline;
+  padding: var(--space-3xs) var(--space-2xs);
+  border-radius: var(--radius-control);
+  background: var(--color-info-soft);
+  color: var(--color-data-blue);
+  font-weight: var(--font-weight-medium);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}

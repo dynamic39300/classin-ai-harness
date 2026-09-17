@@ -11,7 +11,7 @@ function isSession(value: unknown): value is RuntimeSession {
     && value.id !== '' && value.id !== '.' && value.id !== '..'
     && oneOf(value.status, ['idle', 'running', 'stopped', 'failed'])
     && (value.error === undefined || typeof value.error === 'string')
-    && (value.failureCode === undefined || value.failureCode === 'vision-permission' || value.failureCode === 'model-history-invalid')
+    && (value.failureCode === undefined || value.failureCode === 'vision-permission' || value.failureCode === 'model-history-invalid' || value.failureCode === 'model-rate-limited' || value.failureCode === 'context-window-exceeded')
     && Array.isArray(value.events) && value.events.every((event: unknown) => object(event)
       && stringFields(event, ['id', 'runRef', 'occurredAt', 'updatedAt', 'title', 'summary'])
       && Number.isSafeInteger(event.sequence)

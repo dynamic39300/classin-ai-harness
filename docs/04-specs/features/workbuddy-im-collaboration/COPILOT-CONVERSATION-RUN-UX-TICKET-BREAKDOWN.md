@@ -21,3 +21,16 @@ decision: D-151, D-152, D-153
 IM-CRUX-01 建立对话层级；IM-CRUX-02 在相同回合内完成交付闭环；IM-CRUX-03 做跨状态和视觉收口。每张 Ticket 都以老师可演示的结果验收，不拆成单独的 CSS 或字段任务。
 
 五张 Ticket 已于 2026-09-10 完成，证据见 [Implementation Review](./COPILOT-CONVERSATION-RUN-UX-IMPLEMENTATION-REVIEW.md)。
+
+## 2026-09-15 增量
+
+| Ticket | 结果 | Write Set | 验收 |
+| --- | --- | --- | --- |
+| IM-CRUX-06 | 结构化消息预览与发送正文一致 | im-message-draft及测试、Sidecar | 列表逐项展示；无AI寒暄混入消息；普通文字与代码不误拆 |
+| IM-CRUX-07 | 修改与直接发送分开 | Sidecar、局部CSS、组件/E2E | 两入口一致；明确目标；编辑不发送；直接发送不打开编辑器；失败重试、连击去重与上下文复核 |
+
+验收记录见 [本次交付检查](./COPILOT-DRAFT-DELIVERY-REVIEW-2026-09-15.md)。
+
+IM-CRUX-08：在 `AgentRichResponse` 增加按调用方提供名称启用的提及样式，由共享 Sidecar 注入当前上下文名称；复用信息蓝语义 Token。验证全体、多人、嵌套列表/加粗、邮箱/代码/未知姓名不误标，两个 IM 入口一致，发送正文不含展示标签。
+
+IM-CRUX-09：在正文生成合同与 Sidecar 草稿样式中收紧分段规则、段落和列表间距，保留字号、@标签和逐项日程。Write Set 为 im-message-draft、共享Sidecar局部样式和现有浏览器验收；核对两入口列表可读、发送原文不变及无溢出。

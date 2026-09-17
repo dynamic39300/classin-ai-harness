@@ -20,7 +20,9 @@ function supportedNode(version) {
 function launch(command, args, options) {
   const { onExit, ...spawnOptions } = options;
   const processGroup = process.platform !== 'win32';
-  const child = spawn(command, args, { ...spawnOptions, stdio: 'inherit', detached: processGroup });
+  const child = spawn(process.execPath, [join(projectRoot, 'scripts/harness-process.mjs'), command, ...args], {
+    ...spawnOptions, stdio: ['inherit', 'inherit', 'inherit', 'ipc'], detached: processGroup,
+  });
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => {
     try {
       if (processGroup && child.pid) process.kill(-child.pid, signal);

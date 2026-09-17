@@ -1,0 +1,14 @@
+{
+  "instance": "starrocks_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 4525,
+  "data": [
+    {
+      "min_homework_id": 47758891,
+      "max_homework_id": 49111062,
+      "homework_n": 37952
+    }
+  ]
+}

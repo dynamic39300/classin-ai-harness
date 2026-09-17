@@ -1,13 +1,15 @@
 ---
 title: TeachBuddy IM Copilot 教学动态实施验收
-status: AUTOMATION_PASS_PENDING_USER_REVIEW
-version: v1.2
-date: 2026-09-09
+status: USER_ACCEPTED_VIA_FINAL_PARITY_REVIEW
+version: v1.3
+date: 2026-09-16
 requirements: IM-PRD-141—IM-PRD-153
 tickets: IM-031—IM-035
 ---
 
 # TeachBuddy IM Copilot 教学动态实施验收
+
+> 2026-09-16：本实现已随 IM Copilot 最新源项目对齐版本完成用户验收。当前验收事实统一引用[最终对齐验收](./IM-COPILOT-SOURCE-PARITY-IMPLEMENTATION-REVIEW-2026-09-15.md)，下文保留阶段实施证据。
 
 ## 1. 实施结论
 

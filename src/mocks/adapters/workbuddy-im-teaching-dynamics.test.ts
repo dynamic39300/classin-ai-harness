@@ -29,6 +29,9 @@ describe('FixedWorkBuddyImTeachingDynamicsAdapter', () => {
     expect(byStage.summary?.map(({ action }) => action?.label)).toEqual(['生成回顾', '整班总结', '个人总结']);
     expect(byStage.during?.[1]).toMatchObject({ kind: 'confirmation', title: '已上课 15 分钟，全员到齐' });
     expect(result.stages.flatMap(({ items }) => items).filter(({ action }) => action)).toHaveLength(10);
+    expect(result.stages.flatMap(({ items }) => items).filter(({ action }) => action).map(({ recommendationKey }) => recommendationKey).sort()).toEqual([
+      'P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10',
+    ]);
     expect(result.stages.flatMap(({ items }) => items).every(({ action }) => !action || action.teacherRequest.startsWith('请'))).toBe(true);
   });
 

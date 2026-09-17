@@ -1,0 +1,72 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 9,
+  "truncated": false,
+  "execution_time_ms": 3688,
+  "data": [
+    {
+      "biz_type": 7,
+      "configured_course_n": 1766,
+      "configured_school_n": 525,
+      "activity_n": 21510,
+      "week_candidate_course_n": 1114
+    },
+    {
+      "biz_type": 8,
+      "configured_course_n": 2030,
+      "configured_school_n": 641,
+      "activity_n": 11591,
+      "week_candidate_course_n": 1063
+    },
+    {
+      "biz_type": 9,
+      "configured_course_n": 20,
+      "configured_school_n": 18,
+      "activity_n": 49,
+      "week_candidate_course_n": 16
+    },
+    {
+      "biz_type": 10,
+      "configured_course_n": 5222,
+      "configured_school_n": 818,
+      "activity_n": 78512,
+      "week_candidate_course_n": 4640
+    },
+    {
+      "biz_type": 11,
+      "configured_course_n": 533,
+      "configured_school_n": 244,
+      "activity_n": 4410,
+      "week_candidate_course_n": 419
+    },
+    {
+      "biz_type": 12,
+      "configured_course_n": 737,
+      "configured_school_n": 307,
+      "activity_n": 4495,
+      "week_candidate_course_n": 614
+    },
+    {
+      "biz_type": 13,
+      "configured_course_n": 326,
+      "configured_school_n": 131,
+      "activity_n": 4707,
+      "week_candidate_course_n": 276
+    },
+    {
+      "biz_type": 14,
+      "configured_course_n": 150,
+      "configured_school_n": 93,
+      "activity_n": 1277,
+      "week_candidate_course_n": 120
+    },
+    {
+      "biz_type": 15,
+      "configured_course_n": 102,
+      "configured_school_n": 76,
+      "activity_n": 1752,
+      "week_candidate_course_n": 82
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import type { ImMessageReference } from './im-chat-context';
 import type {
   ConversationRunEvent,
   ConversationRunProgress,
@@ -10,6 +11,7 @@ export type WorkBuddyImTarget = Readonly<{
   classLabel: string;
   threadId: string;
   memberCount?: number;
+  aiReference?: ImMessageReference;
   recentMessages?: readonly Readonly<{ authorRole: 'teacher' | 'student-family' | 'class-agent' | 'system' | 'official'; authorName: string; body: string }>[];
 }>;
 

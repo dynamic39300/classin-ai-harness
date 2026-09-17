@@ -47,20 +47,32 @@ function removeExplanatoryEdges(value: string) {
 }
 
 export function buildMessageDraftRuntimeRequest(request: string) {
-  return `${request.trim()}\n\n生成要求：请选择一条最合适的最终消息，不提供多个备选版本。把且只把可以直接发送给目标对象的消息原文放在以下两个不可见标记之间；开场说明、分析、标题、写法解释、要点和后续建议不得放入标记。\n${MESSAGE_BODY_START}\n消息原文\n${MESSAGE_BODY_END}`;
+  return `${request.trim()}\n\n生成要求：请选择一条最合适的最终消息，不提供多个备选版本。把且只把可以直接发送给目标对象的消息原文放在以下两个不可见标记之间；开场说明、分析、写法解释和对老师的后续建议不得放入标记。提及规则（适用于所有教学阶段与自由输入生成的消息）：群消息面向全班时，正文开头写 @所有人；面向单个或部分学生时，按本次请求与业务证据中的实际接收对象逐一写 @姓名，例如“@李明、@周然、@陈晨，请尽快进入课堂”，不能只写裸姓名或用一个 @ 代替多人。只提醒目标学生，不扩大到全班，不把可识别姓名目录当成本次接收名单；姓名保持原样，各提及后用空格或标点分隔。已包含 @ 时不重复添加。普通叙述中提到的姓名不代表接收对象，不自动 @；私聊无需 @所有人。对象不明确时不得编造姓名，应先补问；教师明确要求不 @ 时遵从。颜色与标签由界面统一渲染，不输出 HTML 或颜色描述。正文精简、紧凑，保留关键事实、对象和时间。紧凑指减少冗余和空白，不是把不同主题挤成一段。同一要点内能用一句话说完就保持连贯；称呼、主题和简短进度可连贯写在同一段，不单独列出标题或寒暄。结构化事实适合横向比较至少两个同类对象及其共同字段，或一个对象包含时间、对象、状态、进度等至少四项简短属性时，使用 GFM Markdown 表格；逐人明细较多时另起一张表，避免塞进一个超长单元格。课程、录播、作业或课堂进度同时包含对象元信息和成员进度时，固定使用两张表：先用“项目｜内容”呈现元信息，再用一人一行的成员表呈现状态、进度和时长等字段，不把本应入表的元信息连续写成“标签：内容”的散行。表头必须简短，第一列放行标签或主要对象，不在表格前后重复同一事实。只有单个简单事实、操作步骤、叙述性解释、长文本或字段无法对齐时使用段落或紧凑列表，不为凑表格编造字段。包含不同信息维度但不适合表格时，按要点使用紧凑的 Markdown 列表，每项以简短标签开头。例如课堂回顾中的“本讲知识点”“练习表现”“易错提醒”应各占一项，不能把知识点、正确率和订正建议混写成一个长段。每项内部可用一句话列出相关事实；知识点较多时，再按独立概念逐项列出，避免多层嵌套。多项课程安排、课后任务或操作步骤也逐项换行。列表每项以 - 或数字加点开头，列表项之间不空行；列表前保留解析所需的一个空行。只在主题确实切换时分段，段间最多一个必要空行。简短引导如“后续安排：”即可，不再增加层层小标题；结尾提醒能合并到前文就合并，避免重复总结。\n${MESSAGE_BODY_START}\n消息原文\n${MESSAGE_BODY_END}`;
+}
+
+// Legacy responses sometimes put several explicit bullet items on one line.
+// Reflow only bullet markers; never split prose, decimal numbers or formulas.
+export function formatMessageDraftBody(body: string) {
+  let fenced = false;
+  return body.replace(/\r\n?/g, '\n').split('\n').map((line) => {
+    if (/^\s*(?:```|~~~)/.test(line)) { fenced = !fenced; return line; }
+    if (fenced || line.includes('`') || !/(?:^|[ \t]+)[•●][ \t]+/.test(line)) return line;
+    return line.replace(/(?:^|[ \t]+)[•●][ \t]+/g, (_match, offset: number) => offset === 0 ? '- ' : '\n- ')
+      .replace(/^([^\n]+)\n- /, '$1\n\n- ');
+  }).join('\n').trim();
 }
 
 export function extractMessageDraftBody(generated: string) {
   const normalized = generated.replace(/\r\n?/g, '\n').trim();
   const marked = markedMessageDraftBody(normalized);
-  if (marked?.trim()) return stripWrappingMarkdown(marked);
+  if (marked?.trim()) return formatMessageDraftBody(stripWrappingMarkdown(marked));
 
   const sections = normalized.split(/^\s*---+\s*$/m).map((section) => section.trim()).filter(Boolean);
   if (sections.length >= 3) {
     const middle = removeExplanatoryEdges(sections.slice(1, -1).join('\n\n'));
-    if (middle) return middle;
+    if (middle) return formatMessageDraftBody(middle);
   }
-  return removeExplanatoryEdges(normalized) || normalized;
+  return formatMessageDraftBody(removeExplanatoryEdges(normalized) || normalized);
 }
 
 export function hasMarkedMessageDraftBody(generated: string) {

@@ -24,13 +24,13 @@ const ROLE_OPTIONS: ReadonlyArray<{
   },
 ];
 
-export function RoleSelectPage() {
+export function RoleSelectPage({ teacherDestination }: { teacherDestination?: string }) {
   const { selectRole } = useRoleSession();
   const navigate = useNavigate();
 
   const handleSelect = (role: AppRole) => {
     selectRole(role);
-    navigate(getRoleHomePath(role), { replace: true });
+    navigate(role === 'teacher' && teacherDestination ? teacherDestination : getRoleHomePath(role), { replace: true });
   };
 
   return (

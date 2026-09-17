@@ -22,7 +22,7 @@ test('registers teaching tools and a guard that rejects unsupported names', () =
   const definitions = [];
   const guards = [];
   apply({ tools: { guard: guard => guards.push(guard), register: tool => definitions.push(tool) } });
-  assert.deepEqual(definitions.map(tool => tool.name), [TOOL_NAME, 'create_solution_image']);
+  assert.deepEqual(definitions.map(tool => tool.name), [TOOL_NAME, 'create_solution_image', 'read_classin_context']);
   assert.equal(guards.length, 1);
   for (const tool of ['bash', 'read', 'write', 'subagent', 'run_code', 'todo_write', 'future_tool']) {
     assert.equal(typeof guards[0]({ name: tool }), 'string');

@@ -188,9 +188,10 @@ test('teacher sends and manages a class message @a11y', async ({ page }) => {
   await page.getByRole('button', { name: '发送', exact: true }).click();
   await expect(page.getByText('消息已在本地 Demo 中发送。')).toBeVisible();
 
-  const sentMessageBody = page.getByText(structuredManualMessage, { exact: true }).last();
-  await expect(sentMessageBody).toHaveCSS('white-space', 'pre-wrap');
-  expect(await sentMessageBody.evaluate((element) => (element as HTMLElement).innerText)).toBe(structuredManualMessage);
+  const sentMessageBody = page.locator('[data-message-body]').filter({ hasText: '请按时进入课堂' }).last();
+  await expect(sentMessageBody.locator('p')).toHaveCSS('white-space', 'pre-wrap');
+  await expect(sentMessageBody.getByRole('list')).toBeVisible();
+  await expect(sentMessageBody.locator('li')).toHaveText(['提前准备课本。', '检查课堂练习。']);
 
   await page.getByRole('button', { name: '打开表情与贴纸' }).click();
   await page.getByRole('tab', { name: 'Emoji' }).click();

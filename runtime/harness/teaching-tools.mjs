@@ -1,3 +1,4 @@
+import { CLASSIN_READ_TOOL, createClassInReadTool } from './classin-read-tool.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { constants } from 'node:fs';
 import { link, lstat, mkdir, open, unlink } from 'node:fs/promises';
@@ -31,7 +32,7 @@ export function draftFilename(callId) {
 }
 
 export function teachingToolGuard(exec) {
-  return [TOOL_NAME, 'create_solution_image'].includes(exec.name) ? undefined : 'TeachBuddy permits only teaching draft and solution image tools.';
+  return [TOOL_NAME, 'create_solution_image', CLASSIN_READ_TOOL].includes(exec.name) ? undefined : 'TeachBuddy permits only teaching draft, solution image and authorized ClassIn read tools.';
 }
 
 async function ensureDirectory(path) {
@@ -202,4 +203,5 @@ export function apply(ctx) {
   ctx.tools.guard(teachingToolGuard);
   ctx.tools.register(createTeachingDraftTool());
   ctx.tools.register(createSolutionImageTool());
+  ctx.tools.register(createClassInReadTool());
 }

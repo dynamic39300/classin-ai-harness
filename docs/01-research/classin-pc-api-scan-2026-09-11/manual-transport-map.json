@@ -1,0 +1,247 @@
+[
+  {
+    "moduleId": 563526,
+    "exportName": "B4",
+    "basePrefix": "/zero-usercenter",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "BO",
+    "basePrefix": "/cloudspace/api",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "Ex",
+    "basePrefix": "/coreapi/app",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "Go",
+    "basePrefix": "/coreapi",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "cloud-host-map-origin",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "HV",
+    "basePrefix": "/usercenter",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "Hs",
+    "basePrefix": "/cloudspace/api",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "T1",
+    "basePrefix": "/cloudspace/web",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "cloud-host-map-origin",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "Vp",
+    "basePrefix": "/clouddisk/web",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "cloud-host-map-origin",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "ZX",
+    "basePrefix": "//question-bank-business-service",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": "Keep double slash literal; do not infer hostname"
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "hj",
+    "basePrefix": "/clouddisk/api",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "j7",
+    "basePrefix": "/mix/app",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "mP",
+    "basePrefix": "/zero-user-wx",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "mS",
+    "basePrefix": "/zero-user-wx",
+    "method": "POST",
+    "kind": "client-object",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative",
+    "notes": ""
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "p2",
+    "basePrefix": "/cloudspace/api",
+    "method": "POST",
+    "kind": "callable",
+    "methods": [
+      "POST"
+    ],
+    "hostPolicy": "main-axios-dynamic",
+    "notes": ""
+  },
+  {
+    "moduleId": 629297,
+    "exportName": "createAxiosInstance",
+    "basePrefix": "<argument[0]>",
+    "method": "POST",
+    "kind": "factory",
+    "hostPolicy": "absolute if includes http; else protocol + EEOConfig.DYNAMIC or location.host; overseas remap; __HOSTS__.dynamic override"
+  },
+  {
+    "moduleId": 629297,
+    "exportName": "createAxiosInstanceV2",
+    "basePrefix": "<argument[0]>",
+    "method": "POST",
+    "kind": "factory",
+    "hostPolicy": "absolute if includes http; else protocol + EEOConfig.DYNAMIC or location.host; overseas remap; __HOSTS__.dynamic override"
+  },
+  {
+    "moduleId": 629297,
+    "exportName": "createAxiosInstancePm",
+    "basePrefix": "<argument[0]>",
+    "method": "POST",
+    "kind": "factory",
+    "hostPolicy": "absolute if includes http; else protocol + EEOConfig.DYNAMIC or location.host; overseas remap; __HOSTS__.dynamic override"
+  },
+  {
+    "moduleId": 629297,
+    "exportName": "createNoHeaderAxios",
+    "basePrefix": "<argument[0]>",
+    "method": "POST",
+    "kind": "factory",
+    "hostPolicy": "absolute if includes http; else protocol + EEOConfig.DYNAMIC or location.host; overseas remap; __HOSTS__.dynamic override"
+  },
+  {
+    "moduleId": 629297,
+    "exportName": "createAxiosGetInstance",
+    "basePrefix": "<argument[0]>",
+    "method": "GET",
+    "kind": "factory",
+    "hostPolicy": "absolute if includes http; else location.origin + prefix"
+  },
+  {
+    "moduleId": 563526,
+    "exportName": "uR",
+    "basePrefix": "<argument[0]>",
+    "method": "POST",
+    "kind": "factory",
+    "hostPolicy": "clientInfo.hosts.dynamic -> EEOConfig.DYNAMIC -> relative"
+  },
+  {
+    "moduleId": 563458,
+    "exportName": "$u",
+    "basePrefix": "<argument[0]>",
+    "method": "POST",
+    "kind": "factory",
+    "hostPolicy": "host-map transformed origin + prefix; optional getBaseUrl override",
+    "methods": [
+      "post",
+      "postJson",
+      "postJson2"
+    ]
+  },
+  {
+    "moduleId": 169997,
+    "exportName": "Rh",
+    "basePrefix": "/lms/app",
+    "method": "POST",
+    "kind": "callable",
+    "hostPolicy": "main-axios-dynamic"
+  },
+  {
+    "moduleId": 169997,
+    "exportName": "b6",
+    "basePrefix": "/lms/app",
+    "method": "POST",
+    "kind": "callable",
+    "hostPolicy": "main-axios-dynamic"
+  }
+]

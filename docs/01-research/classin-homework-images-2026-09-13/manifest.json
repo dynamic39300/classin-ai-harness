@@ -1,0 +1,270 @@
+{
+  "truth": "AI_GENERATED_TEST_CONTENT",
+  "rule": {
+    "questions": 4,
+    "images": 2,
+    "text": 2
+  },
+  "images": [
+    {
+      "lesson": 2,
+      "question": 1,
+      "filename": "lesson-02-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 44703,
+      "sha256": "80d9231b865d695e649a596655456441b6ee809f2749ccdd415c64a57294570d",
+      "sourceText": "计算 (−2/3)×(9/4)÷(−3/2)，写出除法转乘法的步骤。"
+    },
+    {
+      "lesson": 2,
+      "question": 2,
+      "filename": "lesson-02-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 39852,
+      "sha256": "55782c7f930e750cf2776eaa65340be8733ba0c338d3a7bb6fd570bdb2dca6ed",
+      "sourceText": "比较 −2⁴ 与 (−2)⁴ 的值，并解释括号的作用。"
+    },
+    {
+      "lesson": 3,
+      "question": 1,
+      "filename": "lesson-03-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 42321,
+      "sha256": "4fe9798078096fdad865483f225508161b291bbd5d95844b914df3fc9b6400cd",
+      "sourceText": "数轴上 A=−6、B=8，求 AB 长度和 AB 中点所表示的数。"
+    },
+    {
+      "lesson": 3,
+      "question": 2,
+      "filename": "lesson-03-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 55525,
+      "sha256": "01c0787d283af2de8f8d65ced1689eaed803b24f6a36e698622bbc1f30888163",
+      "sourceText": "P 从 −6 出发，沿数轴正方向以每秒 2 个单位运动。写出 t 秒后的位置，并求到达 8 的时间。"
+    },
+    {
+      "lesson": 4,
+      "question": 1,
+      "filename": "lesson-04-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 50220,
+      "sha256": "5c3a1e5e764752b1fd4c1560b83ddae28ef66b8b7ba0b640f48e8ca9b71bc5e1",
+      "sourceText": "指出单项式 −3x²y 的系数与次数；指出多项式 2x²−3x+5 的项数与次数。"
+    },
+    {
+      "lesson": 4,
+      "question": 2,
+      "filename": "lesson-04-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 42412,
+      "sha256": "a8c9a20f7b3ec6e1290702e04c9efb4f941563ebb5d7141718872d03c83c7248",
+      "sourceText": "判断 3a²b、−5ab²、7a²b 中哪些是同类项，并说明理由。"
+    },
+    {
+      "lesson": 5,
+      "question": 1,
+      "filename": "lesson-05-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 36781,
+      "sha256": "276dec8bc0ad5f909a6ebe33c5062aec5bd7c6c2d22da2af227c37c350c943c9",
+      "sourceText": "已知 A=2x²−3x+1，B=−x²+4x−2，求 2A−B。"
+    },
+    {
+      "lesson": 5,
+      "question": 2,
+      "filename": "lesson-05-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 42006,
+      "sha256": "43daf47a2e2e7135ee30056405b15f64f12e3a653eae7e63f70b0d9dbe3f71ea",
+      "sourceText": "多项式 (m−2)x²+(3n+6)x+5 不含 x² 项和 x 项，求 m、n。"
+    },
+    {
+      "lesson": 6,
+      "question": 1,
+      "filename": "lesson-06-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 43573,
+      "sha256": "6adddf622533193f102ba776d3d78abf9376ea5cefe90b06a1d04b6860312c63",
+      "sourceText": "定义 a★b=2a−b，计算 3★(−2) 与 (3★1)★2。"
+    },
+    {
+      "lesson": 6,
+      "question": 2,
+      "filename": "lesson-06-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 54731,
+      "sha256": "18f5a3ba684e4f99626ff1772ff5fdb721bc0f3f2a009fde60af1da808efe0f1",
+      "sourceText": "仍定义 a★b=2a−b，分别计算 2★5、5★2，并判断这种运算是否满足交换律。"
+    },
+    {
+      "lesson": 7,
+      "question": 1,
+      "filename": "lesson-07-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 38783,
+      "sha256": "7ae03e2b90468dc6a357ef67f59dd8df38a212f4202185fcad316f7cd2cf4b35",
+      "sourceText": "定义 a△b=a+b−ab，计算 (−2)△3。"
+    },
+    {
+      "lesson": 7,
+      "question": 2,
+      "filename": "lesson-07-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 41789,
+      "sha256": "400b61ba2d6537fdbd6ec4cd3ae19f1c88a47cff6d1f974e7177a8608808e4ec",
+      "sourceText": "定义 a△b=a+b−ab，求所有满足 x△2=5 的 x。"
+    },
+    {
+      "lesson": 8,
+      "question": 1,
+      "filename": "lesson-08-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 54497,
+      "sha256": "cdf29655132e8a0b69b6d000a7f1a7e12b6b932571da568ad556696467f65d16",
+      "sourceText": "一条直线上依次有 A、B、C 三点。由这些点确定多少条不同直线、多少条线段？列出线段名称。"
+    },
+    {
+      "lesson": 8,
+      "question": 2,
+      "filename": "lesson-08-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 52385,
+      "sha256": "66b83cfc32e6a9b4f926edb7866aceded3f321b34896e5a5a5c567eef4b9615e",
+      "sourceText": "四个点中任意三点不共线，每两点连一条直线，一共确定多少条不同直线？说明数法。"
+    },
+    {
+      "lesson": 9,
+      "question": 1,
+      "filename": "lesson-09-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 42403,
+      "sha256": "4f48f1be14c1d6abce79dd9be8b1ed570113bc6a855425b57c89218db7f2237c",
+      "sourceText": "A、B、C 在同一直线上且 B 在 A、C 之间，AB=5、BC=7。求 AC。"
+    },
+    {
+      "lesson": 9,
+      "question": 2,
+      "filename": "lesson-09-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 41396,
+      "sha256": "0c272733135b21033e79b88f16559930b8ade863c4bebc18b10809be56550b95",
+      "sourceText": "线段 AB=18，M 是 AB 中点，N 是 MB 中点。求 AN 和 MN。"
+    },
+    {
+      "lesson": 10,
+      "question": 1,
+      "filename": "lesson-10-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 37882,
+      "sha256": "3621ebea4752ffb4b1f026c3502eb1230ad45c20274a2c6a763a3f394981335a",
+      "sourceText": "一个角为 37°，分别求它的余角与补角。"
+    },
+    {
+      "lesson": 10,
+      "question": 2,
+      "filename": "lesson-10-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 46227,
+      "sha256": "f1df988eb2f69d9bc79224952d6b3f14720ab0de4419170d5b85ee9764fd7a02",
+      "sourceText": "∠AOB=80°，OC 平分 ∠AOB；OD 在 ∠COB 内且 ∠COD=15°。求 ∠DOB。"
+    },
+    {
+      "lesson": 11,
+      "question": 1,
+      "filename": "lesson-11-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 62925,
+      "sha256": "e4bb8dcd09567ace04b93534c410eedb9bd0b647679cde097d070ca51f64abaf",
+      "sourceText": "OA 固定为水平向右方向，OP 从 OA 出发逆时针匀速转动，每秒 6°，0≤t≤30。写出 ∠AOP，并求 t=10 秒时的角度。"
+    },
+    {
+      "lesson": 11,
+      "question": 2,
+      "filename": "lesson-11-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 49310,
+      "sha256": "8e09ee80abe0b16900b35c98ddda1be80b12f0b605742b8ff506dcb487577e81",
+      "sourceText": "仍按第 1 题条件，OP 首次转到与 OA 垂直的位置需要多少秒？"
+    },
+    {
+      "lesson": 12,
+      "question": 1,
+      "filename": "lesson-12-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 39785,
+      "sha256": "7ea997b5970070b0e5d258b5dfd4e8fc11b90f099eba06529a9adf9fd482bed3",
+      "sourceText": "解方程 3(2x−1)−2(x+4)=5，并检验。"
+    },
+    {
+      "lesson": 12,
+      "question": 2,
+      "filename": "lesson-12-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 41983,
+      "sha256": "6358283a0a6513bf43e6acaf71cce859c3f54d1bfaeb052f360bf5fd71ff15f5",
+      "sourceText": "解方程 (x−1)/3−(x+2)/2=1，写出去分母步骤。"
+    },
+    {
+      "lesson": 13,
+      "question": 1,
+      "filename": "lesson-13-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 54739,
+      "sha256": "f23663d69e666fed396b8f69c017bc8a5edbecc4a55126267e98daa0914bc6f7",
+      "sourceText": "一本练习册售价 8 元，一支笔售价 3 元。买 5 本练习册和若干支笔共花 61 元。列方程求笔的支数。"
+    },
+    {
+      "lesson": 13,
+      "question": 2,
+      "filename": "lesson-13-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 53601,
+      "sha256": "f4ca0bb9062757d7b9dafdac067b19bc904775a65224f054cc165f8fecddd732",
+      "sourceText": "甲、乙相距 180 千米，同时相向行驶，速度分别为 40 千米/时和 50 千米/时。列方程求相遇时间。"
+    },
+    {
+      "lesson": 14,
+      "question": 1,
+      "filename": "lesson-14-question-1.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 50701,
+      "sha256": "b9391f848367c6a3192e6d0a747d4a04fa4de3a6c630637ae54dbbf65a884e21",
+      "sourceText": "定义数轴上的距离 d(a,b)=|a−b|，求 d(−4,3)，并求 d(x,−4)=2 的所有 x。"
+    },
+    {
+      "lesson": 14,
+      "question": 2,
+      "filename": "lesson-14-question-2.png",
+      "width": 1200,
+      "height": 760,
+      "bytes": 49243,
+      "sha256": "21522affe5af429f757fe9d14a45ade91e1f6cf2cd8e9a459593db98261073f3",
+      "sourceText": "定义 F(x)=|x+2|+|x−4|。求 F(x) 的最小值，并写出取到最小值时 x 的范围。"
+    }
+  ]
+}

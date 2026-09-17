@@ -38,6 +38,13 @@ export type MessageHistoryLoadState = Readonly<{
   message?: string;
 }>;
 
+export type MessageWorkspaceExtension = Readonly<{
+  threads: readonly MessageThread[];
+  lifecyclePort: MessageLifecyclePort;
+  persist: (threads: readonly MessageThread[]) => void;
+  readEntries?: (threadId: string) => MessageThread['entries'];
+}>;
+
 export type MessageAppendOptions = {
   role: AppRole;
   authorName: string;

@@ -51,6 +51,7 @@ type WorkBuddyImProviderProps = Readonly<{
   experienceScheduler?: WorkBuddyImExperienceScheduler;
   onArtifactCreated?: (artifact: GuidedExplanationArtifact) => void;
   agentServices?: ImSidecarAgentServices;
+  resolveAgentServices?: (target: WorkBuddyImTarget) => ImSidecarAgentServices | undefined;
   children: ReactNode;
 }>;
 
@@ -64,7 +65,7 @@ const INITIAL_STATE: WorkBuddyImState = Object.freeze({
   evaluationHistory: Object.freeze([]),
 });
 
-export function WorkBuddyImProvider({ adapter, guidedExplanationAdapter, teacher, now, experienceScheduler, onArtifactCreated, agentServices, children }: WorkBuddyImProviderProps) {
+export function WorkBuddyImProvider({ adapter, guidedExplanationAdapter, teacher, now, experienceScheduler, onArtifactCreated, agentServices, resolveAgentServices, children }: WorkBuddyImProviderProps) {
   const scheduler = useMemo(() => experienceScheduler ?? createBrowserWorkBuddyImExperienceScheduler(), [experienceScheduler]);
   const [state, setState] = useState<WorkBuddyImState>(INITIAL_STATE);
   const stateRef = useRef(state);
@@ -525,6 +526,7 @@ export function WorkBuddyImProvider({ adapter, guidedExplanationAdapter, teacher
   const actions = useMemo<WorkBuddyImActions>(() => ({
     open, close, editComposerDraft, generate, supplement, removeStudent, removeGroup, restoreChecklist, editBody, reviseExplanation, retryExplanation, approveAndSend,
   }), [approveAndSend, close, editBody, editComposerDraft, generate, open, removeGroup, removeStudent, restoreChecklist, retryExplanation, reviseExplanation, supplement]);
-  const value = useMemo(() => ({ state, actions, agentServices }), [actions, agentServices, state]);
+  const selectedServices = state.target && resolveAgentServices ? resolveAgentServices(state.target) ?? agentServices : agentServices;
+  const value = useMemo(() => ({ state, actions, agentServices: selectedServices }), [actions, selectedServices, state]);
   return <WorkBuddyImContext.Provider value={value}>{children}</WorkBuddyImContext.Provider>;
 }

@@ -1,0 +1,1427 @@
+{
+  "truth": "AI_GENERATED_TEST_CONTENT",
+  "policy": "Seven unit tests; each has 10 questions, 100 points, five verified question types, and two exact-text subjective-question images.",
+  "exams": [
+    {
+      "lesson": 1,
+      "topic": "有理数综合提高（一）",
+      "total_score": 100,
+      "limit_minutes": 45,
+      "type_distribution": {
+        "single_choice": 2,
+        "multiple_choice": 2,
+        "judge": 2,
+        "blank_fill": 2,
+        "subjective_image": 2
+      },
+      "questions": [
+        {
+          "topicType": 1,
+          "content": "<p>计算 -2²＋(-2)³×3/4－(-3)²÷(-3) 的值。</p>",
+          "options": [
+            "<p>-15</p>",
+            "<p>-7</p>",
+            "<p>1</p>",
+            "<p>-13</p>"
+          ],
+          "answer": [
+            "2"
+          ],
+          "analyse": "<p>先乘方：-4＋(-8)×3/4－9÷(-3)=-4-6+3=-7。注意 -2² 与 (-2)² 不同。</p>",
+          "number": 1,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 1,
+          "content": "<p>有理数 a、b 满足 |a＋3|＋|b－2|=0，求 a²b－ab²。</p>",
+          "options": [
+            "<p>-30</p>",
+            "<p>6</p>",
+            "<p>30</p>",
+            "<p>-6</p>"
+          ],
+          "answer": [
+            "3"
+          ],
+          "analyse": "<p>两个绝对值均非负，故 a=-3、b=2；a²b－ab²=18－(-12)=30。</p>",
+          "number": 2,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① a、b 的绝对值分别为 4、3，且 a＋b&lt;0、ab&lt;0，求 a－b。 ② 已知 |x－2|=5，求所有可能的 x 的平方之和。 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 -7</p>",
+            "<p>①的结果为 7</p>",
+            "<p>②的结果为 58</p>",
+            "<p>②的结果为 25</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① ab&lt;0 表示异号，a+b&lt;0 要求绝对值大的 a 为负，所以 a=-4、b=3，差为 -7。 ② x=7 或 -3，平方和为49+9=58。</p>",
+          "number": 3,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 求 |x＋4|＋|x－1|＋|x－6| 的最小值。 ② 若 a 的倒数为 -3/2，b 的相反数为 1/3，求 (a－b)÷(a＋b)。 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 10</p>",
+            "<p>①的结果为 5</p>",
+            "<p>②的结果为 1/3</p>",
+            "<p>②的结果为 3</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 以数轴三点 -4、1、6 为参照，中间点 x=1 时和最小，为5+0+5=10。两端距离和至少10，第三项至少0。 ② a=-2/3，b=-1/3；分子 -1/3，分母 -1，商为1/3。</p>",
+          "number": 4,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>一个非零有理数 a 满足 a²=|a|，求 a³＋1/a 的所有可能值。 其正确结果为 -2 或 2。</p>",
+          "options": [],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>令 |a|=u&gt;0，则u²=u，u=1，所以a=±1，代入得到±2。</p>",
+          "number": 5,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>计算 1/(1×2)＋1/(2×3)＋…＋1/(9×10)。 其正确结果为 10/11。</p>",
+          "options": [],
+          "answer": [
+            "0"
+          ],
+          "analyse": "<p>1/[n(n+1)]=1/n-1/(n+1)，相邻项抵消后为1-1/10=9/10。</p>",
+          "number": 6,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>a、b、c 均非零，且 a+b+c=0、abc&gt;0，求 |a|/a＋|b|/b＋|c|/c。 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"-1\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>积为正时负数个数为0或2。和为0排除全正，因此一正两负，符号和为1-1-1=-1。</p>",
+          "number": 7,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>数轴上整数 x 满足 |x＋2|＋|x－3|=7，求所有这些整数 x 的和。 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"1\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>在[-2,3]内距离和为5，区间外解得x=-3或4，两者之和为1。</p>",
+          "number": 8,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "计算 1/(1×2)＋1/(2×3)＋…＋1/(2025×2026)，写出拆项与抵消过程。",
+          "imageNo": 1,
+          "options": [],
+          "answer": [
+            "<p>利用 1/[n(n+1)]=1/n－1/(n+1)，原式=(1－1/2)+(1/2－1/3)+…+(1/2025－1/2026)=1－1/2026=2025/2026。</p>"
+          ],
+          "analyse": "<p>利用 1/[n(n+1)]=1/n－1/(n+1)，原式=(1－1/2)+(1/2－1/3)+…+(1/2025－1/2026)=1－1/2026=2025/2026。</p>",
+          "subjectiveNameId": 0,
+          "number": 9,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "解方程 |x＋2|＋|x－3|=9，并在数轴上说明两个解所在的位置。",
+          "imageNo": 2,
+          "options": [],
+          "answer": [
+            "<p>当 -2≤x≤3 时左边恒为5，不合题意。x＜-2 时，-x-2+3-x=9，得 x=-4；x＞3 时，x+2+x-3=9，得 x=5。因此解为 x=-4 或 x=5。</p>"
+          ],
+          "analyse": "<p>当 -2≤x≤3 时左边恒为5，不合题意。x＜-2 时，-x-2+3-x=9，得 x=-4；x＞3 时，x+2+x-3=9，得 x=5。因此解为 x=-4 或 x=5。</p>",
+          "subjectiveNameId": 0,
+          "number": 10,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        }
+      ]
+    },
+    {
+      "lesson": 3,
+      "topic": "压轴题：数轴上的动点问题",
+      "total_score": 100,
+      "limit_minutes": 45,
+      "type_distribution": {
+        "single_choice": 2,
+        "multiple_choice": 2,
+        "judge": 2,
+        "blank_fill": 2,
+        "subjective_image": 2
+      },
+      "questions": [
+        {
+          "topicType": 1,
+          "content": "<p>数轴上 A=-8、B=10。P 从 A 以每秒3单位向右运动，Q 同时从 B 以每秒1单位向左运动。相遇点坐标是多少？</p>",
+          "options": [
+            "<p>9/2</p>",
+            "<p>-7/2</p>",
+            "<p>7</p>",
+            "<p>11/2</p>"
+          ],
+          "answer": [
+            "4"
+          ],
+          "analyse": "<p>相遇时间18/(3+1)=9/2秒；坐标-8+3×9/2=11/2。</p>",
+          "number": 1,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 1,
+          "content": "<p>数轴上 P 从 -6 出发以每秒4单位向右运动，Q 同时从 8 出发以每秒1单位向右运动。出发后 PQ=5 的时刻有哪些？</p>",
+          "options": [
+            "<p>3 秒和 19/3 秒</p>",
+            "<p>只有 3 秒</p>",
+            "<p>3 秒和 5 秒</p>",
+            "<p>只有 19/3 秒</p>"
+          ],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>相对位置P-Q=-14+3t，解|-14+3t|=5，得t=3或19/3，分别在追上前后。</p>",
+          "number": 2,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 数轴上 A=-4、B=8，P 从 A 以每秒2单位向右运动，且只研究 0≤t≤6。何时 PA=2PB？ ② A 从 -5 以每秒2单位向右运动，B 同时从 7 以每秒4单位向左运动。线段 AB 的中点第一次到达原点需几秒？ 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 4 秒</p>",
+            "<p>①的结果为 2 秒</p>",
+            "<p>②的结果为 1 秒</p>",
+            "<p>②的结果为 2 秒</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① P在AB内，PA=2t，PB=12-2t。2t=2(12-2t)，得t=4。 ② 中点坐标[(-5+2t)+(7-4t)]/2=1-t，令其为0得t=1。</p>",
+          "number": 3,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① P 从数轴 -2 出发以每秒3单位向右运动，Q 从 10 同时以每秒1单位向左运动；相遇后均保持方向速度。什么时候 PQ 再次等于初始距离？ ② A=-6、B=6。P 从 A 以每秒3单位向右运动，到 B 后立即以原速返回。Q 从 A 同时以每秒1单位向右运动。P 返回途中与 Q 相遇的时刻及坐标是？ 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 6 秒</p>",
+            "<p>①的结果为 3 秒</p>",
+            "<p>②的结果为 第 6 秒，坐标 0</p>",
+            "<p>②的结果为 第 4 秒，坐标 -2</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 初始距离12，运动后距离为|-12+4t|。除t=0外，等于12的解是t=6。 ② P第4秒到B，返回时坐标6-3(t-4)=18-3t；Q=-6+t。解得t=6，坐标0。</p>",
+          "number": 4,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>A=-9、B=3，P 从 A 以每秒2单位向右运动。何时 PA＋PB=20？ 其正确结果为 8 秒。</p>",
+          "options": [],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>t≥0时P不会在A左侧；AB内距离和恒为12。过B后PA+PB=2t+(2t-12)=4t-12，解得t=8。</p>",
+          "number": 5,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>P 从 -10 以每秒3单位向右运动，Q 从 2 同时以每秒1单位向右运动。线段 PQ 的中点与原点的距离为2的时刻有哪些？ 其正确结果为 只有 2 秒。</p>",
+          "options": [],
+          "answer": [
+            "0"
+          ],
+          "analyse": "<p>中点坐标(-10+3t+2+t)/2=-4+2t。令|-4+2t|=2，得t=1或3。</p>",
+          "number": 6,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>P 从 -7 以每秒2单位向右运动，Q 从 5 同时以每秒1单位向左运动。若此后都不停，PQ&lt;3 对应的时间范围是？ 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"3<t<5\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>PQ=|-12+3t|&lt;3，等价于-3&lt;-12+3t&lt;3，得到3&lt;t&lt;5。端点距离等于3，不取。</p>",
+          "number": 7,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>A=-4、B=8。P 从 A 以每秒2单位向右运动，Q 从 B 同时以每秒4单位向右运动。M 是 AP 中点，N 是 BQ 中点。出发后 MN=18 时，t 等于多少？ 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"6 秒\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>M=-4+t，N=8+2t；t≥0时N在M右侧，MN=12+t，故t=6。</p>",
+          "number": 8,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "数轴上 P 从 -8 出发以每秒3个单位向右运动，Q 从 10 同时以每秒1个单位向左运动，二者相遇后仍按原方向运动。求出发后两点距离为6个单位的所有时刻，并写出此时两点坐标。",
+          "imageNo": 1,
+          "options": [],
+          "answer": [
+            "<p>t秒时 P=-8+3t，Q=10-t。由 |P-Q|=|-18+4t|=6，得 t=3 或 t=6。t=3 时 P=1、Q=7；t=6 时 P=10、Q=4。</p>"
+          ],
+          "analyse": "<p>t秒时 P=-8+3t，Q=10-t。由 |P-Q|=|-18+4t|=6，得 t=3 或 t=6。t=3 时 P=1、Q=7；t=6 时 P=10、Q=4。</p>",
+          "subjectiveNameId": 0,
+          "number": 9,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "数轴上 A=-6、B=6。P 从 A 以每秒3个单位向右运动，到 B 后立即原速返回；Q 从 A 同时以每秒1个单位向右运动。求 P 返回途中与 Q 相遇的时刻和相遇点坐标。",
+          "imageNo": 2,
+          "options": [],
+          "answer": [
+            "<p>P在第4秒到达B。返回途中 P=6-3(t-4)=18-3t，Q=-6+t。令二者相等，得18-3t=-6+t，t=6；相遇坐标为0。</p>"
+          ],
+          "analyse": "<p>P在第4秒到达B。返回途中 P=6-3(t-4)=18-3t，Q=-6+t。令二者相等，得18-3t=-6+t，t=6；相遇坐标为0。</p>",
+          "subjectiveNameId": 0,
+          "number": 10,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        }
+      ]
+    },
+    {
+      "lesson": 5,
+      "topic": "整式综合提高（二）",
+      "total_score": 100,
+      "limit_minutes": 45,
+      "type_distribution": {
+        "single_choice": 2,
+        "multiple_choice": 2,
+        "judge": 2,
+        "blank_fill": 2,
+        "subjective_image": 2
+      },
+      "questions": [
+        {
+          "topicType": 1,
+          "content": "<p>化简 3(2a－b)－2[a－2(b－a)]。</p>",
+          "options": [
+            "<p>4a+b</p>",
+            "<p>b</p>",
+            "<p>4a-7b</p>",
+            "<p>12a+b</p>"
+          ],
+          "answer": [
+            "2"
+          ],
+          "analyse": "<p>括号内为3a-2b，原式6a-3b-6a+4b=b。</p>",
+          "number": 1,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 1,
+          "content": "<p>已知 A=2x²－3x＋1，B=x²＋2x－4。求 2A－3B 在 x=-2 时的值。</p>",
+          "options": [
+            "<p>6</p>",
+            "<p>30</p>",
+            "<p>42</p>",
+            "<p>-18</p>"
+          ],
+          "answer": [
+            "3"
+          ],
+          "analyse": "<p>2A-3B=x²-12x+14，代入-2得4+24+14=42。</p>",
+          "number": 2,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 多项式 (m－2)x³＋(n＋1)x²＋5x－7 是关于 x 的一次式，则 m＋n 等于多少？ ② 若 3xᵐy² 与 -5x³yⁿ 是同类项，求 2m－n。 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 1</p>",
+            "<p>①的结果为 3</p>",
+            "<p>②的结果为 4</p>",
+            "<p>②的结果为 1</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 三次项、二次项系数均须为0，因此m=2、n=-1，和为1。一次项系数5非零。 ② 同类项的对应字母指数相同，m=3、n=2，2m-n=4。</p>",
+          "number": 3,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 若 2a－3b=5，求 4a－6b＋7－(2a－3b) 的值。 ② 关于 x、y 的多项式 2x²＋kxy－3y²－[x²＋(2k－1)xy－5y²] 不含 xy 项，k 等于多少？ 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 12</p>",
+            "<p>①的结果为 17</p>",
+            "<p>②的结果为 1</p>",
+            "<p>②的结果为 -1</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 把2a-3b整体记为5，原式2×5+7-5=12。 ② xy项系数为k-(2k-1)=1-k，令其为0得到k=1。</p>",
+          "number": 4,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>已知 P(x)=2x³－5x²＋4x－7，求 P(2)＋P(-2)。 其正确结果为 -54。</p>",
+          "options": [],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>奇次项相消，和为-10×2²-14=-54。</p>",
+          "number": 5,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>若 A－2B=3x²－x＋4，且 B=x²＋2x－1，求 A－B。 其正确结果为 2x²－3x＋5。</p>",
+          "options": [],
+          "answer": [
+            "0"
+          ],
+          "analyse": "<p>A-B=(A-2B)+B，将已知两式相加并合并同类项得4x²+x+3。</p>",
+          "number": 6,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>有一个多项式，减去 2x²－3x＋5 时，被误算为加上这个式子，错误结果是 5x²－x＋8。正确结果是什么？ 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"x²＋5x－2\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>错误结果比正确结果多2(2x²-3x+5)，因此正确结果=(5x²-x+8)-2(2x²-3x+5)=x²+5x-2。</p>",
+          "number": 7,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>当 x+y=4、xy=-3 时，求 2x²y＋2xy²－3(x+y)。 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"-36\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>前两项合并为2xy(x+y)，故原式=2×(-3)×4-3×4=-36。</p>",
+          "number": 8,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "已知 A=2x²－3x＋1，B=x²＋2x－4。先化简 2A－3B，再求 x=-2 时的值。",
+          "imageNo": 1,
+          "options": [],
+          "answer": [
+            "<p>2A－3B=2(2x²－3x＋1)－3(x²＋2x－4)=x²－12x＋14。代入 x=-2，得4+24+14=42。</p>"
+          ],
+          "analyse": "<p>2A－3B=2(2x²－3x＋1)－3(x²＋2x－4)=x²－12x＋14。代入 x=-2，得4+24+14=42。</p>",
+          "subjectiveNameId": 0,
+          "number": 9,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "某多项式减去 2x²－3x＋5 时，被误算成加上这个式子，错误结果为 5x²－x＋8。求原多项式和正确结果。",
+          "imageNo": 2,
+          "options": [],
+          "answer": [
+            "<p>设原多项式为P。由 P+(2x²－3x＋5)=5x²－x＋8，得P=3x²+2x+3。正确结果P-(2x²－3x＋5)=x²+5x－2。</p>"
+          ],
+          "analyse": "<p>设原多项式为P。由 P+(2x²－3x＋5)=5x²－x＋8，得P=3x²+2x+3。正确结果P-(2x²－3x＋5)=x²+5x－2。</p>",
+          "subjectiveNameId": 0,
+          "number": 10,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        }
+      ]
+    },
+    {
+      "lesson": 7,
+      "topic": "压轴题：运算类新定义问题",
+      "total_score": 100,
+      "limit_minutes": 45,
+      "type_distribution": {
+        "single_choice": 2,
+        "multiple_choice": 2,
+        "judge": 2,
+        "blank_fill": 2,
+        "subjective_image": 2
+      },
+      "questions": [
+        {
+          "topicType": 1,
+          "content": "<p>定义 a★b=2a－b＋ab。求 (2★(-1))★3。</p>",
+          "options": [
+            "<p>3</p>",
+            "<p>6</p>",
+            "<p>18</p>",
+            "<p>12</p>"
+          ],
+          "answer": [
+            "4"
+          ],
+          "analyse": "<p>2★(-1)=4+1-2=3，再算3★3=6-3+9=12。</p>",
+          "number": 1,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 1,
+          "content": "<p>定义 a△b=a＋2b。若 x△(2△x)=19，求 x。</p>",
+          "options": [
+            "<p>3</p>",
+            "<p>2</p>",
+            "<p>4</p>",
+            "<p>5</p>"
+          ],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>2△x=2+2x，外层为x+2(2+2x)=5x+4=19，所以x=3。</p>",
+          "number": 2,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 定义 a⊙b=a－b²。求 2⊙(3⊙1) 与 (2⊙3)⊙1 的差（前者减后者）。 ② 定义 a◇b=3a－2b。若 a◇b=b◇a，且 a+b=10，则 a◇b 等于多少？ 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 6</p>",
+            "<p>①的结果为 -6</p>",
+            "<p>②的结果为 5</p>",
+            "<p>②的结果为 0</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 前者=2-(3-1)²=-2，后者=(2-9)-1=-8，差为6。该运算不满足结合律。 ② 相等条件给出5a=5b，结合a+b=10得a=b=5，因此3a-2b=5。</p>",
+          "number": 3,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 定义 F(x)：x≥0 时 F(x)=2x－1，x&lt;0 时 F(x)=-x＋2。满足 F(x)=5 的所有 x 的和是多少？ ② 定义 a★b=a＋b－ab。若 x★2=-3，求 (x★1)★0。 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 0</p>",
+            "<p>①的结果为 3</p>",
+            "<p>②的结果为 1</p>",
+            "<p>②的结果为 0</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 正分支2x-1=5得3；负分支-x+2=5得-3。均满足对应范围，和为0。 ② x+2-2x=-3得x=5；任意x都有x★1=1，所以结果1★0=1。</p>",
+          "number": 4,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>定义 a△b=2a＋b。若 (x△2)△3=x△(2△3)，求 x。 其正确结果为 0。</p>",
+          "options": [],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>左边4x+7，右边2x+7；相等得2x=0，因此x=0。</p>",
+          "number": 5,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>对整数 n 定义 T(n)：n 为偶数时 T(n)=n/2，n 为奇数时 T(n)=3n＋1。从 5 出发连续做 4 次 T 运算，结果是多少？ 其正确结果为 4。</p>",
+          "options": [],
+          "answer": [
+            "0"
+          ],
+          "analyse": "<p>5→16→8→4→2，注意要完成4次而不是把初始值计作第1次。</p>",
+          "number": 6,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>定义 a⊙b=(a－b)/(a＋b)，要求 a+b≠0。若 3⊙x=-2，求 x⊙1。 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"5/4\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>(3-x)/(3+x)=-2得x=-9，符合分母非零要求；x⊙1=(-9-1)/(-9+1)=5/4。</p>",
+          "number": 7,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>定义 F(x)=3－x。从 x=7 开始连续进行 2027 次 F 运算，最终结果是多少？ 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"-4\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>F(F(x))=x，每两次恢复原数。2027为奇数，最终等于F(7)=-4。</p>",
+          "number": 8,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "定义 a★b=a＋b－ab。若 x★2=-3，求 x，并计算 (x★1)★0；写出每一步。",
+          "imageNo": 1,
+          "options": [],
+          "answer": [
+            "<p>x+2-2x=-3，得x=5。x★1=x+1-x=1，所以(x★1)★0=1★0=1。</p>"
+          ],
+          "analyse": "<p>x+2-2x=-3，得x=5。x★1=x+1-x=1，所以(x★1)★0=1★0=1。</p>",
+          "subjectiveNameId": 0,
+          "number": 9,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "对整数 n 定义 T(n)：n 为偶数时 T(n)=n/2，n 为奇数时 T(n)=3n＋1。从5出发连续做6次T运算，依次写出每次结果。",
+          "imageNo": 2,
+          "options": [],
+          "answer": [
+            "<p>5→16→8→4→2→1→4，所以连续6次后的结果是4。</p>"
+          ],
+          "analyse": "<p>5→16→8→4→2→1→4，所以连续6次后的结果是4。</p>",
+          "subjectiveNameId": 0,
+          "number": 10,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        }
+      ]
+    },
+    {
+      "lesson": 9,
+      "topic": "线段计算综合",
+      "total_score": 100,
+      "limit_minutes": 45,
+      "type_distribution": {
+        "single_choice": 2,
+        "multiple_choice": 2,
+        "judge": 2,
+        "blank_fill": 2,
+        "subjective_image": 2
+      },
+      "questions": [
+        {
+          "topicType": 1,
+          "content": "<p>A、B、C 在同一直线上，B 在 A、C 之间。AB=8，BC=6。M 为 AC 中点，N 为 BC 中点。MN 等于多少？</p>",
+          "options": [
+            "<p>3</p>",
+            "<p>4</p>",
+            "<p>7</p>",
+            "<p>5</p>"
+          ],
+          "answer": [
+            "2"
+          ],
+          "analyse": "<p>令A=0、B=8、C=14，则M=7、N=11，MN=4。</p>",
+          "number": 1,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 1,
+          "content": "<p>A、B、C 在同一直线上，AB=10、BC=4，位置关系没有其他限制。M、N 分别为 AB、BC 的中点，MN 的所有可能值是？</p>",
+          "options": [
+            "<p>只有 3</p>",
+            "<p>只有 7</p>",
+            "<p>3 或 7</p>",
+            "<p>2 或 5</p>"
+          ],
+          "answer": [
+            "3"
+          ],
+          "analyse": "<p>设B=0、A=10，则C=4或-4，M=5、N=2或-2，MN=3或7。</p>",
+          "number": 2,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 在线段 AB 上依次有点 C、D，即 A-C-D-B。已知 AC=2CD、DB=3CD、AB=24。AC 与 DB 的中点之间距离是多少？ ② C 在线段 AB 内，AC:CB=2:3。M 为 AC 中点，N 为 CB 中点，且 MN=15。求 AB。 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 14</p>",
+            "<p>①的结果为 12</p>",
+            "<p>②的结果为 30</p>",
+            "<p>②的结果为 25</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 令CD=x，则AB=6x=24，x=4。AC中点距A为4，DB中点距A为18，距离14。 ② 设AC=2k、CB=3k，则MN=AC/2+CB/2=AB/2，故AB=30。</p>",
+          "number": 3,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① A-C-B-D 依次位于同一直线上，AC=4、CB=6、BD=8。M 为 AB 中点，N 为 CD 中点。MN 等于多少？ ② C 在线段 AB 的延长线上，即 A-B-C。M 为 AB 中点，N 为 BC 中点。已知 MN=13、AB-BC=6，求 BC。 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 6</p>",
+            "<p>①的结果为 4</p>",
+            "<p>②的结果为 10</p>",
+            "<p>②的结果为 7</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 令A=0，C=4，B=10，D=18；M=5，N=(4+18)/2=11，所以MN=6。 ② MN=(AB+BC)/2，故AB+BC=26。与AB-BC=6联立，BC=10。</p>",
+          "number": 4,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>A-B-C 在同一直线上，AB=12、BC=8。D 为 AC 中点，E 为 BD 中点。求 AE。 其正确结果为 11。</p>",
+          "options": [],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>设A=0、B=12、C=20，D=10，E=(12+10)/2=11，因此AE=11。</p>",
+          "number": 5,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>在线段 AB 上依次有点 C、D。AC=3、DB=5，AC 的中点 M 与 DB 的中点 N 相距12。求 CD。 其正确结果为 4。</p>",
+          "options": [],
+          "answer": [
+            "0"
+          ],
+          "analyse": "<p>MN=AC/2+CD+DB/2=1.5+CD+2.5=12，故CD=8。</p>",
+          "number": 6,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>A、B、C 共线，AB=7、AC=11。M、N 分别为 AB、AC 的中点。若 B、C 在 A 的两侧，MN 是同侧情形 MN 的多少倍？ 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"9/2\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>两侧时MN=(7+11)/2=9；同侧时MN=(11-7)/2=2，比值9/2。</p>",
+          "number": 7,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>A-B-C 共线，AB:BC=3:2。M 为 AB 中点，N 为 MC 中点。已知 MN=7，求 AC。 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"20\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>设AB=3k、BC=2k，则MC=1.5k+2k=3.5k，MN=1.75k=7得k=4，AC=5k=20。</p>",
+          "number": 8,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "在线段 AB 上依次有点 C、D。已知 AC=3、DB=5，AC 的中点 M 与 DB 的中点 N 相距12。求 CD，并用线段和差关系说明。",
+          "imageNo": 1,
+          "options": [],
+          "answer": [
+            "<p>设A=0，则C=3，M=3/2。设CD=x，则D=3+x，B=8+x，N=(D+B)/2=11/2+x。MN=4+x=12，得x=8，所以CD=8。</p>"
+          ],
+          "analyse": "<p>设A=0，则C=3，M=3/2。设CD=x，则D=3+x，B=8+x，N=(D+B)/2=11/2+x。MN=4+x=12，得x=8，所以CD=8。</p>",
+          "subjectiveNameId": 0,
+          "number": 9,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "A、B、C 共线，AB=7、AC=11，M、N 分别为 AB、AC 的中点。分别求 B、C 在 A 同侧和异侧时的 MN，并求异侧值是同侧值的多少倍。",
+          "imageNo": 2,
+          "options": [],
+          "answer": [
+            "<p>同侧时 MN=|AC-AB|/2=(11-7)/2=2；异侧时 MN=(AC+AB)/2=(11+7)/2=9；倍数为9/2。</p>"
+          ],
+          "analyse": "<p>同侧时 MN=|AC-AB|/2=(11-7)/2=2；异侧时 MN=(AC+AB)/2=(11+7)/2=9；倍数为9/2。</p>",
+          "subjectiveNameId": 0,
+          "number": 10,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        }
+      ]
+    },
+    {
+      "lesson": 11,
+      "topic": "压轴题：动射线与角度计算",
+      "total_score": 100,
+      "limit_minutes": 45,
+      "type_distribution": {
+        "single_choice": 2,
+        "multiple_choice": 2,
+        "judge": 2,
+        "blank_fill": 2,
+        "subjective_image": 2
+      },
+      "questions": [
+        {
+          "topicType": 1,
+          "content": "<p>固定射线 OA、OB 构成120°角。OP 从 OA 出发，以每秒6°在角内部向 OB 转动（0≤t≤20）。当 ∠AOP=2∠POB 时，t 等于多少？</p>",
+          "options": [
+            "<p>10 秒</p>",
+            "<p>20/3 秒</p>",
+            "<p>15 秒</p>",
+            "<p>40/3 秒</p>"
+          ],
+          "answer": [
+            "4"
+          ],
+          "analyse": "<p>6t=2(120-6t)，得到18t=240，t=40/3，满足范围。</p>",
+          "number": 1,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 1,
+          "content": "<p>OA、OB 构成150°角。OP 从 OA、OQ 从 OB 同时在角内相向转动，速度分别为每秒4°、6°。相遇前 ∠POQ=30° 时是第几秒？</p>",
+          "options": [
+            "<p>12 秒</p>",
+            "<p>15 秒</p>",
+            "<p>18 秒</p>",
+            "<p>10 秒</p>"
+          ],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>相遇前夹角为150-(4+6)t。令其为30得t=12，早于相遇时刻15秒。</p>",
+          "number": 2,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① OA、OB 为反向射线。OP 从 OA 在同一半平面内以每秒5°向 OB 转动，OM 平分 ∠AOP。当 ∠MOB=130° 时，t 等于多少？ ② 在 ∠AOB=100° 内，OP 是一条动射线。OM 平分 ∠AOP，ON 平分 ∠POB。无论 OP 如何运动，∠MON 都等于多少？ 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 20 秒</p>",
+            "<p>①的结果为 10 秒</p>",
+            "<p>②的结果为 50°</p>",
+            "<p>②的结果为 25°</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① OM与OA夹角为2.5t，故∠MOB=180-2.5t=130，t=20。此时OP转过100°。 ② 设∠AOP=x，则∠MOP=x/2、∠PON=(100-x)/2，两者和恒为50°。</p>",
+          "number": 3,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 以 OA 为0°方向，OP、OQ 同时从 OA 出发逆时针匀速转动，每秒分别转8°、3°，只研究0≤t≤20。两射线的较小夹角第一次为60°需多久？ ② ∠AOB=90°。OP 从 OA 起每秒逆时针转6°，OQ 从 OB 起沿相同方向每秒转2°；OA方向为0°、OB方向为90°。0≤t≤30 内，较小夹角 ∠POQ=30° 的时刻有哪些？ 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 12 秒</p>",
+            "<p>①的结果为 6 秒</p>",
+            "<p>②的结果为 15 秒和 30 秒</p>",
+            "<p>②的结果为 只有 15 秒</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 方向角差为5t，在此时间范围内不超过100°；5t=60，t=12。 ② 方向角差为|6t-(90+2t)|=|4t-90|，此范围内≤90°，解得t=15或30。</p>",
+          "number": 4,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>∠AOB=120°，OP 从 OA 以每秒4°在角内向 OB 转动。OM 平分 ∠POB。当 ∠AOM=90° 时，t 是多少？ 其正确结果为 15 秒。</p>",
+          "options": [],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>OM方向角为(4t+120)/2=2t+60，令其为90得t=15，此时OP在角内。</p>",
+          "number": 5,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>OA、OB 为反向射线，OC 位于上半平面且 ∠AOC=60°。OP 从 OA 在上半平面以每秒10°转向 OB。0≤t≤18 内，∠COP=40° 的所有时刻是？ 其正确结果为 4 秒和 8 秒。</p>",
+          "options": [],
+          "answer": [
+            "0"
+          ],
+          "analyse": "<p>OP方向角10t，OC方向角60°，两者差在[-60,120]内，所以|10t-60|=40，得2或10秒。</p>",
+          "number": 6,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>OP、OQ 从同一射线 OA 同时逆时针转动，速度分别为每秒7°、3°。只研究0≤t≤25。当 ∠AOP 的角内平分线 OM 与 OQ 的较小夹角为10°时，t 等于多少？ 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"20 秒\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>此范围内OP转过的角度小于180°，OM方向角为3.5t，OQ方向角为3t，两者夹角0.5t=10，得t=20。</p>",
+          "number": 7,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>∠AOB=150°。OP 从 OA 以每秒5°在角内转向 OB。设 OM、ON 分别平分 ∠AOP、∠POB。当 ∠AOM:∠NOB=2:1 时，∠POB 是多少？ 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"50°\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>令∠AOP=x，则(x/2):[(150-x)/2]=2:1，解得x=100，∠POB=50°。</p>",
+          "number": 8,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "∠AOB=150°。OP 从 OA 以每秒5°在角内转向 OB。OM、ON 分别平分 ∠AOP、∠POB。当 ∠AOM:∠NOB=2:1 时，求运动时间和 ∠POB。",
+          "imageNo": 1,
+          "options": [],
+          "answer": [
+            "<p>设运动t秒，则∠AOP=5t，∠POB=150-5t，∠AOM=5t/2，∠NOB=(150-5t)/2。由二者之比为2:1，得5t=2(150-5t)，t=20秒，∠POB=50°。</p>"
+          ],
+          "analyse": "<p>设运动t秒，则∠AOP=5t，∠POB=150-5t，∠AOM=5t/2，∠NOB=(150-5t)/2。由二者之比为2:1，得5t=2(150-5t)，t=20秒，∠POB=50°。</p>",
+          "subjectiveNameId": 0,
+          "number": 9,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "OA、OB 为反向射线，OC 位于同一半平面且 ∠AOC=60°。OP 从 OA 以每秒10°转向 OB。求0≤t≤18内 ∠COP=40°的所有时刻。",
+          "imageNo": 2,
+          "options": [],
+          "answer": [
+            "<p>t秒时∠AOP=10t，OC对应60°方向，所以∠COP=|10t-60|。解|10t-60|=40，得t=2或t=10，均在范围内。</p>"
+          ],
+          "analyse": "<p>t秒时∠AOP=10t，OC对应60°方向，所以∠COP=|10t-60|。解|10t-60|=40，得t=2或t=10，均在范围内。</p>",
+          "subjectiveNameId": 0,
+          "number": 10,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        }
+      ]
+    },
+    {
+      "lesson": 13,
+      "topic": "方程应用综合提高",
+      "total_score": 100,
+      "limit_minutes": 45,
+      "type_distribution": {
+        "single_choice": 2,
+        "multiple_choice": 2,
+        "judge": 2,
+        "blank_fill": 2,
+        "subjective_image": 2
+      },
+      "questions": [
+        {
+          "topicType": 1,
+          "content": "<p>某商品按成本加价25%标价，再打九折出售，每件仍获利30元。每件商品成本是多少元？</p>",
+          "options": [
+            "<p>200</p>",
+            "<p>240</p>",
+            "<p>250</p>",
+            "<p>300</p>"
+          ],
+          "answer": [
+            "2"
+          ],
+          "analyse": "<p>设成本x，售价1.25×0.9x=1.125x，利润0.125x=30，得x=240。</p>",
+          "number": 1,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 1,
+          "content": "<p>一项工程甲单独做需12天，乙单独做需18天。两人先合作3天，剩余由甲单独完成。甲还需做几天？</p>",
+          "options": [
+            "<p>5</p>",
+            "<p>6</p>",
+            "<p>7</p>",
+            "<p>8</p>"
+          ],
+          "answer": [
+            "3"
+          ],
+          "analyse": "<p>合作3天完成3(1/12+1/18)=5/12，剩余7/12，由甲完成需(7/12)/(1/12)=7天。</p>",
+          "number": 2,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 两地相距210千米，甲车先以每小时60千米出发，半小时后乙车从另一地以每小时90千米相向出发。乙车出发多久与甲相遇？ ② 现有浓度20%的盐水300克，加入一定质量的水后变为浓度12%的盐水。应加水多少克？ 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 1.2 小时</p>",
+            "<p>①的结果为 1.4 小时</p>",
+            "<p>②的结果为 200</p>",
+            "<p>②的结果为 150</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 乙出发时剩余210-60×0.5=180千米，两车相对速度150千米/小时，时间180/150=1.2小时。 ② 盐质量不变，为60克。设加水x克，0.12(300+x)=60，解得x=200。</p>",
+          "number": 3,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 2,
+          "content": "<p>分别完成① 某班租车出行。每车坐4人会剩3人无座；每车坐5人则恰好空出1辆车，其他车都坐满。班级有多少人？ ② 父亲今年年龄是孩子的4倍，12年后父亲年龄是孩子的2倍。孩子今年多少岁？ 选择所有正确结论。</p>",
+          "options": [
+            "<p>①的结果为 35</p>",
+            "<p>①的结果为 32</p>",
+            "<p>②的结果为 6</p>",
+            "<p>②的结果为 8</p>"
+          ],
+          "answer": [
+            "1",
+            "3"
+          ],
+          "analyse": "<p>① 设车数n，人数=4n+3=5(n-1)，得n=8，人数35。 ② 设孩子x岁，父亲4x岁。4x+12=2(x+12)，得x=6。</p>",
+          "number": 4,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>某商店有甲、乙两种练习本。买3本甲和2本乙共31元，甲比乙每本贵2元。乙每本多少元？ 其正确结果为 5。</p>",
+          "options": [],
+          "answer": [
+            "1"
+          ],
+          "analyse": "<p>设乙x元，甲x+2元，3(x+2)+2x=31，5x=25，x=5。</p>",
+          "number": 5,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 3,
+          "content": "<p>一根绳子第一次剪去全长的1/3，第二次剪去剩余长度的1/4，最后还剩9米。绳子原长多少米？ 其正确结果为 12。</p>",
+          "options": [],
+          "answer": [
+            "0"
+          ],
+          "analyse": "<p>剩余比例为(1-1/3)(1-1/4)=1/2，故原长x满足x/2=9，得18。</p>",
+          "number": 6,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>一段上坡路和下坡路共12千米。某人上坡每小时3千米，下坡每小时6千米，全程走了3小时。上坡路长多少千米？ 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"6\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>设上坡x千米，下坡12-x千米，x/3+(12-x)/6=3，解得x=6。</p>",
+          "number": 7,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 4,
+          "content": "<p>某项活动原计划每天完成20份材料，可按期完成；实际每天完成25份，提前2天完成且比原计划多完成10份。原计划要完成多少份？ 答：______。</p>",
+          "options": [],
+          "alternativeAnswer": "[[\"240\"]]",
+          "sensitive": 0,
+          "order": 0,
+          "analyse": "<p>设计划天数d，原计划20d份，实际25(d-2)=20d+10，得d=12，原计划240份。</p>",
+          "number": 8,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "一项工程甲单独做需12天，乙单独做需18天。两人先合作3天，余下由甲单独完成。求甲还需多少天，并检验总工作量。",
+          "imageNo": 1,
+          "options": [],
+          "answer": [
+            "<p>甲、乙效率分别为1/12和1/18，合作效率为5/36。3天完成5/12，剩余7/12。甲单独完成需(7/12)÷(1/12)=7天。检验：3×5/36+7×1/12=1。</p>"
+          ],
+          "analyse": "<p>甲、乙效率分别为1/12和1/18，合作效率为5/36。3天完成5/12，剩余7/12。甲单独完成需(7/12)÷(1/12)=7天。检验：3×5/36+7×1/12=1。</p>",
+          "subjectiveNameId": 0,
+          "number": 9,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        },
+        {
+          "topicType": 5,
+          "content": "",
+          "imageQuestion": "某商品按成本加价25%标价，再按标价九折出售，每件仍获利30元。求成本、标价和售价。",
+          "imageNo": 2,
+          "options": [],
+          "answer": [
+            "<p>设成本为x元，标价为1.25x，售价为0.9×1.25x=1.125x。由1.125x-x=30，得0.125x=30，x=240。标价300元，售价270元。</p>"
+          ],
+          "analyse": "<p>设成本为x元，标价为1.25x，售价为0.9×1.25x=1.125x。由1.125x-x=30，得0.125x=30，x=240。标价300元，售价270元。</p>",
+          "subjectiveNameId": 0,
+          "number": 10,
+          "score": 10,
+          "topicSource": 0,
+          "degree": 4,
+          "pointIds": [],
+          "textbookIds": [],
+          "dimensions": []
+        }
+      ]
+    }
+  ]
+}

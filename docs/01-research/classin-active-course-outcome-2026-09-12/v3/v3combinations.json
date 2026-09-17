@@ -1,0 +1,15 @@
+{
+  "instance": "impala_warehouse",
+  "database": "eo_pdviews",
+  "row_count": 1,
+  "truncated": false,
+  "execution_time_ms": 5718,
+  "data": [
+    {
+      "any_support_course_n": 56566,
+      "any_core_support_course_n": 53225,
+      "both_hw_exam_course_n": 2576,
+      "any_week_support_course_n": 43509
+    }
+  ]
+}

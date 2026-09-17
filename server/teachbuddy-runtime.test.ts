@@ -5,6 +5,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createServer, request as httpRequest } from 'node:http';
 import { createHarnessRpc, createTeachBuddyRuntime, maintainRuntime, runtimeMiddleware } from './teachbuddy-runtime.ts';
+import type { ClassInScene } from '../src/contracts/classin-test';
+import { projectContext } from '../src/domain/classin-test/projections';
+import { createRuntimeContextEnvelope } from '../src/domain/workbuddy/runtime-context-envelope';
+import { ClassInError } from './classin-test-transport';
 import type { SessionFileContent, SessionFileGroup } from '../src/contracts/workbuddy/session-files.ts';
 
 const roots: string[] = [];
@@ -21,7 +25,7 @@ afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
-function fixture() {
+function fixture(classInScene?: () => Promise<ClassInScene>) {
   const root = mkdtempSync(join(tmpdir(), 'teachbuddy-runtime-'));
   roots.push(root);
   const calls: { method: string; payload: Record<string, unknown>; rpcId?: string }[] = [];
@@ -99,7 +103,7 @@ function fixture() {
     throw new Error(`Unexpected RPC ${method}`);
   };
   return {
-    root, calls, events, rpc, append, claim, adapter: createTeachBuddyRuntime({ root, rpc }),
+    root, calls, events, rpc, append, claim, adapter: createTeachBuddyRuntime({ root, rpc, classInScene }),
     unconfigure() { configured = false; },
     loseResponse() { losePromptResponse = true; },
     setStage(value: typeof stage) { stage = value; },
@@ -108,6 +112,43 @@ function fixture() {
 }
 
 describe('TeachBuddy runtime governance', () => {
+  it('preserves ClassIn authentication errors and rejects an untrusted host at the HTTP entry', async () => {
+    const f = fixture(async () => { throw new ClassInError('unauthorized', '测试凭据不可用'); });
+    const middleware = runtimeMiddleware(f.adapter);
+    const server = createServer((req, res) => middleware(req, res, () => { res.writeHead(404); res.end(); }));
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address(); if (!address || typeof address === 'string') throw new Error('Missing port');
+    try {
+      const url = `http://127.0.0.1:${address.port}/api/teachbuddy/sessions`;
+      const options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ scope: 'classin-test' }) };
+      const response = await fetch(url, options); expect(response.status).toBe(401); expect(await response.json()).toEqual({ error: '测试凭据不可用' });
+      // Fetch normalizes Host to its URL; raw HTTP is needed to exercise a hostile Host.
+      const hostileStatus = await new Promise<number>((resolve, reject) => {
+        const request = httpRequest(url, { method: 'POST', headers: { ...options.headers, Host: 'evil.invalid' } }, response => {
+          response.resume(); response.on('end', () => resolve(response.statusCode ?? 0)); response.on('error', reject);
+        });
+        request.on('error', reject); request.end(options.body);
+      });
+      expect(hostileStatus).toBe(403);
+      expect(f.calls.some(c => c.method === 'session.create')).toBe(false);
+    } finally { server.closeAllConnections(); await new Promise<void>(resolve => server.close(() => resolve())); }
+  });
+  it('authorizes dedicated test sessions before creation and binds each submitted turn', async () => {
+    const scene: ClassInScene = { environment: 'classin-test', teacher: { id: 'classin-test:teacher:1', name: '老师' }, schoolRef: 'classin-test:school:1', class: { id: '1', name: '班级' }, course: { id: '2', name: '课程' }, units: [], activities: [], members: [], capturedAt: new Date().toISOString(), version: 'v1', complete: true, capabilities: { ordinaryIm: 'unavailable', realtimeAttendance: 'unverified' } };
+    const readScene = vi.fn(async () => scene); const f = fixture(readScene);
+    const session = await f.adapter.create('classin-test'); expect(readScene).toHaveBeenCalledTimes(1);
+    await expect(f.adapter.read('ideal-full', session.id)).rejects.toThrow();
+    await expect(f.adapter.send('classin-test', session.id, 'unscoped message', 'bad')).rejects.toThrow('上下文');
+    expect(f.calls.some(c => c.method === 'session.prompt')).toBe(false);
+    const text = createRuntimeContextEnvelope(projectContext(scene, 'message-draft'), '整理任务提醒');
+    await f.adapter.send('classin-test', session.id, text, 'authorized');
+    const stored = JSON.parse(readFileSync(join(f.root, 'sessions', `${session.id}.json`), 'utf8'));
+    expect(stored.businessRead).toMatchObject({ commandId: 'authorized', use: 'message-draft', actorRef: scene.teacher.id });
+    expect(await f.adapter.list('ideal-full')).toEqual([]);
+    const denied = fixture(async () => { throw new Error('教师权限失效'); });
+    await expect(denied.adapter.create('classin-test')).rejects.toThrow('教师权限');
+    expect(denied.calls.some(c => c.method === 'session.create')).toBe(false);
+  });
   it('refuses missing credentials without falling back to a simulated run', async () => {
     const f = fixture(); f.unconfigure();
     expect((await f.adapter.health()).status).toBe('unconfigured');

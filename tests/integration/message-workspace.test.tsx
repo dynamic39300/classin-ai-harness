@@ -113,6 +113,46 @@ describe('message workspace', () => {
     expect(screen.getByRole('button', { name: '添加图片' })).toBeInTheDocument();
   });
 
+  it('renders approved Markdown messages as structured chat content', () => {
+    const scenario = createFixedMessageScenario();
+    if (scenario.status !== 'ready') throw new Error('Expected the fixed message scenario to be ready.');
+    const thread = scenario.threads.find(({ id }) => id === 'class-physics-3');
+    expect(thread).toBeDefined();
+    thread!.entries.push({
+      id: 'approved-structured-message',
+      authorRole: 'teacher',
+      authorName: '王老师',
+      sentAt: '2026-09-17T10:00:00+08:00',
+      kind: 'text',
+      body: `## 小石头学情摘要
+
+| 项目 | 内容 |
+| --- | --- |
+| **学生** | 小石头 |
+| **课程** | 初中数学专题提升课程 |
+
+1. **在线课堂**：已完成
+2. **单元练习**：未提交
+
+- **学习资料**：个人完成状态未知
+
+> 以上仅整理有依据的数据。`,
+    });
+
+    renderWorkspace('teacher', '/teacher/messages?category=class&thread=class-physics-3', scenario);
+
+    const message = document.querySelector('[data-message-id="approved-structured-message"]');
+    expect(message).not.toBeNull();
+    expect(within(message as HTMLElement).getByRole('heading', { name: '小石头学情摘要' })).toBeInTheDocument();
+    expect(within(message as HTMLElement).getByRole('table')).toBeInTheDocument();
+    expect(message!.querySelectorAll('strong')).toHaveLength(5);
+    expect(message!.querySelector('ol')).toBeInTheDocument();
+    expect(message!.querySelector('ul')).toBeInTheDocument();
+    expect(message!.querySelector('blockquote')).toBeInTheDocument();
+    expect(message).not.toHaveTextContent('| --- | --- |');
+    expect(message).not.toHaveTextContent('**学生**');
+  });
+
   it('keeps the ordinary media composer on teacher and student class/direct entries while isolating Agent direct chats', async () => {
     const user = userEvent.setup();
     renderWorkspace('student-family', '/student/messages?category=class&thread=class-physics-3');
@@ -623,7 +663,9 @@ describe('message workspace', () => {
     await user.click(screen.getByRole('button', { name: '添加真棒' }));
     expect(screen.getByRole('list', { name: '已添加 1 张图片' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '发送' }));
-    const sent = screen.getAllByText(`@所有人 请查看新资料 @${personName} 😀`).map((node) => node.closest('article')).find(Boolean);
+    const expectedBody = `@所有人 请查看新资料 @${personName} 😀`;
+    const sent = Array.from(document.querySelectorAll<HTMLElement>('article[data-mention-everyone="true"]'))
+      .find((article) => article.querySelector('[data-message-body]')?.textContent === expectedBody);
     expect(sent).toHaveAttribute('data-mention-everyone', 'true');
   });
 

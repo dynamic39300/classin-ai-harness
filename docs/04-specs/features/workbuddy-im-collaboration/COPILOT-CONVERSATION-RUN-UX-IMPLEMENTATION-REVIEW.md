@@ -1,12 +1,14 @@
 ---
 title: TeachBuddy IM 对话运行体验 Implementation Review
-status: IMPLEMENTED_PENDING_USER_REVIEW
-version: v1.2
-date: 2026-09-10
+status: USER_ACCEPTED_VIA_FINAL_PARITY_REVIEW
+version: v1.3
+date: 2026-09-16
 decision: D-151, D-152, D-153
 ---
 
 # 实施结果
+
+> 2026-09-16：本实现已随 IM Copilot 最新源项目对齐版本完成用户验收。当前验收事实统一引用[最终对齐验收](./IM-COPILOT-SOURCE-PARITY-IMPLEMENTATION-REVIEW-2026-09-15.md)，下文保留阶段实施证据。
 
 IM Sidecar 已把一次 TeachBuddy 执行收敛为连续对话回合：教师消息不再显示“您”标题；compact 过程条只显示 TeachBuddy、业务动作和真实耗时；最终回复移除外框、标题分隔和阴影；审阅动作紧邻结果；进入审阅后当前结果原位替换为可编辑消息；发送或插入成功后关闭审阅区，不显示“业务已完成”或“已发送”状态卡。
 

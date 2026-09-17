@@ -25,18 +25,64 @@ function Harness({ onAction = vi.fn() }: Readonly<{ onAction?: (action: { label:
 }
 
 describe('TeachingDynamics', () => {
+  it('shows a plain no-class notice without actions, badges or a fabricated suggestion', () => {
+    render(<TeachingDynamics snapshot={{ ...snapshot, stages: snapshot.stages.map(stage => stage.id === 'during' ? { ...stage, items: [] } : stage) }} expanded selectedStage="during" onExpandedChange={vi.fn()} onSelectedStageChange={vi.fn()} onAction={vi.fn()} />);
+    const panel = screen.getByRole('tabpanel');
+    expect(panel).toHaveTextContent('当前没有正在上课的课堂');
+    expect(within(panel).queryByRole('button')).not.toBeInTheDocument();
+    expect(within(panel).queryByRole('article')).not.toBeInTheDocument();
+    expect(panel).not.toHaveTextContent(/仅供查看|无需处理|实时出勤尚未接入/);
+    expect(screen.getByRole('tab', { name: /课中.*暂无课堂/ })).toHaveTextContent('课中暂无');
+  });
+
+  it('keeps full attendance informational and leaves the missing-student reminder actionable', () => {
+    const full = { id: 'full', stage: 'during' as const, kind: 'confirmation' as const, title: '数学课，已上课15分钟，全员满勤', detail: '无需发送提醒', priority: 1 };
+    const onAction = vi.fn();
+    render(<TeachingDynamics snapshot={{ ...snapshot, stages: snapshot.stages.map(stage => stage.id === 'during' ? { ...stage, items: [...stage.items, full] } : stage) }} expanded selectedStage="during" onExpandedChange={vi.fn()} onSelectedStageChange={vi.fn()} onAction={onAction} />);
+    const notice = screen.getByRole('article');
+    expect(notice).toHaveTextContent('全员满勤');
+    expect(within(notice).queryByRole('button')).not.toBeInTheDocument();
+    expect(notice).not.toHaveTextContent(/仅供查看|无需处理/);
+    expect(within(screen.getByRole('tabpanel')).getAllByRole('button')).toHaveLength(1);
+    expect(screen.getByRole('button', { name: /提醒上课/ })).toBeEnabled();
+    expect(onAction).not.toHaveBeenCalled();
+  });
+
+  it('shows loading when collapsed and keeps stage counts unknown in an expanded skeleton', () => {
+    const props = { snapshot: null, loading: true, selectedStage: null, onExpandedChange: vi.fn(), onSelectedStageChange: vi.fn(), onAction: vi.fn() };
+    const { rerender } = render(<TeachingDynamics {...props} expanded={false} />);
+    expect(screen.getByRole('status')).toHaveTextContent('正在整理建议…');
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    rerender(<TeachingDynamics {...props} expanded slow />);
+    expect(screen.getByText('读取时间较长，您可以先提问')).toBeVisible();
+    expect(screen.queryByText(/0条|待核|已核/)).not.toBeInTheDocument();
+  });
+
+  it('uses a compact failure with retry and preserves old content on refresh failure', async () => {
+    const retry = vi.fn();
+    const props = { selectedStage: null, onExpandedChange: vi.fn(), onSelectedStageChange: vi.fn(), onAction: vi.fn(), onRetry: retry };
+    const { rerender } = render(<TeachingDynamics {...props} snapshot={null} expanded error="离线" />);
+    expect(screen.getByRole('status')).toHaveTextContent('教学建议暂不可用');
+    expect(screen.getByText('您仍可直接提问')).toBeVisible();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: '重试' }));
+    expect(retry).toHaveBeenCalledTimes(1);
+    rerender(<TeachingDynamics {...props} snapshot={snapshot} expanded error="离线" />);
+    expect(screen.getByText('正在上课，3 人迟到')).toBeVisible();
+    expect(screen.getByRole('status')).toHaveTextContent('更新失败');
+  });
   it('fuses the AI message assistant introduction with four compact stage tabs and switches one content card in place', async () => {
     const user = userEvent.setup();
     render(<Harness />);
     const module = screen.getByRole('region', { name: 'AI 消息助手建议' });
     expect(within(module).getByText('AI 消息助手')).toBeVisible();
-    expect(within(module).getByText('4 项建议')).toBeVisible();
+    expect(within(module).getByText('4项')).toBeVisible();
     expect(within(module).queryByText('仅你可见')).not.toBeInTheDocument();
-    expect(within(module).getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
+    expect(within(module).getByText(/选一条建议，AI写消息，您确认后发送/)).toBeVisible();
     expect(within(module).queryByText('您好，我会根据当前教学进展，帮您把要发给学生的消息整理好。')).not.toBeInTheDocument();
     const collapse = within(module).getByRole('button', { name: '收起 AI 消息助手建议' });
     expect(collapse).toHaveAttribute('aria-expanded', 'true');
-    expect(collapse).toHaveTextContent('');
+    expect(collapse).toHaveTextContent('AI 消息助手');
     expect(within(module).queryByText('教学动态')).not.toBeInTheDocument();
     expect(within(module).getByRole('tab', { name: /课中.*建议 1 条/ })).toHaveAttribute('aria-selected', 'true');
     expect(within(module).getByRole('tab', { name: /课中.*建议 1 条/ })).toHaveTextContent('课中1条');
@@ -69,11 +115,14 @@ describe('TeachingDynamics', () => {
     await user.click(screen.getByRole('tab', { name: /课后/ }));
     await user.click(screen.getByRole('button', { name: /提醒学生：大数加减法/ }));
     expect(onAction).toHaveBeenCalledWith(expect.objectContaining({ teacherRequest: '提醒交作业' }));
-    await user.click(screen.getByRole('button', { name: '收起 AI 消息助手建议' }));
+    await user.click(screen.getByText(/选一条建议，AI写消息，您确认后发送/));
     expect(screen.getByRole('button', { name: '展开 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.getByText('4 项建议')).toBeVisible();
-    expect(screen.getByText('选环节，点一条建议，AI写消息草稿，您确认后发送')).toBeVisible();
+    expect(screen.getByText('4项')).toBeVisible();
+    expect(screen.getByText(/选一条建议，AI写消息，您确认后发送/)).toBeVisible();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    await user.keyboard(' ');
+    expect(screen.getByRole('button', { name: '收起 AI 消息助手建议' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('tab', { name: /课后/ })).toHaveAttribute('aria-selected', 'true');
   });
 
   it('keeps the current stage selected until the teacher chooses another tab', () => {
@@ -87,5 +136,19 @@ describe('TeachingDynamics', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('uses a stage-specific empty state without creating a fake suggestion', () => {
+    render(<TeachingDynamics
+      snapshot={{ ...snapshot, currentStage: 'after', stages: snapshot.stages.map((stage) => stage.id === 'after' ? { ...stage, items: [] } : stage) }}
+      expanded
+      selectedStage="after"
+      onExpandedChange={vi.fn()}
+      onSelectedStageChange={vi.fn()}
+      onAction={vi.fn()}
+    />);
+
+    expect(screen.getByText('当前没有待提醒或待处理的课后任务')).toBeVisible();
+    expect(screen.getByRole('tab', { name: /课后.*已核对/ })).toHaveTextContent('课后已核');
   });
 });

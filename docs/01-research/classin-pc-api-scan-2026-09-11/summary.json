@@ -1,0 +1,26 @@
+{
+  "definitions": 350,
+  "domains": {
+    "题库与试卷": 25,
+    "班级、课堂与课表": 27,
+    "Agent 与 AI": 86,
+    "基础服务与其他": 25,
+    "身份、组织与设置": 38,
+    "云盘与文件": 70,
+    "计量与权益": 1,
+    "课程分类、单元与活动": 50,
+    "待办": 14,
+    "共创与 Flowin": 11,
+    "外部云存储": 3
+  },
+  "methods": {
+    "POST": 336,
+    "UNKNOWN": 13,
+    "GET": 1
+  },
+  "evidence": {
+    "REQUEST_CALL": 336,
+    "API_PATH_CALL_CANDIDATE": 3,
+    "URL_CONFIG_CANDIDATE": 11
+  }
+}

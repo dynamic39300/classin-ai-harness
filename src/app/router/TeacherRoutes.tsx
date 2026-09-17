@@ -1,3 +1,4 @@
+import { ClassInTestPage } from '@features/classin-test';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from '@app/shell/AppShell';
 import { TeacherHomePage } from '@pages/teacher/TeacherHomePage';
@@ -30,6 +31,7 @@ import { IdealWorkBuddyLayout } from './IdealWorkBuddyLayout';
 export function TeacherRoutes() {
   return (
     <Routes>
+      <Route path="/teacher/classin-test" element={<ClassInTestPage />} />
       <Route path="/teacher/classes/:classId/workbuddy" element={<ClassMvpWorkBuddyLayout />}>
         <Route index element={<Navigate to="new" replace />} />
         <Route path="new" element={<TeacherAiAgentPage />} />
